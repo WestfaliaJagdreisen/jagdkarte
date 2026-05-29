@@ -1,36 +1,40 @@
 /* Westfalia Jagdreisen – Interaktive Weltkarte
    依赖 window.JAGDKARTE_DATA 和 window.JAGDKARTE_SPARKS
-   v2.2: 匹配扩宽后的大西洋，更新地图物理周长为 1100，完美无缝循环
+   v2.3: 匹配 1100 宽度，修复排版重叠，地球整体下沉，完美无缝循环
 */
 (function () {
   function init() {
     var mount = document.getElementById('jagdkarte');
-    if (!mount) { console.warn('[Jagdkarte] 找不到 #jagdkarte 容器'); return; }
-    if (!window.JAGDKARTE_DATA) { console.warn('[Jagdkarte] 数据未加载'); return; }
+    if (!mount) { console.warn('[Jagdkarte] 找不到 #jagdkarte 容器 (Container nicht gefunden)'); return; }
+    if (!window.JAGDKARTE_DATA) { console.warn('[Jagdkarte] 数据未加载 (Daten nicht geladen)'); return; }
 
     var DATA = window.JAGDKARTE_DATA;
     var SPARKS = window.JAGDKARTE_SPARKS || {};
     var names = {EU:'Europa',AS:'Asien',AF:'Afrika',NA:'Nordamerika',SA:'Südamerika',OC:'Ozeanien'};
     var NS = 'http://www.w3.org/2000/svg';
 
-    // 自转速度：360秒转一个屏宽
+    // 自转速度 (Rotationsgeschwindigkeit)：360秒转一个屏宽
     var AUTO_SECONDS = 360;
     var DRAG_DAMP = 0.55;
 
+    // 核心 CSS 样式注入 (CSS-Injektion)
     var css = `
     .jk-stage{position:relative;width:100%;height:100%;min-height:600px;display:flex;align-items:center;justify-content:center;overflow:hidden;
       background:radial-gradient(ellipse 90% 85% at 50% 38%, #3a4a4e 0%, #2a3236 45%, #211e22 100%)}
-    .jk-eyebrow{position:absolute;top:16%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;letter-spacing:.45em;font-size:.72rem;color:#c9a961;font-weight:500;text-transform:uppercase;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
-    .jk-headline{position:absolute;top:20%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-family:'Oswald',sans-serif;font-weight:600;font-size:3.6rem;letter-spacing:.04em;text-transform:uppercase;color:#F5F1E8;text-shadow:0 2px 24px rgba(0,0,0,.55);white-space:nowrap;transition:opacity .8s;pointer-events:none}
-    .jk-sub{position:absolute;top:31%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-size:.82rem;color:#dfd8cd;letter-spacing:.08em;font-weight:300;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
     
+    /* 文字排版整体下移，避开导航栏 (Navigation umgehen) */
+    .jk-eyebrow{position:absolute;top:18%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;letter-spacing:.45em;font-size:.72rem;color:#c9a961;font-weight:500;text-transform:uppercase;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
+    .jk-headline{position:absolute;top:22%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-family:'Oswald',sans-serif;font-weight:600;font-size:3.6rem;letter-spacing:.04em;text-transform:uppercase;color:#F5F1E8;text-shadow:0 2px 24px rgba(0,0,0,.55);white-space:nowrap;transition:opacity .8s;pointer-events:none}
+    .jk-sub{position:absolute;top:34%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-size:.82rem;color:#dfd8cd;letter-spacing:.08em;font-weight:300;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
+    .jk-back{position:absolute;top:15%;left:5%;z-index:30;color:#c9a961;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .5s;border-bottom:1px solid #c9a961;padding-bottom:3px;font-family:'Raleway',sans-serif}
+    .jk-back.jk-show{opacity:1}
+
     .jk-viewport{position:absolute;inset:0;overflow:hidden;cursor:grab;}
     .jk-viewport.jk-grabbing{cursor:grabbing}
-    
     .jk-rotor{position:absolute;top:0;left:0;display:flex;will-change:transform}
     .jk-globe{flex-shrink:0;}
     
-    /* overflow:visible 确保超出 1100 边界的零星岛屿也能渲染并无缝交接 */
+    /* 允许边缘岛屿溢出渲染，实现缝合 (Überlauf sichtbar) */
     .jk-stage svg{width:100%;height:100%;display:block;overflow:visible!important}
     .jk-country{transition:fill .5s ease,stroke .5s ease,opacity .6s ease;cursor:pointer;fill:#5a4a3a;stroke:#3f3025;stroke-width:.4;vector-effect:non-scaling-stroke}
     .jk-country.jk-hover{fill:#6e5a40!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
@@ -40,14 +44,12 @@
     .jk-label{position:absolute;z-index:20;pointer-events:none;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:2.1rem;color:#c9a961;opacity:0;transition:opacity .4s;text-shadow:0 2px 16px rgba(0,0,0,.85);letter-spacing:.05em;top:50%;left:50%;transform:translate(-50%,-50%)}
     .jk-hint{position:absolute;bottom:7%;left:50%;transform:translateX(-50%);z-index:10;font-size:.7rem;color:#b0bdb6;letter-spacing:.3em;text-transform:uppercase;animation:jkpulse 2.4s ease-in-out infinite;font-family:'Raleway',sans-serif;pointer-events:none}
     @keyframes jkpulse{0%,100%{opacity:.5}50%{opacity:1}}
-    .jk-back{position:absolute;top:12%;left:5%;z-index:30;color:#c9a961;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;opacity:0;transition:opacity .5s;border-bottom:1px solid #c9a961;padding-bottom:3px;font-family:'Raleway',sans-serif}
-    .jk-back.jk-show{opacity:1}
     `;
     var styleEl = document.createElement('style');
     styleEl.textContent = css;
     document.head.appendChild(styleEl);
 
-    // 【关键修改】viewBox 宽度更新为 1100
+    // 更新原生坐标系为 1100，解决太平洋切割问题 (Vektor-Koordinaten aktualisieren)
     mount.innerHTML =
       '<div class="jk-stage">' +
         '<div class="jk-eyebrow">— Die Welt ist weit —</div>' +
@@ -112,7 +114,7 @@
       var sw = stage.offsetWidth;
       var sh = stage.offsetHeight;
 
-      // 【关键修改】配合 1100 的物理宽度，计算比例更新为 2.2
+      // 根据 1100x500 的地图设定 2.2 的计算比例 (Seitenverhältnis berechnen)
       var RATIO = 2.2; 
       var targetWidth = sw;
       var targetHeight = sw / RATIO;
@@ -128,9 +130,11 @@
         g.style.height = targetHeight + 'px';
       });
 
+      // 设置转子宽度，并将地球整体向下推 80 像素，避开头部文字 (Vertikaler Versatz)
+      var VERTICAL_OFFSET = 80;
       rotor.style.width = (targetWidth * 2) + 'px';
       rotor.style.height = targetHeight + 'px';
-      rotor.style.top = ((sh - targetHeight) / 2) + 'px';
+      rotor.style.top = (((sh - targetHeight) / 2) + VERTICAL_OFFSET) + 'px';
 
       halfWidth = targetWidth;
       autoVel = -halfWidth / (AUTO_SECONDS * 1000);
