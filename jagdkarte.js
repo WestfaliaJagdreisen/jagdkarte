@@ -33,7 +33,7 @@
     .jk-country.jk-hover{fill:#6e5a40!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
     .jk-country.jk-dim{opacity:.28}
     .jk-spark{fill:#f2dca0;pointer-events:none}
-    @keyframes jktw{0%,49.5%{opacity:0}50%{opacity:0.85}50.5%,100%{opacity:0}}
+    @keyframes jktw{0%,49.4%{opacity:0}50%{opacity:0.85}50.6%,100%{opacity:0}}
     .jk-label{position:absolute;z-index:20;pointer-events:none;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:2.1rem;color:#c9a961;opacity:0;transition:opacity .4s;text-shadow:0 2px 16px rgba(0,0,0,.85);letter-spacing:.05em;top:50%;left:50%;transform:translate(-50%,-50%)}
     .jk-hint{position:absolute;bottom:7%;left:50%;transform:translateX(-50%);z-index:10;font-size:.7rem;color:#b0bdb6;letter-spacing:.3em;text-transform:uppercase;animation:jkpulse 2.4s ease-in-out infinite;font-family:'Raleway',sans-serif;pointer-events:none}
     @keyframes jkpulse{0%,100%{opacity:.5}50%{opacity:1}}
