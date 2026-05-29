@@ -33,7 +33,7 @@
     .jk-rotor{position:absolute;top:0;left:0;display:flex;will-change:transform}
     .jk-globe{flex-shrink:0;}
     
-    .jk-stage svg{width:100%;height:100%;display:block}
+    .jk-stage svg{width:100%;height:100%;display:block;overflow:visible!important}
     .jk-country{transition:fill .5s ease,stroke .5s ease,opacity .6s ease;cursor:pointer;fill:#5a4a3a;stroke:#3f3025;stroke-width:.4;vector-effect:non-scaling-stroke}
     .jk-country.jk-hover{fill:#6e5a40!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
     .jk-country.jk-dim{opacity:.28}
