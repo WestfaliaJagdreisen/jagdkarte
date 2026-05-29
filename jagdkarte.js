@@ -1,7 +1,7 @@
 /* Westfalia Jagdreisen – Interaktive Weltkarte
    依赖 window.JAGDKARTE_DATA 和 window.JAGDKARTE_SPARKS (由 jagdkarte-data.js 提供)
    用法：页面放一个 <div id="jagdkarte"></div>，再引入本脚本
-   v2: 增加拖动旋转 + 惯性滑动，松手后平滑接回匀速自转
+   v2.1: 修复裁切问题，强制 2:1 原生比例，完美无缝循环
 */
 (function () {
   function init() {
@@ -14,9 +14,9 @@
     var names = {EU:'Europa',AS:'Asien',AF:'Afrika',NA:'Nordamerika',SA:'Südamerika',OC:'Ozeanien'};
     var NS = 'http://www.w3.org/2000/svg';
 
-    // 自转速度：360秒转一个屏宽(50%宽度)。换算成 px/ms 在运行时按容器宽度计算
+    // 自转速度：360秒转一个屏宽。换算成 px/ms 在运行时按容器宽度计算
     var AUTO_SECONDS = 360;
-    var DRAG_DAMP = 0.55;   // 拖动阻尼：地图旋转 = 拖动距离 × 此系数（<1 让地球更有重量感）
+    var DRAG_DAMP = 0.55;
 
     var css = `
     .jk-stage{position:relative;width:100%;height:100%;min-height:600px;display:flex;align-items:center;justify-content:center;overflow:hidden;
@@ -24,10 +24,15 @@
     .jk-eyebrow{position:absolute;top:7%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;letter-spacing:.45em;font-size:.72rem;color:#c9a961;font-weight:500;text-transform:uppercase;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
     .jk-headline{position:absolute;top:11%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-family:'Oswald',sans-serif;font-weight:600;font-size:3.6rem;letter-spacing:.04em;text-transform:uppercase;color:#F5F1E8;text-shadow:0 2px 24px rgba(0,0,0,.55);white-space:nowrap;transition:opacity .8s;pointer-events:none}
     .jk-sub{position:absolute;top:22%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-size:.82rem;color:#dfd8cd;letter-spacing:.08em;font-weight:300;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
-    .jk-viewport{position:absolute;inset:0;overflow:hidden;cursor:grab}
+    
+    /* 修改视口 (Viewport) 设定 */
+    .jk-viewport{position:absolute;inset:0;overflow:hidden;cursor:grab;}
     .jk-viewport.jk-grabbing{cursor:grabbing}
-    .jk-rotor{position:absolute;top:0;left:0;height:100%;width:200%;display:flex;will-change:transform}
-    .jk-globe{width:50%;height:100%}
+    
+    /* 移除转子 (Rotor) 和地球 (Globe) 的强硬百分比限制 */
+    .jk-rotor{position:absolute;top:0;left:0;display:flex;will-change:transform}
+    .jk-globe{flex-shrink:0;}
+    
     .jk-stage svg{width:100%;height:100%;display:block}
     .jk-country{transition:fill .5s ease,stroke .5s ease,opacity .6s ease;cursor:pointer;fill:#5a4a3a;stroke:#3f3025;stroke-width:.4;vector-effect:non-scaling-stroke}
     .jk-country.jk-hover{fill:#6e5a40!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
@@ -44,6 +49,7 @@
     styleEl.textContent = css;
     document.head.appendChild(styleEl);
 
+    // 将 SVG 的 slice 改为 meet，配合精确的 2:1 容器实现零裁切
     mount.innerHTML =
       '<div class="jk-stage">' +
         '<div class="jk-eyebrow">— Die Welt ist weit —</div>' +
@@ -51,8 +57,8 @@
         '<div class="jk-sub">Wählen Sie einen Kontinent und beginnen Sie Ihre Reise</div>' +
         '<div class="jk-back">← Zurück zur Welt</div>' +
         '<div class="jk-viewport"><div class="jk-rotor">' +
-          '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice" class="jk-svg1"></svg></div>' +
-          '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice" class="jk-svg2"></svg></div>' +
+          '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg1"></svg></div>' +
+          '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg2"></svg></div>' +
         '</div></div>' +
         '<div class="jk-label"></div>' +
         '<div class="jk-hint">Fahren Sie über einen Kontinent</div>' +
@@ -95,25 +101,49 @@
     var zoomed = false;
     function allPaths() { return mount.querySelectorAll('.jk-country'); }
 
-    // ====== 旋转引擎（JS 接管，支持拖动+惯性+匀速自转）======
-    var halfWidth = 0;            // 一个屏宽（rotor的50%）
-    var offset = 0;              // 当前横向位移（负值向左）
-    var autoVel = 0;             // 自动自转速度 px/ms（负=向左）
-    var velocity = 0;            // 当前速度 px/ms（拖动惯性用）
+    var halfWidth = 0;            
+    var offset = 0;              
+    var autoVel = 0;             
+    var velocity = 0;            
     var dragging = false;
     var lastX = 0, lastT = 0;
     var lastFrame = 0;
 
+    // 核心重写：精准接管尺寸运算 (Maßberechnung)
     function measure() {
-      halfWidth = rotor.offsetWidth / 2;       // 一张地图的宽度
-      // 360秒走完一个 halfWidth
+      var stage = mount.querySelector('.jk-stage');
+      var sw = stage.offsetWidth;
+      var sh = stage.offsetHeight;
+
+      // 强制按照 1000:500 (2:1) 的原生比例计算
+      var targetWidth = sw;
+      var targetHeight = sw / 2;
+
+      // 如果宽度适配导致高度不足以铺满屏幕，则改用高度适配
+      if (targetHeight < sh) {
+        targetHeight = sh;
+        targetWidth = sh * 2;
+      }
+
+      var globes = mount.querySelectorAll('.jk-globe');
+      globes.forEach(function(g) {
+        g.style.width = targetWidth + 'px';
+        g.style.height = targetHeight + 'px';
+      });
+
+      // 设置 rotor 的宽度，并使其垂直居中 (Vertikale Zentrierung)
+      rotor.style.width = (targetWidth * 2) + 'px';
+      rotor.style.height = targetHeight + 'px';
+      rotor.style.top = ((sh - targetHeight) / 2) + 'px';
+
+      halfWidth = targetWidth;
       autoVel = -halfWidth / (AUTO_SECONDS * 1000);
     }
+    
     measure();
     window.addEventListener('resize', measure);
 
     function wrap(v) {
-      // 无缝循环：位移保持在 (-halfWidth, 0]
       while (v <= -halfWidth) v += halfWidth;
       while (v > 0) v -= halfWidth;
       return v;
@@ -123,11 +153,9 @@
       if (!lastFrame) lastFrame = t;
       var dt = t - lastFrame;
       lastFrame = t;
-      if (dt > 100) dt = 16; // 防止切后台回来跳变
+      if (dt > 100) dt = 16;
 
       if (!dragging && !zoomed) {
-        // 惯性 + 趋向自动速度
-        // velocity 向 autoVel 缓慢收敛（惯性衰减）
         velocity += (autoVel - velocity) * 0.03;
         offset += velocity * dt;
         offset = wrap(offset);
@@ -137,7 +165,6 @@
     }
     requestAnimationFrame(frame);
 
-    // ====== 拖动交互 ======
     function pointerDown(e) {
       if (zoomed) return;
       dragging = true;
@@ -150,11 +177,11 @@
       if (!dragging) return;
       var x = (e.touches ? e.touches[0].clientX : e.clientX);
       var now = performance.now();
-      var dx = (x - lastX) * DRAG_DAMP;   // 应用阻尼：地图转得比手慢
+      var dx = (x - lastX) * DRAG_DAMP;   
       var dtm = now - lastT;
       offset = wrap(offset + dx);
       rotor.style.transform = 'translateX(' + offset + 'px)';
-      if (dtm > 0) velocity = dx / dtm; // px/ms，基于阻尼后的位移，惯性也随之自然
+      if (dtm > 0) velocity = dx / dtm; 
       lastX = x; lastT = now;
       if (e.cancelable) e.preventDefault();
     }
@@ -162,7 +189,6 @@
       if (!dragging) return;
       dragging = false;
       viewport.classList.remove('jk-grabbing');
-      // velocity 保留为松手瞬间速度 → frame里会带惯性并缓慢收敛回autoVel
     }
     viewport.addEventListener('mousedown', pointerDown);
     window.addEventListener('mousemove', pointerMove);
@@ -171,7 +197,6 @@
     window.addEventListener('touchmove', pointerMove, {passive:false});
     window.addEventListener('touchend', pointerUp);
 
-    // 区分"拖动"和"点击"：移动超过阈值算拖动，不触发洲点击（鼠标+触摸都支持）
     var downX = 0, moved = false;
     function markDown(x){ downX = x; moved = false; }
     function markMove(x){ if(dragging && Math.abs(x-downX)>5) moved = true; }
@@ -180,7 +205,6 @@
     viewport.addEventListener('touchstart', function(e){ if(e.touches[0]) markDown(e.touches[0].clientX); }, {passive:true});
     viewport.addEventListener('touchmove', function(e){ if(e.touches[0]) markMove(e.touches[0].clientX); }, {passive:true});
 
-    // ====== 洲 hover / 点击 ======
     function hoverCont(cont, on) {
       if (zoomed || dragging) return;
       allPaths().forEach(function (p) { p.classList.remove('jk-hover', 'jk-dim'); });
@@ -200,8 +224,6 @@
       label.style.opacity = 0; hint.style.opacity = 0;
       eyebrow.style.opacity = 0; headline.style.opacity = 0; sub.style.opacity = 0;
       setTimeout(function () { back.classList.add('jk-show'); }, 700);
-      // ★ 以后接：飞入该洲下一层 / 跳转洲页面
-      // window.location.href = '/kontinent/' + cont.toLowerCase();
     }
     function reset() {
       zoomed = false;
@@ -209,7 +231,7 @@
       back.classList.remove('jk-show');
       eyebrow.style.opacity = ''; headline.style.opacity = ''; sub.style.opacity = '';
       hint.style.opacity = '';
-      velocity = autoVel; // 接回自转
+      velocity = autoVel; 
     }
     allPaths().forEach(function (p) {
       var cont = p.dataset.cont;
