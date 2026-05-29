@@ -1,7 +1,6 @@
 /* Westfalia Jagdreisen – Interaktive Weltkarte
-   依赖 window.JAGDKARTE_DATA 和 window.JAGDKARTE_SPARKS (由 jagdkarte-data.js 提供)
-   用法：页面放一个 <div id="jagdkarte"></div>，再引入本脚本
-   v2.1: 修复裁切问题，强制 2:1 原生比例，完美无缝循环
+   依赖 window.JAGDKARTE_DATA 和 window.JAGDKARTE_SPARKS
+   v2.2: 匹配扩宽后的大西洋，更新地图物理周长为 1100，完美无缝循环
 */
 (function () {
   function init() {
@@ -14,7 +13,7 @@
     var names = {EU:'Europa',AS:'Asien',AF:'Afrika',NA:'Nordamerika',SA:'Südamerika',OC:'Ozeanien'};
     var NS = 'http://www.w3.org/2000/svg';
 
-    // 自转速度：360秒转一个屏宽。换算成 px/ms 在运行时按容器宽度计算
+    // 自转速度：360秒转一个屏宽
     var AUTO_SECONDS = 360;
     var DRAG_DAMP = 0.55;
 
@@ -25,14 +24,13 @@
     .jk-headline{position:absolute;top:11%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-family:'Oswald',sans-serif;font-weight:600;font-size:3.6rem;letter-spacing:.04em;text-transform:uppercase;color:#F5F1E8;text-shadow:0 2px 24px rgba(0,0,0,.55);white-space:nowrap;transition:opacity .8s;pointer-events:none}
     .jk-sub{position:absolute;top:22%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-size:.82rem;color:#dfd8cd;letter-spacing:.08em;font-weight:300;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
     
-    /* 修改视口 (Viewport) 设定 */
     .jk-viewport{position:absolute;inset:0;overflow:hidden;cursor:grab;}
     .jk-viewport.jk-grabbing{cursor:grabbing}
     
-    /* 移除转子 (Rotor) 和地球 (Globe) 的强硬百分比限制 */
     .jk-rotor{position:absolute;top:0;left:0;display:flex;will-change:transform}
     .jk-globe{flex-shrink:0;}
     
+    /* overflow:visible 确保超出 1100 边界的零星岛屿也能渲染并无缝交接 */
     .jk-stage svg{width:100%;height:100%;display:block;overflow:visible!important}
     .jk-country{transition:fill .5s ease,stroke .5s ease,opacity .6s ease;cursor:pointer;fill:#5a4a3a;stroke:#3f3025;stroke-width:.4;vector-effect:non-scaling-stroke}
     .jk-country.jk-hover{fill:#6e5a40!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
@@ -49,7 +47,7 @@
     styleEl.textContent = css;
     document.head.appendChild(styleEl);
 
-    // 将 SVG 的 slice 改为 meet，配合精确的 2:1 容器实现零裁切
+    // 【关键修改】viewBox 宽度更新为 1100
     mount.innerHTML =
       '<div class="jk-stage">' +
         '<div class="jk-eyebrow">— Die Welt ist weit —</div>' +
@@ -57,8 +55,8 @@
         '<div class="jk-sub">Wählen Sie einen Kontinent und beginnen Sie Ihre Reise</div>' +
         '<div class="jk-back">← Zurück zur Welt</div>' +
         '<div class="jk-viewport"><div class="jk-rotor">' +
-          '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg1"></svg></div>' +
-          '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg2"></svg></div>' +
+          '<div class="jk-globe"><svg viewBox="0 0 1100 500" preserveAspectRatio="xMidYMid meet" class="jk-svg1"></svg></div>' +
+          '<div class="jk-globe"><svg viewBox="0 0 1100 500" preserveAspectRatio="xMidYMid meet" class="jk-svg2"></svg></div>' +
         '</div></div>' +
         '<div class="jk-label"></div>' +
         '<div class="jk-hint">Fahren Sie über einen Kontinent</div>' +
@@ -109,20 +107,19 @@
     var lastX = 0, lastT = 0;
     var lastFrame = 0;
 
-    // 核心重写：精准接管尺寸运算 (Maßberechnung)
     function measure() {
       var stage = mount.querySelector('.jk-stage');
       var sw = stage.offsetWidth;
       var sh = stage.offsetHeight;
 
-      // 强制按照 1000:500 (2:1) 的原生比例计算
+      // 【关键修改】配合 1100 的物理宽度，计算比例更新为 2.2
+      var RATIO = 2.2; 
       var targetWidth = sw;
-      var targetHeight = sw / 2;
+      var targetHeight = sw / RATIO;
 
-      // 如果宽度适配导致高度不足以铺满屏幕，则改用高度适配
       if (targetHeight < sh) {
         targetHeight = sh;
-        targetWidth = sh * 2;
+        targetWidth = sh * RATIO;
       }
 
       var globes = mount.querySelectorAll('.jk-globe');
@@ -131,7 +128,6 @@
         g.style.height = targetHeight + 'px';
       });
 
-      // 设置 rotor 的宽度，并使其垂直居中 (Vertikale Zentrierung)
       rotor.style.width = (targetWidth * 2) + 'px';
       rotor.style.height = targetHeight + 'px';
       rotor.style.top = ((sh - targetHeight) / 2) + 'px';
