@@ -16,22 +16,23 @@
 
     // 自转速度：360秒转一个屏宽(50%宽度)。换算成 px/ms 在运行时按容器宽度计算
     var AUTO_SECONDS = 360;
+    var DRAG_DAMP = 0.55;   // 拖动阻尼：地图旋转 = 拖动距离 × 此系数（<1 让地球更有重量感）
 
     var css = `
     .jk-stage{position:relative;width:100%;height:100%;min-height:600px;display:flex;align-items:center;justify-content:center;overflow:hidden;
-      background:radial-gradient(ellipse 80% 80% at 50% 42%, #335256 0%, #25403f 55%, #1a2e2c 100%)}
+      background:radial-gradient(ellipse 90% 85% at 50% 38%, #3a4a4e 0%, #2a3236 45%, #211e22 100%)}
     .jk-eyebrow{position:absolute;top:9%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;letter-spacing:.45em;font-size:.72rem;color:#c9a961;font-weight:500;text-transform:uppercase;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
-    .jk-headline{position:absolute;top:12.5%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:2.9rem;color:#F5F1E8;font-weight:400;text-shadow:0 2px 24px rgba(0,0,0,.55);white-space:nowrap;transition:opacity .8s;pointer-events:none}
+    .jk-headline{position:absolute;top:12%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-family:'Oswald',sans-serif;font-weight:600;font-size:4rem;letter-spacing:.04em;text-transform:uppercase;color:#F5F1E8;text-shadow:0 2px 24px rgba(0,0,0,.55);white-space:nowrap;transition:opacity .8s;pointer-events:none}
     .jk-sub{position:absolute;top:24%;left:50%;transform:translateX(-50%);text-align:center;z-index:10;font-size:.82rem;color:#dfd8cd;letter-spacing:.08em;font-weight:300;transition:opacity .8s;font-family:'Raleway',sans-serif;pointer-events:none}
     .jk-viewport{position:absolute;inset:0;overflow:hidden;cursor:grab}
     .jk-viewport.jk-grabbing{cursor:grabbing}
     .jk-rotor{position:absolute;top:0;left:0;height:100%;width:200%;display:flex;will-change:transform}
     .jk-globe{width:50%;height:100%}
     .jk-stage svg{width:100%;height:100%;display:block}
-    .jk-country{transition:fill .5s ease,stroke .5s ease,opacity .6s ease;cursor:pointer;fill:#56493c;stroke:#3d3228;stroke-width:.4;vector-effect:non-scaling-stroke}
-    .jk-country.jk-hover{fill:#6a5a44!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
+    .jk-country{transition:fill .5s ease,stroke .5s ease,opacity .6s ease;cursor:pointer;fill:#5a4a3a;stroke:#3f3025;stroke-width:.4;vector-effect:non-scaling-stroke}
+    .jk-country.jk-hover{fill:#6e5a40!important;stroke:#c9a961!important;stroke-width:1!important;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px rgba(201,169,97,.7))}
     .jk-country.jk-dim{opacity:.28}
-    .jk-spark{fill:#f0d89a;pointer-events:none}
+    .jk-spark{fill:#f2dca0;pointer-events:none}
     @keyframes jktw{0%,49.5%{opacity:0}50%{opacity:0.85}50.5%,100%{opacity:0}}
     .jk-label{position:absolute;z-index:20;pointer-events:none;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:2.1rem;color:#c9a961;opacity:0;transition:opacity .4s;text-shadow:0 2px 16px rgba(0,0,0,.85);letter-spacing:.05em;top:50%;left:50%;transform:translate(-50%,-50%)}
     .jk-hint{position:absolute;bottom:7%;left:50%;transform:translateX(-50%);z-index:10;font-size:.7rem;color:#b0bdb6;letter-spacing:.3em;text-transform:uppercase;animation:jkpulse 2.4s ease-in-out infinite;font-family:'Raleway',sans-serif;pointer-events:none}
@@ -149,11 +150,11 @@
       if (!dragging) return;
       var x = (e.touches ? e.touches[0].clientX : e.clientX);
       var now = performance.now();
-      var dx = x - lastX;
+      var dx = (x - lastX) * DRAG_DAMP;   // 应用阻尼：地图转得比手慢
       var dtm = now - lastT;
       offset = wrap(offset + dx);
       rotor.style.transform = 'translateX(' + offset + 'px)';
-      if (dtm > 0) velocity = dx / dtm; // px/ms，记录松手时的速度
+      if (dtm > 0) velocity = dx / dtm; // px/ms，基于阻尼后的位移，惯性也随之自然
       lastX = x; lastT = now;
       if (e.cancelable) e.preventDefault();
     }
