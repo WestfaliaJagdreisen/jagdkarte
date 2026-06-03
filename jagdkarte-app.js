@@ -47,46 +47,66 @@
 
     var BUSINESS = {
       'EU': [
-        {name:'Bulgarien', iso:'BG', desc:'Rothirsch, Keiler, Rehwild'}, {name:'Europ. Russland', iso:'RU-EU', desc:'Braunbär, Elch, Auerhahn'},
-        {name:'Frankreich', iso:'FR', desc:'Gams, Rothirsch, Mufflon'}, {name:'Irland', iso:'IE', desc:'Sikahirsch, Damhirsch'},
-        {name:'Kroatien', iso:'HR', desc:'Braunbär, Schwarzwild'}, {name:'Norwegen', iso:'NO', desc:'Elch, Rentier, Schneehuhn'},
-        {name:'Österreich', iso:'AT', desc:'Alpenmufflon, Gams, Hirsch'}, {name:'Polen', iso:'PL', desc:'Rothirsch, Rehbock, Keiler'},
-        {name:'Rumänien', iso:'RO', desc:'Braunbär, Gams, Karpatenhirsch'}, {name:'Schottland', iso:'GB-SCO', desc:'Rothirsch, Rehbock, Moorhuhn'},
-        {name:'Schweden', iso:'SE', desc:'Elch, Bär, Auerhahn'}, {name:'Serbien', iso:'RS', desc:'Rehbock, Keiler, Wolf'},
-        {name:'Slowakei', iso:'SK', desc:'Hirsch, Wolf, Bär'}, {name:'Slowenien', iso:'SI', desc:'Alpensteinbock, Gams'},
-        {name:'Spanien', iso:'ES', desc:'Steinbock, Rothirsch, Mufflon'}, {name:'Südengland', iso:'GB-ENG', desc:'Muntjak, Wasserreh'},
-        {name:'Tschechien', iso:'CZ', desc:'Sikahirsch, Mufflon'}, {name:'Türkei', iso:'TR', desc:'Bezoar-Steinbock, Keiler'},
-        {name:'Ungarn', iso:'HU', desc:'Kapitaler Rothirsch, Damhirsch'}, {name:'Weißrussland', iso:'BY', desc:'Wisent, Elch, Wolf'},
+        {name:'Bulgarien', iso:'BG', slug:'bulgarien', desc:'Rothirsch, Keiler, Rehwild'}, {name:'Europ. Russland', iso:'RU-EU', slug:'europ-russland', desc:'Braunbär, Elch, Auerhahn'},
+        {name:'Frankreich', iso:'FR', slug:'frankreich', desc:'Gams, Rothirsch, Mufflon'}, {name:'Irland', iso:'IE', slug:'irland', desc:'Sikahirsch, Damhirsch'},
+        {name:'Kroatien', iso:'HR', slug:'kroatien', desc:'Braunbär, Schwarzwild'}, {name:'Norwegen', iso:'NO', slug:'norwegen', desc:'Elch, Rentier, Schneehuhn'},
+        {name:'Österreich', iso:'AT', slug:'oesterreich', desc:'Alpenmufflon, Gams, Hirsch'}, {name:'Polen', iso:'PL', slug:'polen', desc:'Rothirsch, Rehbock, Keiler'},
+        {name:'Rumänien', iso:'RO', slug:'rumaenien', desc:'Braunbär, Gams, Karpatenhirsch'}, {name:'Schottland', iso:'GB-SCO', slug:'schottland', desc:'Rothirsch, Rehbock, Moorhuhn'},
+        {name:'Schweden', iso:'SE', slug:'schweden', desc:'Elch, Bär, Auerhahn'}, {name:'Serbien', iso:'RS', slug:'serbien', desc:'Rehbock, Keiler, Wolf'},
+        {name:'Slowakei', iso:'SK', slug:'slowakei', desc:'Hirsch, Wolf, Bär'}, {name:'Slowenien', iso:'SI', slug:'slowenien', desc:'Alpensteinbock, Gams'},
+        {name:'Spanien', iso:'ES', slug:'spanien', desc:'Steinbock, Rothirsch, Mufflon'}, {name:'Südengland', iso:'GB-ENG', slug:'suedengland', desc:'Muntjak, Wasserreh'},
+        {name:'Tschechien', iso:'CZ', slug:'tschechien', desc:'Sikahirsch, Mufflon'}, {name:'Türkei', iso:'TR', slug:'tuerkei', desc:'Bezoar-Steinbock, Keiler'},
+        {name:'Ungarn', iso:'HU', slug:'ungarn', desc:'Kapitaler Rothirsch, Damhirsch'}, {name:'Weißrussland', iso:'BY', slug:'weissrussland', desc:'Wisent, Elch, Wolf'},
         {name:'Weitere Länder (Europa)…', iso:null}
       ],
       'AS': [
-        {name:'Aserbaidschan', iso:'AZ', desc:'Dagestan-Tur'}, {name:'Iran', iso:'IR', desc:'Bezoar-Steinbock, Urial'},
-        {name:'Kasachstan', iso:'KZ', desc:'Maral, Sibirischer Steinbock'}, {name:'Kaukasus', iso:'GE', desc:'Kuban-Tur, Braunbär'},
-        {name:'Kirgisien', iso:'KG', desc:'Marco-Polo-Argali, Ibex'}, {name:'Mongolei', iso:'MN', desc:'Altai-Argali, Ibex, Maral'},
-        {name:'Pakistan', iso:'PK', desc:'Markhor, Urial, Ibex'}, {name:'Tadschikistan', iso:'TJ', desc:'Marco-Polo-Argali, Markhor'},
-        {name:'Asiat. Russland', iso:'RU', desc:'Sibirisches Reh, Bär, Elch'},
+        {name:'Aserbaidschan', iso:'AZ', slug:'aserbaidschan', desc:'Dagestan-Tur'}, {name:'Iran', iso:'IR', slug:'iran', desc:'Bezoar-Steinbock, Urial'},
+        {name:'Kasachstan', iso:'KZ', slug:'kasachstan', desc:'Maral, Sibirischer Steinbock'}, {name:'Kaukasus', iso:'GE', slug:'kaukasus', desc:'Kuban-Tur, Braunbär'},
+        {name:'Kirgisien', iso:'KG', slug:'kirgisien', desc:'Marco-Polo-Argali, Ibex'}, {name:'Mongolei', iso:'MN', slug:'mongolei', desc:'Altai-Argali, Ibex, Maral'},
+        {name:'Pakistan', iso:'PK', slug:'pakistan', desc:'Markhor, Urial, Ibex'}, {name:'Tadschikistan', iso:'TJ', slug:'tadschikistan', desc:'Marco-Polo-Argali, Markhor'},
+        {name:'Asiat. Russland', iso:'RU', slug:'asiat-russland', desc:'Sibirisches Reh, Bär, Elch'},
         {name:'Weitere Länder (Asien)…', iso:null}
       ],
       'AF': [
-        {name:'Äthiopien', iso:'ET', desc:'Bergnyala, Buschbock'}, {name:'Botswana', iso:'BW', desc:'Elefant, Leopard, Büffel'},
-        {name:'Kamerun', iso:'CM', desc:'Riesen-Eland, Bongo, Büffel'}, {name:'Kongo', iso:'CG', desc:'Bongo, Waldelefant, Sitatunga'},
-        {name:'Mosambik', iso:'MZ', desc:'Krokodil, Löwe, Büffel'}, {name:'Namibia', iso:'NA', desc:'Oryx, Kudu, Springbok, Leopard'},
-        {name:'Simbabwe', iso:'ZW', desc:'Elefant, Büffel, Leopard'}, {name:'Südafrika', iso:'ZA', desc:'Nyala, Kudu, Breitmaulnashorn'},
-        {name:'Sambia', iso:'ZM', desc:'Löwe, Leopard, Büffel'}, {name:'Sudan', iso:'SD', desc:'Nubischer Steinbock, Warzenschwein'},
-        {name:'Tansania', iso:'TZ', desc:'Löwe, Leopard, Büffel, Elefant'}, {name:'Uganda', iso:'UG', desc:'Sitatunga, Nilbüffel'},
+        {name:'Äthiopien', iso:'ET', slug:'aethiopien', desc:'Bergnyala, Buschbock'}, {name:'Botswana', iso:'BW', slug:'botswana', desc:'Elefant, Leopard, Büffel'},
+        {name:'Kamerun', iso:'CM', slug:'kamerun', desc:'Riesen-Eland, Bongo, Büffel'}, {name:'Kongo', iso:'CG', slug:'kongo', desc:'Bongo, Waldelefant, Sitatunga'},
+        {name:'Mosambik', iso:'MZ', slug:'mosambik', desc:'Krokodil, Löwe, Büffel'}, {name:'Namibia', iso:'NA', slug:'namibia', desc:'Oryx, Kudu, Springbok, Leopard'},
+        {name:'Simbabwe', iso:'ZW', slug:'simbabwe', desc:'Elefant, Büffel, Leopard'}, {name:'Südafrika', iso:'ZA', slug:'suedafrika', desc:'Nyala, Kudu, Breitmaulnashorn'},
+        {name:'Sambia', iso:'ZM', slug:'sambia', desc:'Löwe, Leopard, Büffel'}, {name:'Sudan', iso:'SD', slug:'sudan', desc:'Nubischer Steinbock, Warzenschwein'},
+        {name:'Tansania', iso:'TZ', slug:'tansania', desc:'Löwe, Leopard, Büffel, Elefant'}, {name:'Uganda', iso:'UG', slug:'uganda', desc:'Sitatunga, Nilbüffel'},
         {name:'Weitere Länder (Afrika)…', iso:null}
       ],
       'AMERIKA': [
-        {name:'Alaska', iso:'US-AK', desc:'Elch, Karibu, Braunbär'}, {name:'Argentinien', iso:'AR', desc:'Wasserbüffel, Hirsch, Flugwild'},
-        {name:'Grönland', iso:'GL', desc:'Moschusochse, Rentier'}, {name:'Kanada', iso:'CA', desc:'Schwarzbär, Elch, Puma, Wapiti'},
-        {name:'Mexiko', iso:'MX', desc:'Dickhornschaf, Weißwedelhirsch'}, {name:'Peru', iso:'PE', desc:'Puma, Weißwedelhirsch'},
-        {name:'USA', iso:'US', desc:'Wapiti, Puma, Pronghorn'}, {name:'Weitere Länder (Amerika)…', iso:null}
+        {name:'Alaska', iso:'US-AK', slug:'alaska', desc:'Elch, Karibu, Braunbär'}, {name:'Argentinien', iso:'AR', slug:'argentinien', desc:'Wasserbüffel, Hirsch, Flugwild'},
+        {name:'Grönland', iso:'GL', slug:'groenland', desc:'Moschusochse, Rentier'}, {name:'Kanada', iso:'CA', slug:'kanada', desc:'Schwarzbär, Elch, Puma, Wapiti'},
+        {name:'Mexiko', iso:'MX', slug:'mexiko', desc:'Dickhornschaf, Weißwedelhirsch'}, {name:'Peru', iso:'PE', slug:'peru', desc:'Puma, Weißwedelhirsch'},
+        {name:'USA', iso:'US', slug:'usa', desc:'Wapiti, Puma, Pronghorn'}, {name:'Weitere Länder (Amerika)…', iso:null}
       ],
       'OC': [
-        {name:'Australien', iso:'AU', desc:'Wasserbüffel, Banteng'}, {name:'Neuseeland', iso:'NZ', desc:'Tahr, Gams, Rothirsch'},
+        {name:'Australien', iso:'AU', slug:'australien', desc:'Wasserbüffel, Banteng'}, {name:'Neuseeland', iso:'NZ', slug:'neuseeland', desc:'Tahr, Gams, Rothirsch'},
         {name:'Weitere Länder (Ozeanien)…', iso:null}
       ]
     };
+
+    // === Länderseiten-Navigation =========================================
+    // Basis-Pfad zu den CMS-Länderseiten. Relativ -> funktioniert auf
+    // Vorschau-Domain UND echter Domain.
+    var LAENDER_BASE = '/laender/';
+    // iso -> slug Karte (aus BUSINESS aufgebaut)
+    var isoToSlug = {};
+    Object.values(BUSINESS).forEach(function(list) {
+        list.forEach(function(c) {
+            if (c.iso && c.slug) isoToSlug[c.iso] = c.slug;
+        });
+    });
+    function gotoCountry(iso) {
+        if (!iso) return;
+        var slug = isoToSlug[iso];
+        if (!slug) return;
+        // iOS-sicher: location.href statt window.open
+        window.location.href = LAENDER_BASE + slug;
+    }
+    // =====================================================================
 
     var PLACEHOLDER_IMG = 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6a031a630ef91eab1f78673f_Frame%201321316194.png';
 
@@ -610,9 +630,18 @@
           if (animalInfo) animalInfo.classList.remove('jk-show');
         }
         if (noAutoSpin) {
-          li.addEventListener('click', function(ev) { ev.stopPropagation(); activateCountry(); });
+          // Touch: 1. Tap = direkt öffnen
+          li.addEventListener('click', function(ev) {
+            ev.stopPropagation();
+            gotoCountry(iso);
+          });
         } else {
+          // Desktop: hover = Vorschau, Klick = öffnen
           li.addEventListener('mouseenter', activateCountry);
+          li.addEventListener('click', function(ev) {
+            ev.stopPropagation();
+            gotoCountry(iso);
+          });
         }
       });
 
@@ -623,29 +652,17 @@
           path.addEventListener('click', function(ev) {
             ev.stopPropagation();
             if (!zoomReady) return;
-            var tIso = path.dataset.iso;
-            activeSvg.querySelectorAll('path.jk-active-hover').forEach(function(p){ p.classList.remove('jk-active-hover'); });
-            panel.querySelectorAll('li.jk-active-hover').forEach(function(l){ l.classList.remove('jk-active-hover'); });
-            path.classList.add('jk-active-hover');
-            if (path.nextElementSibling) path.parentNode.appendChild(path);
-            var li = panel.querySelector('li[data-iso="'+tIso+'"]');
-            if (li) {
-              li.classList.add('jk-active-hover');
-              var listArea = panel.querySelector('.jk-list-area');
-              if (listArea) {
-                var liRect = li.getBoundingClientRect();
-                var areaRect = listArea.getBoundingClientRect();
-                var liOffsetInContent = (liRect.top - areaRect.top) + listArea.scrollTop;
-                listArea.scrollTo({ top: Math.max(0, liOffsetInContent - 30), behavior: 'smooth' });
-              }
-            }
-            var rect = path.getBoundingClientRect();
-            var stageRect = stageEl.getBoundingClientRect();
-            var centerX = rect.left + rect.width / 2 - stageRect.left;
-            var topY = rect.top - stageRect.top - 15;
-            if (topY < 35) topY = 35;
-            showMapTooltip(tIso, centerX, topY);
-            currentHoverIso = tIso;
+            // Touch: 1. Tap auf ein Service-Land = direkt öffnen
+            gotoCountry(path.dataset.iso);
+          });
+        });
+      } else {
+        // Desktop: Klick direkt auf ein Service-Land auf der Karte = öffnen
+        activeSvg.querySelectorAll('path.jk-service').forEach(function(path) {
+          path.addEventListener('click', function(ev) {
+            ev.stopPropagation();
+            if (!zoomReady) return;
+            gotoCountry(path.dataset.iso);
           });
         });
       }
