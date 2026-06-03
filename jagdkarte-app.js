@@ -167,7 +167,7 @@
     var iso2cont = {};
     DATA.forEach(function(d) { iso2cont[d.iso] = d.cont; });
 
-    var SIMPLIFY = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) ? 1.5 : 0;
+    var SIMPLIFY = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) ? 0.8 : 0;
     function jkPerpSq(p, a, b) {
       var dx = b[0]-a[0], dy = b[1]-a[1];
       if (dx === 0 && dy === 0) { var ddx=p[0]-a[0], ddy=p[1]-a[1]; return ddx*ddx+ddy*ddy; }
