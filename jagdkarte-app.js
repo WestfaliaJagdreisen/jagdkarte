@@ -110,6 +110,37 @@
 
     var PLACEHOLDER_IMG = 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6a031a630ef91eab1f78673f_Frame%201321316194.png';
 
+    // === Strukturierte Tierdaten pro Land =================================
+    // Pro Land eine Liste von Tieren mit { name, img }.
+    // name MUSS exakt dem Wildarten-Namen in Webflow entsprechen (für wild_equal).
+    // Länder ohne Eintrag hier nutzen weiterhin desc + Platzhalterbild (Fallback).
+    var ANIMAL_DATA = {
+      'PL': [
+        { name: 'Damhirsch',   img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch.jpg' },
+        { name: 'Rothirsch',   img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb3ef7bdde75fdfb2e9c1_Rothirsch.jpg' },
+        { name: 'Muffel',      img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecb0891e1273e6181afbf_Muffel.jpg' },
+        { name: 'Rehbock',     img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock.jpg' },
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild.jpg' }
+      ]
+    };
+    // Basis-Pfad zur Reisen-Filterseite
+    var REISEN_BASE = '/reisen';
+    // iso -> Land-Name Karte (für land_equal), aus BUSINESS aufgebaut
+    var isoToName = {};
+    Object.values(BUSINESS).forEach(function(list) {
+        list.forEach(function(c) {
+            if (c.iso && c.name) isoToName[c.iso] = c.name;
+        });
+    });
+    // Baut die Filter-URL: /reisen?land_equal=Polen&wild_equal=Rothirsch
+    function buildAnimalUrl(iso, animalName) {
+        var landName = isoToName[iso] || '';
+        return REISEN_BASE +
+               '?land_equal=' + encodeURIComponent(landName) +
+               '&wild_equal=' + encodeURIComponent(animalName);
+    }
+    // =====================================================================
+
     var isoDataMap = {};
     Object.values(BUSINESS).forEach(function(list) {
         list.forEach(function(c) {
@@ -487,18 +518,32 @@
 
     function renderAnimalInfo(iso) {
         if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) return;
-        var data = isoDataMap[iso];
         var animalInfo = panel.querySelector('.jk-animal-info');
-        if (!animalInfo || !data) return;
+        if (!animalInfo) return;
 
-        var animalNames = (data.desc || 'Premium Jagd').split(',').map(function(s){ return s.trim(); });
-        var count = animalNames.length;
+        var structured = ANIMAL_DATA[iso];
+        var items;
+        if (structured && structured.length) {
+            // Strukturierte Daten vorhanden (z. B. Polen): echtes Bild + Filter-Link
+            items = structured.map(function(a) {
+                return { name: a.name, img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a.name) };
+            });
+        } else {
+            // Fallback: desc-String + Platzhalterbild + Filter-Link (best effort)
+            var data = isoDataMap[iso];
+            if (!data) return;
+            var animalNames = (data.desc || 'Premium Jagd').split(',').map(function(s){ return s.trim(); });
+            items = animalNames.map(function(name) {
+                return { name: name, img: PLACEHOLDER_IMG, href: buildAnimalUrl(iso, name) };
+            });
+        }
 
+        var count = items.length;
         var galleryHtml = '';
-        animalNames.forEach(function(animalName) {
-            galleryHtml += '<a class="jk-animal-item" href="#" data-iso="' + iso + '" data-animal="' + animalName + '">' +
-                             '<img class="jk-animal-img" src="' + PLACEHOLDER_IMG + '" alt="' + animalName + '" />' +
-                             '<div class="jk-animal-name">' + animalName + '</div>' +
+        items.forEach(function(it) {
+            galleryHtml += '<a class="jk-animal-item" href="' + it.href + '" data-iso="' + iso + '" data-animal="' + it.name + '">' +
+                             '<img class="jk-animal-img" src="' + it.img + '" alt="' + it.name + '" />' +
+                             '<div class="jk-animal-name">' + it.name + '</div>' +
                            '</a>';
         });
 
