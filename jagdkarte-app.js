@@ -325,6 +325,7 @@
     var autoVel = 0, velocity = 0, userInertia = 0;
     var dragging = false, lastX = 0, lastT = 0, lastFrame = 0, activeSvg = null;
     var currentHoverIso = null, isHoveringCont = false, currentZoomCont = null;
+    var zoomClickReady = false, zoomReadyTimer = null;
 
     function isTouchLayout() {
       return (stageEl.offsetWidth <= 1024) || (stageEl.offsetHeight > stageEl.offsetWidth);
@@ -690,27 +691,14 @@
         }
       });
 
-      var zoomReady = false;
-      setTimeout(function(){ zoomReady = true; }, 700);
-      if (noAutoSpin) {
-        activeSvg.querySelectorAll('path.jk-service').forEach(function(path) {
-          path.addEventListener('click', function(ev) {
-            ev.stopPropagation();
-            if (!zoomReady) return;
-            // Touch: 1. Tap auf ein Service-Land = direkt öffnen
-            gotoCountry(path.dataset.iso);
-          });
-        });
-      } else {
-        // Desktop: Klick direkt auf ein Service-Land auf der Karte = öffnen
-        activeSvg.querySelectorAll('path.jk-service').forEach(function(path) {
-          path.addEventListener('click', function(ev) {
-            ev.stopPropagation();
-            if (!zoomReady) return;
-            gotoCountry(path.dataset.iso);
-          });
-        });
-      }
+      // Service-Land-Klicks laufen zentral über einen delegierten Listener auf stageEl
+      // (siehe Init-Bereich). Hier nur den Ready-Timer neu starten.
+      // Fix: vorher wurden bei jedem zoomTo neue Listener auf die Pfade gebunden,
+      // die nach reset() weiterlebten und beim zweiten Besuch desselben Kontinents
+      // sofort zur Länderseite sprangen.
+      zoomClickReady = false;
+      clearTimeout(zoomReadyTimer);
+      zoomReadyTimer = setTimeout(function(){ zoomClickReady = true; }, 700);
       [50, 200, 500, 900].forEach(function(delay) {
         setTimeout(function() {
           allPaths().forEach(function(p) { p.classList.remove('jk-active-hover'); });
@@ -724,6 +712,8 @@
 
     function reset() {
       zoomed = false; activeSvg = null; currentHoverIso = null; currentZoomCont = null; hideMapTooltip(); hideContLabel();
+      zoomClickReady = false;
+      clearTimeout(zoomReadyTimer);
       dragging = false;
       userInertia = 0;
       velocity = autoVel;
@@ -786,6 +776,17 @@
       p.addEventListener('click', function (e) {
           if (!zoomed && !moved) { e.stopPropagation(); zoomTo(cont, e); }
       });
+    });
+
+    // Delegierter Klick auf Service-Länder im gezoomten Zustand.
+    // Einmal registriert -> keine Residual-Listener mehr.
+    stageEl.addEventListener('click', function (ev) {
+      if (!zoomed || !zoomClickReady) return;
+      var t = ev.target;
+      if (t.tagName === 'path' && t.classList.contains('jk-service')) {
+        ev.stopPropagation();
+        gotoCountry(t.dataset.iso);
+      }
     });
 
     back.addEventListener('click', reset);
