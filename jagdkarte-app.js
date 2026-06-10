@@ -593,7 +593,7 @@
 
       var isAm = (cont === 'NA' || cont === 'SA');
       var serviceSet = getServiceIsoSet(cont);
-      var clickedSvg = noAutoSpin ? mount.querySelector('.jk-svg1') : clickEvent.target.closest('svg');
+      var clickedSvg = (noAutoSpin || !clickEvent) ? mount.querySelector('.jk-svg1') : clickEvent.target.closest('svg');
       activeSvg = clickedSvg;
 
       allPaths().forEach(function (p) {
@@ -797,6 +797,18 @@
       if (e.target.tagName === 'path' && e.target.classList.contains('jk-service')) return;
       reset();
     });
+
+    // Deep-Link: /jagdlaender?kontinent=afrika -> direkt in den Kontinent fliegen
+    var DEEP_CONT = { europa: 'EU', asien: 'AS', afrika: 'AF', nordamerika: 'NA', suedamerika: 'SA', ozeanien: 'OC' };
+    try {
+      var deepParam = new URLSearchParams(window.location.search).get('kontinent');
+      if (deepParam) {
+        var deepCode = DEEP_CONT[deepParam.toLowerCase()];
+        if (deepCode) {
+          setTimeout(function () { zoomTo(deepCode); }, 350);
+        }
+      }
+    } catch (err) {}
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();
