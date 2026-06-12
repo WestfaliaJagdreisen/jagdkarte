@@ -346,13 +346,16 @@
       var RATIO = 2.0;
       var isTabletOrMobile = (sw <= 1024) || (sh > sw);
       var viewportRatio = sw / sh;
+      var isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
       var tw, th;
       if (isTabletOrMobile) {
         tw = sw; th = sw / RATIO;
         if (th > sh) { th = sh; tw = sh * RATIO; }
-      } else if (viewportRatio < 1.6) {
-        // Desktop-Layout, aber gedrungenes Viewport (z. B. iPad quer 4:3):
-        // contain statt cover -> komplette Weltkarte sichtbar, kein Beschnitt
+      } else if (isCoarsePointer || viewportRatio < 1.6) {
+        // Desktop-Layout, aber Touch-Gerät (iPad quer) oder gedrungenes Viewport:
+        // contain statt cover -> komplette Weltkarte sichtbar, kein Beschnitt.
+        // pointer:coarse statt Ratio-Schwelle, weil Browser-Chrome die
+        // Stage-Höhe verkleinert und 11"-iPads sonst über 1.6 rutschen.
         tw = sw; th = sw / RATIO;
         if (th > sh) { th = sh; tw = sh * RATIO; }
       } else {
