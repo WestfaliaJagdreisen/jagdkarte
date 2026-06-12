@@ -826,7 +826,9 @@
     back.addEventListener('click', reset);
     stageEl.addEventListener('click', function (e) {
       if (!zoomed || moved) return;
-      if (e.target.closest('.jk-country-list li') || e.target.closest('.jk-animal-info')) return;
+      if (e.target.closest('.jk-country-list li')) return;
+      var gal = e.target.closest('.jk-animal-info');
+      if (gal && gal.classList.contains('jk-show')) return;
       if (e.target.closest('.jk-back')) return;
       if (e.target.tagName === 'path' && e.target.classList.contains('jk-service')) return;
       reset();
