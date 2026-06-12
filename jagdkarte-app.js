@@ -662,7 +662,7 @@
       setTimeout(function () { back.classList.add('jk-show'); }, 700);
 
       var list = getBusinessList(cont);
-      var listHtml = '<h3 class="jk-panel-title">' + (CONT_TITLE[cont] || names[cont]) + '</h3><div class="jk-list-area"><ul class="jk-country-list">';
+      var listHtml = '<h3 class="jk-panel-title">' + (CONT_TITLE[cont] || names[cont]) + '</h3><div class="jk-list-area"><ul class="jk-country-list' + (list.length <= 8 ? ' jk-single-col' : '') + '">';
       list.forEach(function(c) {
         var cls = c.iso ? '' : ' class="jk-more"';
         listHtml += '<li data-iso="' + (c.iso || '') + '"' + cls + '>' + c.name + '</li>';
