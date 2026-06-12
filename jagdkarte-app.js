@@ -735,6 +735,8 @@
           panel.querySelectorAll('li.jk-active-hover').forEach(function(li){ li.classList.remove('jk-active-hover'); });
           hideMapTooltip();
           currentHoverIso = null;
+          var animalInfo = panel.querySelector('.jk-animal-info');
+          if (animalInfo) animalInfo.classList.remove('jk-show');
         }, delay);
       });
       setTimeout(function() { panel.classList.add('jk-show'); }, 500);
@@ -772,6 +774,7 @@
 
     stageEl.addEventListener('mouseover', function(e) {
         if (!zoomed || !activeSvg) return;
+        if (!zoomClickReady) return;
         if (noAutoSpin) return;
         var isPath = e.target.tagName === 'path' && e.target.classList.contains('jk-service');
 
