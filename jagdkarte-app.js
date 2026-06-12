@@ -345,11 +345,19 @@
       var sw = stageEl.offsetWidth, sh = stageEl.offsetHeight;
       var RATIO = 2.0;
       var isTabletOrMobile = (sw <= 1024) || (sh > sw);
+      var viewportRatio = sw / sh;
       var tw, th;
       if (isTabletOrMobile) {
         tw = sw; th = sw / RATIO;
         if (th > sh) { th = sh; tw = sh * RATIO; }
+      } else if (viewportRatio < 1.6) {
+        // Desktop-Layout, aber gedrungenes Viewport (z. B. iPad quer 4:3):
+        // contain statt cover -> komplette Weltkarte sichtbar, kein Beschnitt
+        tw = sw; th = sw / RATIO;
+        if (th > sh) { th = sh; tw = sh * RATIO; }
       } else {
+        // Breites Desktop-Viewport: cover, Höhe füllt die Bühne,
+        // Breite läuft über und wird durch die Auto-Rotation gezeigt
         tw = sw; th = sw / RATIO;
         if (th < sh) { th = sh; tw = sh * RATIO; }
       }
