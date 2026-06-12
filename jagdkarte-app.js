@@ -680,6 +680,7 @@
           return;
         }
         function activateCountry() {
+          if (!zoomClickReady) return;
           currentHoverIso = iso;
           activeSvg.querySelectorAll('path.jk-active-hover').forEach(function(p){ p.classList.remove('jk-active-hover'); });
           panel.querySelectorAll('li.jk-active-hover').forEach(function(l){ l.classList.remove('jk-active-hover'); });
@@ -728,8 +729,8 @@
       // sofort zur Länderseite sprangen.
       zoomClickReady = false;
       clearTimeout(zoomReadyTimer);
-      zoomReadyTimer = setTimeout(function(){ zoomClickReady = true; }, 700);
-      [50, 200, 500, 900].forEach(function(delay) {
+      zoomReadyTimer = setTimeout(function(){ zoomClickReady = true; }, 1300);
+      [50, 200, 500, 900, 1250].forEach(function(delay) {
         setTimeout(function() {
           allPaths().forEach(function(p) { p.classList.remove('jk-active-hover'); });
           panel.querySelectorAll('li.jk-active-hover').forEach(function(li){ li.classList.remove('jk-active-hover'); });
