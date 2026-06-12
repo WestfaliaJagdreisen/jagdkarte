@@ -177,6 +177,17 @@
       'SA': { focusX: 50, focusY: -15, scale: 1.2 },
       'OC': { focusX: 55, focusY: -20, scale: 2.3 }
     };
+    // iPad quer (pointer:coarse, Desktop-Layout, contain-Karte):
+    // eigene Kamera-Werte. focusX groesser = Karte weiter rechts,
+    // focusY groesser = weiter unten, scale groesser = staerker gezoomt.
+    var CAMERAS_TABLET = window.JK_CAMERAS_TABLET || {
+      'EU': { focusX: 28, focusY: 38, scale: 1.7 },
+      'AS': { focusX: 28, focusY: 42, scale: 1.3 },
+      'AF': { focusX: 28, focusY: 38, scale: 1.6 },
+      'NA': { focusX: 30, focusY: 45, scale: 1.2 },
+      'SA': { focusX: 30, focusY: 45, scale: 1.2 },
+      'OC': { focusX: 28, focusY: 35, scale: 1.8 }
+    };
     var CONT_CENTER = {
       'EU': { cx: 530, cy: 150, name: 'Europa' },
       'AS': { cx: 760, cy: 175, name: 'Asien' },
@@ -571,12 +582,20 @@
       var cy_pct = ((cam.cy + cam.dy) / 500) * 100;
 
       var isPortraitLayout = stageEl.offsetHeight > stageEl.offsetWidth;
+      var isCoarseLandscape = !isPortraitLayout &&
+                              window.matchMedia && window.matchMedia('(pointer: coarse)').matches &&
+                              stageEl.offsetWidth > 1024;
       var focusX, focusY, finalScale;
       if (isPortraitLayout) {
         var pcam = CAMERAS_PORTRAIT[cont] || { focusX: 50, focusY: 25, scale: cam.scale * 1.1 };
         focusX = pcam.focusX;
         focusY = pcam.focusY;
         finalScale = pcam.scale;
+      } else if (isCoarseLandscape) {
+        var tcam = CAMERAS_TABLET[cont] || { focusX: 30, focusY: 40, scale: cam.scale * 1.2 };
+        focusX = tcam.focusX;
+        focusY = tcam.focusY;
+        finalScale = tcam.scale;
       } else {
         focusX = 30;
         focusY = 50;
