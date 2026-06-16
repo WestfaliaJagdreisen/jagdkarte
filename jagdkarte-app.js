@@ -99,8 +99,25 @@
             if (c.iso && c.slug) isoToSlug[c.iso] = c.slug;
         });
     });
+    // === Sanktionierte Länder (EU-Sanktionen) ============================
+    // Russland (asiat. + europ.) und Weißrussland: keine Navigation,
+    // stattdessen Hinweis-Popup (global in Footer-Code definiert).
+    var SANCTION_ISOS = { 'RU': true, 'RU-EU': true, 'BY': true };
+    function isSanctionedIso(iso) {
+        return !!SANCTION_ISOS[iso];
+    }
+    function showSanctionNotice() {
+        // Greift auf das globale Popup zu (Footer-Code). Fallback: nichts tun.
+        if (typeof window.JK_SANCTION_SHOW === 'function') {
+            window.JK_SANCTION_SHOW();
+        }
+    }
+    // =====================================================================
+
     function gotoCountry(iso) {
         if (!iso) return;
+        // Sanktionierte Länder: kein Sprung, nur Hinweis
+        if (isSanctionedIso(iso)) { showSanctionNotice(); return; }
         var slug = isoToSlug[iso];
         if (!slug) return;
         // iOS-sicher: location.href statt window.open
