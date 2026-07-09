@@ -347,7 +347,7 @@
       });
     }
     fill(mount.querySelector('.jk-svg1'), true);
-    fill(mount.querySelector('.jk-svg2'), false);
+    fill(mount.querySelector('.jk-svg2'), true);
 
     var zoomed = false, halfWidth = 0, offset = 0;
     var autoVel = 0, velocity = 0, userInertia = 0;
