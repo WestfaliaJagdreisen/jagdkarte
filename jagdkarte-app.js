@@ -1,4 +1,4 @@
-// Version: 20260717_v54_zwei_reihen  (54 Laender, max 10 Arten, 2 Reihen ab 6)
+// Version: 20260720_v55_zwei_reihen_fix  (2. Reihe, Kachelgroesse konstant, Laenderliste fix)
 (function () {
   var retryCount = 0;
   function init() {
@@ -904,10 +904,9 @@
         });
 
         var galleryEl = animalInfo.querySelector('.jk-animal-gallery');
-        // >5 Arten: zwei Reihen (max. 5 pro Reihe)
-        var perRow = count > 5 ? Math.ceil(count / 2) : count;
+        // >5 Arten: zweite Reihe, Kachelgroesse bleibt wie bei 5 pro Reihe
         var rowCls = count > 5 ? ' jk-two-rows' : '';
-        galleryEl.className = 'jk-animal-gallery jk-count-' + count + ' jk-per-row-' + perRow + rowCls;
+        galleryEl.className = 'jk-animal-gallery jk-count-' + count + rowCls;
         galleryEl.innerHTML = galleryHtml;
         animalInfo.classList.add('jk-show');
     }
