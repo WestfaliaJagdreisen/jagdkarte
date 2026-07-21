@@ -1,4 +1,4 @@
-// Version: 20260721_v57_kontinentliste_styled  (Weltansicht: Titel + Panel-Optik wie Kontinentansicht)
+// Version: 20260721_v58_weltansicht_split  (Touch-Welt: Karte oben, Panel ab 48%, Hoehe eingefroren)
 (function () {
   var retryCount = 0;
   function init() {
@@ -541,6 +541,12 @@
         '<div class="jk-cont-label"><div class="jk-cl-name"></div></div>' +
         '<div class="jk-tooltip jk-hide"><div class="jk-tt-name"></div></div>' +
       '</div>';
+
+    // iOS: Containerhoehe einmalig in px einfrieren (Leisten-Ein/Ausblenden verschiebt sonst das Layout)
+    if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
+      var frozenH = mount.getBoundingClientRect().height;
+      if (frozenH > 0) mount.style.height = Math.round(frozenH) + 'px';
+    }
 
     var stageEl = mount.querySelector('.jk-stage');
     var viewport = mount.querySelector('.jk-viewport');
