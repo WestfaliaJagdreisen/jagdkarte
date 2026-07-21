@@ -1,4 +1,4 @@
-// Version: 20260721_v60_klickfix  (Kontinent-Liste: stopPropagation gegen Stage-Reset; Titel = .jk-panel-title)
+// Version: 20260721_v61_titel_h3  (KONTINENTE als <h3> wie EUROPA -> erbt Webflow-h3-Styles)
 (function () {
   var retryCount = 0;
   function init() {
@@ -688,7 +688,7 @@
     if (contList) {
       var CONT_ITEMS = [['EU','Europa'],['AS','Asien'],['AF','Afrika'],['NA','Amerika'],['OC','Ozeanien']];
       contList.innerHTML =
-        '<div class="jk-panel-title jk-cl-title">Kontinente</div>' +
+        '<h3 class="jk-panel-title jk-cl-title">Kontinente</h3>' +
         '<div class="jk-cl-items">' +
         CONT_ITEMS.map(function(c){
           return '<div class="jk-cl-item" data-cont="' + c[0] + '">' + c[1] + '</div>';
