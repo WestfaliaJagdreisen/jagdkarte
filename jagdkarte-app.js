@@ -1,4 +1,4 @@
-// Version: 20260721_v61_titel_h3  (KONTINENTE als <h3> wie EUROPA -> erbt Webflow-h3-Styles)
+// Version: 20260721_v62_rotation_fix  (Hoehe = Viewport, bei Rotation neu; Listen mobil zentriert)
 (function () {
   var retryCount = 0;
   function init() {
@@ -542,10 +542,20 @@
         '<div class="jk-tooltip jk-hide"><div class="jk-tt-name"></div></div>' +
       '</div>';
 
-    // iOS: Containerhoehe einmalig in px einfrieren (Leisten-Ein/Ausblenden verschiebt sonst das Layout)
+    // iOS: Containerhoehe an der Viewport-Hoehe fixieren.
+    // Browserleisten-Ein/Ausblenden aendert innerHeight nur leicht -> ignorieren.
+    // Rotation aendert die Breite -> neu setzen (sonst wird die Karte beschnitten).
     if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) {
-      var frozenH = mount.getBoundingClientRect().height;
-      if (frozenH > 0) mount.style.height = Math.round(frozenH) + 'px';
+      var lockW = 0;
+      var lockHeight = function () {
+        var h = window.innerHeight;
+        if (h > 0) { mount.style.height = h + 'px'; lockW = window.innerWidth; }
+      };
+      lockHeight();
+      window.addEventListener('orientationchange', function () { setTimeout(lockHeight, 350); });
+      window.addEventListener('resize', function () {
+        if (Math.abs(window.innerWidth - lockW) > 40) lockHeight();   // nur echte Rotation
+      });
     }
 
     var stageEl = mount.querySelector('.jk-stage');
