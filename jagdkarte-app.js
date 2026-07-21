@@ -1,4 +1,4 @@
-// Version: 20260720_v55_zwei_reihen_fix  (2. Reihe, Kachelgroesse konstant, Laenderliste fix)
+// Version: 20260720_v56_mobile_kontinentliste  (Touch: tippbare Kontinent-Liste unter Weltkarte)
 (function () {
   var retryCount = 0;
   function init() {
@@ -536,6 +536,7 @@
           '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg2"></svg></div>' +
         '</div></div>' +
         '<div class="jk-hint"></div>' +
+        '<div class="jk-cont-list"></div>' +
         '<div class="jk-country-panel"></div>' +
         '<div class="jk-cont-label"><div class="jk-cl-name"></div></div>' +
         '<div class="jk-tooltip jk-hide"><div class="jk-tt-name"></div></div>' +
@@ -672,9 +673,23 @@
     var noAutoSpin = isTouchLayout();
     function applyTouchLayout() {
       noAutoSpin = isTouchLayout();
+      stageEl.classList.toggle('jk-touch', noAutoSpin);
       if (svg2) svg2.parentNode.style.display = noAutoSpin ? 'none' : '';
       if (hint) hint.textContent = noAutoSpin ? 'Tippen Sie auf einen Kontinent' : 'Fahren Sie über einen Kontinent';
     }
+    // Touch-Layout: Kontinent-Liste unter der Weltkarte (tippbar)
+    var contList = mount.querySelector('.jk-cont-list');
+    if (contList) {
+      var CONT_ITEMS = [['EU','Europa'],['AS','Asien'],['AF','Afrika'],['NA','Amerika'],['OC','Ozeanien']];
+      contList.innerHTML = CONT_ITEMS.map(function(c){
+        return '<div class="jk-cl-item" data-cont="' + c[0] + '">' + c[1] + '</div>';
+      }).join('');
+      contList.addEventListener('click', function(e){
+        var item = e.target.closest('.jk-cl-item');
+        if (item) zoomTo(item.dataset.cont);
+      });
+    }
+
     applyTouchLayout();
     window.addEventListener('resize', applyTouchLayout);
 
