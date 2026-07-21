@@ -1,4 +1,4 @@
-// Version: 20260721_v62_rotation_fix  (Hoehe = Viewport, bei Rotation neu; Listen mobil zentriert)
+// Version: 20260721_v63_welt_service_highlight  (Handy hochkant: Service-Laender hervorgehoben)
 (function () {
   var retryCount = 0;
   function init() {
@@ -615,6 +615,15 @@
     }
     var SPARK_R = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) ? 1.4 : 0.8;
 
+    // Alle Service-Laender ueber alle Kontinente (fuer die Welt-Hervorhebung)
+    var ALL_SERVICE_ISOS = (function () {
+      var set = {};
+      Object.keys(BUSINESS).forEach(function (k) {
+        BUSINESS[k].forEach(function (c) { if (c.iso) set[c.iso] = true; });
+      });
+      return set;
+    })();
+
     function fill(svg, drawSparks) {
       DATA.forEach(function (c) {
         var p = document.createElementNS(NS, 'path');
@@ -623,7 +632,7 @@
         if (c.iso === 'SO') pathData = soUnified;
         pathData = jkSimplify(pathData, SIMPLIFY);
         p.setAttribute('d', pathData);
-        p.setAttribute('class', 'jk-country');
+        p.setAttribute('class', 'jk-country' + (ALL_SERVICE_ISOS[c.iso] ? ' jk-world-service' : ''));
         p.dataset.cont = c.cont;
         p.dataset.iso = c.iso;
         svg.appendChild(p);
