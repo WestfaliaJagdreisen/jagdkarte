@@ -1,4 +1,4 @@
-// Version: 20260721_v58_weltansicht_split  (Touch-Welt: Karte oben, Panel ab 48%, Hoehe eingefroren)
+// Version: 20260721_v60_klickfix  (Kontinent-Liste: stopPropagation gegen Stage-Reset; Titel = .jk-panel-title)
 (function () {
   var retryCount = 0;
   function init() {
@@ -688,13 +688,14 @@
     if (contList) {
       var CONT_ITEMS = [['EU','Europa'],['AS','Asien'],['AF','Afrika'],['NA','Amerika'],['OC','Ozeanien']];
       contList.innerHTML =
-        '<div class="jk-cl-title">Kontinente</div>' +
+        '<div class="jk-panel-title jk-cl-title">Kontinente</div>' +
         '<div class="jk-cl-items">' +
         CONT_ITEMS.map(function(c){
           return '<div class="jk-cl-item" data-cont="' + c[0] + '">' + c[1] + '</div>';
         }).join('') +
         '</div>';
       contList.addEventListener('click', function(e){
+        e.stopPropagation();  // sonst faengt der Stage-Handler den Klick und ruft reset()
         var item = e.target.closest('.jk-cl-item');
         if (item) zoomTo(item.dataset.cont);
       });
