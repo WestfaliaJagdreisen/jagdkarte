@@ -1,4 +1,4 @@
-// Version: 20260720_v56_mobile_kontinentliste  (Touch: tippbare Kontinent-Liste unter Weltkarte)
+// Version: 20260721_v57_kontinentliste_styled  (Weltansicht: Titel + Panel-Optik wie Kontinentansicht)
 (function () {
   var retryCount = 0;
   function init() {
@@ -681,9 +681,13 @@
     var contList = mount.querySelector('.jk-cont-list');
     if (contList) {
       var CONT_ITEMS = [['EU','Europa'],['AS','Asien'],['AF','Afrika'],['NA','Amerika'],['OC','Ozeanien']];
-      contList.innerHTML = CONT_ITEMS.map(function(c){
-        return '<div class="jk-cl-item" data-cont="' + c[0] + '">' + c[1] + '</div>';
-      }).join('');
+      contList.innerHTML =
+        '<div class="jk-cl-title">Kontinente</div>' +
+        '<div class="jk-cl-items">' +
+        CONT_ITEMS.map(function(c){
+          return '<div class="jk-cl-item" data-cont="' + c[0] + '">' + c[1] + '</div>';
+        }).join('') +
+        '</div>';
       contList.addEventListener('click', function(e){
         var item = e.target.closest('.jk-cl-item');
         if (item) zoomTo(item.dataset.cont);
