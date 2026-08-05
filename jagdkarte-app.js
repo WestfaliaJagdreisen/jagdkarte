@@ -1,4 +1,4 @@
-// Version: 20260722_v64_bilder_update  (Tierbilder aus CMS aktualisiert; Bezoar korrigiert)
+// Version: 20260722_v66_alle_bilder  (alle Tierbilder aus CMS, keine Platzhalter mehr)
 (function () {
   var retryCount = 0;
   function init() {
@@ -231,7 +231,7 @@
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Niederwild', img: PLACEHOLDER_IMG }
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
       ],
       'SE': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' }
@@ -245,7 +245,7 @@
         { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Federwild', img: PLACEHOLDER_IMG }
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
       ],
       'SI': [
         { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' },
@@ -258,7 +258,7 @@
         { name: 'Mähnenschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f006316d982255635e2a_AdobeStock_247472934_Preview-p-500.jpeg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Federwild', img: PLACEHOLDER_IMG }
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
       ],
       'GB-ENG': [
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
@@ -271,7 +271,7 @@
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
         { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e04700b3f3e7e3b483e0_AdobeStock_2105520599_Preview%20-p-500.jpeg' },
-        { name: 'Federwild', img: PLACEHOLDER_IMG }
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
       ],
       'TR': [
         { name: 'Bezoar', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a7204ff6dd8a7a7389fd5b4_Bezoar-p-500.jpg' },
@@ -283,7 +283,7 @@
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Niederwild', img: PLACEHOLDER_IMG }
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
       ],
       'BY': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
@@ -319,7 +319,7 @@
         { name: 'Altai-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fc0011168a8847a0c7d6_altai-argali-schaf-ovis-ammon-ammon-altai-berge-mongolei-november-2xfx25k-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
         { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324426d450f2e5c6202c47_Maral-p-500.jpg' },
-        { name: 'Argali', img: PLACEHOLDER_IMG }
+        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
       ],
       'NP': [
         { name: 'Blauschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b7d769c7418708ffea7_Blauschaf-p-500.jpg' },
@@ -355,7 +355,7 @@
       ],
       'MR': [
         { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: PLACEHOLDER_IMG }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'MU': [
         { name: 'Rusahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d5d801bdba7b0fb584a0_AdobeStock_754167344_Preview-p-500.jpeg' },
@@ -364,7 +364,7 @@
       'MZ': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
         { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: PLACEHOLDER_IMG }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'NA': [
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
@@ -372,13 +372,13 @@
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
         { name: 'Springbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4fd9129090b6f8950bd_AdobeStock_500561686_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: PLACEHOLDER_IMG }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'ZM': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
-        { name: 'Plainsgame', img: PLACEHOLDER_IMG }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'ZW': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -395,7 +395,7 @@
         { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
         { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e780241100fcde5802b3_AdobeStock_277438835_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: PLACEHOLDER_IMG }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'TZ': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -404,7 +404,7 @@
         { name: 'Elefant', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be0e19662b8e5b5406c25_Elefant-p-500.jpg' },
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
         { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: PLACEHOLDER_IMG }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'UG': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
