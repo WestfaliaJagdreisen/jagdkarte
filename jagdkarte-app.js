@@ -144,12 +144,45 @@
     }
     // =====================================================================
 
+// === Produkt-Verfügbarkeit ===========================================
+    // Liest den versteckten CMS-Datenblock (#reisen-data) auf der Seite.
+    // Länder ohne veröffentlichtes Produkt führen NICHT auf die (noch leere)
+    // Länderseite, sondern auf /reisen -> dort greift der Vorbereitungs-Hinweis.
+    var _liveLands = null;
+    function getLiveLands() {
+        if (_liveLands) return _liveLands;
+        _liveLands = { _count: 0 };
+        var src = document.getElementById('reisen-data');
+        if (!src) return _liveLands;
+        src.querySelectorAll('.rd-land').forEach(function (el) {
+            var n = (el.textContent || '').trim();
+            if (!n) return;
+            _liveLands[n.toLowerCase()] = true;
+            _liveLands._count++;
+        });
+        return _liveLands;
+    }
+    function hasProduct(landName) {
+        if (!landName) return true;
+        var map = getLiveLands();
+        // Kein Datenblock auf der Seite -> altes Verhalten, nicht blockieren.
+        if (map._count === 0) return true;
+        return !!map[landName.toLowerCase()];
+    }
+    // =====================================================================
+
     function gotoCountry(iso) {
         if (!iso) return;
         // Sanktionierte Länder: kein Sprung, nur Hinweis
         if (isSanctionedIso(iso)) { showSanctionNotice(); return; }
         var slug = isoToSlug[iso];
         if (!slug) return;
+        // Noch kein Produkt online -> Filterseite mit Vorbereitungs-Hinweis
+        var landName = isoToName[iso];
+        if (!hasProduct(landName)) {
+            window.location.href = REISEN_BASE + '?land_equal=' + encodeURIComponent(landName);
+            return;
+        }
         // iOS-sicher: location.href statt window.open
         window.location.href = LAENDER_BASE + slug;
     }
