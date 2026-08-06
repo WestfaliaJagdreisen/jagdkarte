@@ -486,6 +486,8 @@
     };
     // Basis-Pfad zur Reisen-Filterseite
     var REISEN_BASE = '/reisen';
+    // Basis-Pfad zur Anfrage-Seite
+    var ANFRAGE_BASE = '/anfrage';
     // iso -> Land-Name Karte (für land_equal), aus BUSINESS aufgebaut
     var isoToName = {};
     Object.values(BUSINESS).forEach(function(list) {
@@ -1088,8 +1090,14 @@
       panel.querySelectorAll('li').forEach(function(li) {
         var iso = li.dataset.iso;
         if (!iso) {
-          li.addEventListener('click', function() {
-            console.log('Weitere Länder geklickt:', cont);
+          // "Weitere Länder…": konkretes Land unbekannt -> direkt zur Anfrage.
+          // Der Kontinent wird als Hinweis in die Nachricht vorbelegt.
+          li.addEventListener('click', function(ev) {
+            ev.stopPropagation();
+            var kont = CONT_TITLE[cont] || names[cont] || '';
+            window.location.href = ANFRAGE_BASE +
+              '?reiseziel=' + encodeURIComponent('Weiteres Land') +
+              (kont ? '&kontinent=' + encodeURIComponent(kont) : '');
           });
           return;
         }
