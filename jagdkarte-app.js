@@ -1,4 +1,4 @@
-// Version: 20260818_v69_namibia_direktlink
+// Version: 20260818_v70_polen_drueckjagd
 (function () {
   var retryCount = 0;
   function init() {
@@ -259,7 +259,8 @@
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Drückjagd', filter: 'jagdart', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84306b617ad5354ba3cbbd_drueckjagd-polen-lutowko-hero-p-500.jpg' }
       ],
       'RO': [
         { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
@@ -509,11 +510,17 @@
         });
     });
     // Baut die Filter-URL: /reisen?land_equal=Polen&wild_equal=Rothirsch
-    function buildAnimalUrl(iso, animalName) {
+    // item.filter === 'jagdart' -> jagdart_equal statt wild_equal
+    function buildAnimalUrl(iso, item) {
+        // Länder ohne eigene Länderseite: direkt aufs Produkt
+        var direct = DIRECT_PRODUCT[iso];
+        if (direct) return direct;
         var landName = isoToName[iso] || '';
+        var key = (item && item.filter === 'jagdart') ? 'jagdart_equal' : 'wild_equal';
+        var value = (item && item.name) ? item.name : item;
         return REISEN_BASE +
                '?land_equal=' + encodeURIComponent(landName) +
-               '&wild_equal=' + encodeURIComponent(animalName);
+               '&' + key + '=' + encodeURIComponent(value);
     }
     // =====================================================================
 
@@ -975,7 +982,7 @@
         if (structured && structured.length) {
             // Strukturierte Daten vorhanden (z. B. Polen): echtes Bild + Filter-Link
             items = structured.map(function(a) {
-                return { name: a.name, img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a.name) };
+                return { name: a.name, img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
             });
         } else {
             // Fallback: desc-String + Platzhalterbild + Filter-Link (best effort)
@@ -983,7 +990,7 @@
             if (!data) return;
             var animalNames = (data.desc || 'Premium Jagd').split(',').map(function(s){ return s.trim(); });
             items = animalNames.map(function(name) {
-                return { name: name, img: PLACEHOLDER_IMG, href: buildAnimalUrl(iso, name) };
+                return { name: name, img: PLACEHOLDER_IMG, href: buildAnimalUrl(iso, { name: name }) };
             });
         }
 
