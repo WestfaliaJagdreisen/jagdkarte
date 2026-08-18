@@ -1,4 +1,4 @@
-// Version: 20260818_v70_polen_drueckjagd
+// Version: 20260818_v71_eland_bild_neu
 (function () {
   var retryCount = 0;
   function init() {
@@ -412,7 +412,7 @@
       'NA': [
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
-        { name: 'Elenantilope / Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a840c60dcd3f783ed10fe8b_AdobeStock_102090145_Preview-p-500.jpeg' },
+        { name: 'Elenantilope / Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8433edec63f5a82778032e_AdobeStock_102090145_Preview-p-500.jpeg' },
         { name: 'Springbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4fd9129090b6f8950bd_AdobeStock_500561686_Preview-p-500.jpeg' },
         { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
         { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
