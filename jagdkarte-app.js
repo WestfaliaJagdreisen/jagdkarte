@@ -1,4 +1,4 @@
-// Version: 20260818_v68_eland_bild
+// Version: 20260818_v69_namibia_direktlink
 (function () {
   var retryCount = 0;
   function init() {
@@ -122,6 +122,12 @@
     // Basis-Pfad zu den CMS-Länderseiten. Relativ -> funktioniert auf
     // Vorschau-Domain UND echter Domain.
     var LAENDER_BASE = '/laender/';
+    // === Länder ohne eigene Länderseite ==================================
+    // Nur ein Produkt -> direkt auf die Produktseite statt auf /laender/.
+    // Zum Entfernen: Zeile löschen, sobald das Land eine Länderseite hat.
+    var DIRECT_PRODUCT = {
+        'NA': '/jagdreviere/jagdsafari-in-namibia'
+    };
     // iso -> slug Karte (aus BUSINESS aufgebaut)
     var isoToSlug = {};
     Object.values(BUSINESS).forEach(function(list) {
@@ -175,6 +181,9 @@
         if (!iso) return;
         // Sanktionierte Länder: kein Sprung, nur Hinweis
         if (isSanctionedIso(iso)) { showSanctionNotice(); return; }
+        // Direkt-Link auf ein Produkt (Länder ohne eigene Länderseite)
+        var direct = DIRECT_PRODUCT[iso];
+        if (direct) { window.location.href = direct; return; }
         var slug = isoToSlug[iso];
         if (!slug) return;
         // Noch kein Produkt online -> Filterseite mit Vorbereitungs-Hinweis
