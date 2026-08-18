@@ -1,4 +1,4 @@
-// Version: 20260722_v66_alle_bilder  (alle Tierbilder aus CMS, keine Platzhalter mehr)
+// Version: 20260818_v67_namibia_10_arten
 (function () {
   var retryCount = 0;
   function init() {
