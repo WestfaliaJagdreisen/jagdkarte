@@ -1,4 +1,4 @@
-// Version: 20260818_v67_namibia_10_arten
+// Version: 20260818_v68_eland_bild
 (function () {
   var retryCount = 0;
   function init() {
