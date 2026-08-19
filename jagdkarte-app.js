@@ -67,7 +67,7 @@
         {name:'Serbien', iso:'RS', slug:'serbien', desc:'Rothirsch, Rehbock'},
         {name:'Slowakei', iso:'SK', slug:'slowakei', desc:'Rothirsch, Damhirsch, Muffel, Fasan, Federwild'},
         {name:'Slowenien', iso:'SI', slug:'slowenien', desc:'Gams, Rothirsch, Rehbock, Muffel'},
-        {name:'Spanien', iso:'ES', slug:'spanien', desc:'Iberischer Steinbock, Mähnenschaf, Rehbock, Schwarzwild / Keiler, Federwild'},
+        {name:'Spanien', iso:'ES', slug:'spanien', desc:'Iberischer Steinbock, Mähnenschaf, Rehbock, Rothirsch, Schwarzwild / Keiler, Rothuhn / Rotes Rebhuhn, Federwild, Niederwild'},
         {name:'Südengland', iso:'GB-ENG', slug:'suedengland', desc:'Rehbock, Chinesisches Wasserreh, Muntjak'},
         {name:'Tschechien', iso:'CZ', slug:'tschechien', desc:'Muffel, Damhirsch, Rothirsch, Sikahirsch, Taube'},
         {name:'Türkei', iso:'TR', slug:'tuerkei', desc:'Bezoar, Schwarzwild / Keiler'},
@@ -300,8 +300,11 @@
         { name: 'Iberischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2c00bbdda9d7b4b3bbf626_Iberischer%20Steinbock-p-500.jpg' },
         { name: 'Mähnenschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f006316d982255635e2a_AdobeStock_247472934_Preview-p-500.jpeg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
+        { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
+        { name: 'Rothuhn / Rotes Rebhuhn' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
       ],
       'GB-ENG': [
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
