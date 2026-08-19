@@ -302,7 +302,7 @@
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Rothuhn / Rotes Rebhuhn' },
+        { name: 'Rothuhn / Rotes Rebhuhn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a857878840c2c6455aa5cf7_AdobeStock_390714652_Preview-p-500.jpg' },
         { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' },
         { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
       ],
