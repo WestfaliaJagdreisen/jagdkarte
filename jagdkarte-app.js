@@ -1,4 +1,4 @@
-// Version: 20260818_v71_eland_bild_neu
+// Version: 20260820_v72_direktlink_datengesteuert
 (function () {
   var retryCount = 0;
   function init() {
@@ -51,7 +51,7 @@
         {name:'Bulgarien', iso:'BG', slug:'bulgarien', desc:'Rothirsch, Damhirsch, Gams, Muffel, Rehbock'},
         {name:'Deutschland', iso:'DE', slug:'deutschland', desc:'Schwarzwild / Keiler'},
         {name:'Estland', iso:'EE', slug:'estland', desc:'Elch'},
-        {name:'Europ. Russland', iso:'RU-EU', slug:'europ-russland', desc:'Auerhahn, Birkhahn, Elch, Wolf, Sikahirsch'},
+        {name:'Europ. Russland', iso:'RU-EU', slug:'russland-europa', desc:'Auerhahn, Birkhahn, Elch, Wolf, Sikahirsch'},
         {name:'Finnland', iso:'FI', slug:'finnland', desc:'Elch, Weißwedelhirsch'},
         {name:'Frankreich', iso:'FR', slug:'frankreich', desc:'Gams'},
         {name:'Griechenland', iso:'GR', slug:'griechenland', desc:'Kri-Kri / Kretische Wildziege'},
@@ -68,7 +68,7 @@
         {name:'Slowakei', iso:'SK', slug:'slowakei', desc:'Rothirsch, Damhirsch, Muffel, Schwarzwild, Fasan, Federwild'},
         {name:'Slowenien', iso:'SI', slug:'slowenien', desc:'Gams, Rothirsch, Rehbock, Muffel'},
         {name:'Spanien', iso:'ES', slug:'spanien', desc:'Iberischer Steinbock, Mähnenschaf, Rehbock, Rothirsch, Schwarzwild / Keiler, Rothuhn / Rotes Rebhuhn, Federwild, Niederwild'},
-        {name:'Südengland', iso:'GB-ENG', slug:'suedengland', desc:'Rehbock, Chinesisches Wasserreh, Muntjak'},
+        {name:'Südengland', iso:'GB-ENG', slug:'sued-england', desc:'Rehbock, Chinesisches Wasserreh, Muntjak'},
         {name:'Tschechien', iso:'CZ', slug:'tschechien', desc:'Muffel, Damhirsch, Rothirsch, Sikahirsch, Taube'},
         {name:'Türkei', iso:'TR', slug:'tuerkei', desc:'Bezoar, Schwarzwild / Keiler'},
         {name:'Ungarn', iso:'HU', slug:'ungarn', desc:'Rothirsch, Damhirsch, Rehbock, Muffel, Fasan'},
@@ -76,10 +76,10 @@
         {name:'Weitere Länder (Europa)…', iso:null}
       ],
       'AS': [
-        {name:'Asiat. Russland', iso:'RU', slug:'asiat-russland', desc:'Kamtschatka-Braunbär, Elch, Schneeschaf, Tur, Sibirischer Rehbock'},
+        {name:'Asiat. Russland', iso:'RU', slug:'russland-asien', desc:'Kamtschatka-Braunbär, Elch, Schneeschaf, Tur, Sibirischer Rehbock'},
         {name:'Iran', iso:'IR', slug:'iran', desc:'Urial, Bezoar, Schwarzwild / Keiler'},
         {name:'Kasachstan', iso:'KZ', slug:'kasachstan', desc:'Steinbock, Maral, Saiga, Sibirischer Rehbock'},
-        {name:'Kirgisien', iso:'KG', slug:'kirgisien', desc:'Tien Shan Argali, Steinbock'},
+        {name:'Kirgisien', iso:'KG', slug:'kirgisistan', desc:'Tien Shan Argali, Steinbock'},
         {name:'Mongolei', iso:'MN', slug:'mongolei', desc:'Altai-Argali, Steinbock, Maral, Argali'},
         {name:'Nepal', iso:'NP', slug:'nepal', desc:'Blauschaf, Tahr'},
         {name:'Pakistan', iso:'PK', slug:'pakistan', desc:'Markhor, Urial, Blauschaf, Steinbock'},
@@ -122,12 +122,18 @@
     // Basis-Pfad zu den CMS-Länderseiten. Relativ -> funktioniert auf
     // Vorschau-Domain UND echter Domain.
     var LAENDER_BASE = '/laender/';
-    // === Länder ohne eigene Länderseite ==================================
-    // Nur ein Produkt -> direkt auf die Produktseite statt auf /laender/.
-    // Zum Entfernen: Zeile löschen, sobald das Land eine Länderseite hat.
-    var DIRECT_PRODUCT = {
-        'NA': '/jagdreviere/jagdsafari-in-namibia'
+    // === Anzeigename -> CMS-Name =========================================
+    // Nur noetig, wo der Kartentext bewusst vom Namen in der Sammlung
+    // "Laender" abweicht. Der angezeigte Text bleibt unveraendert;
+    // uebersetzt wird erst beim Abgleich mit dem CMS (hasProduct,
+    // land_equal, Direktlink).
+    var LAND_ALIAS = {
+        'Südengland':     'Süd-England',
+        'Kirgisien':       'Kirgisistan',
+        'Asiat. Russland': 'Russland Asien',
+        'Europ. Russland': 'Russland Europa'
     };
+    function cmsLand(n) { return LAND_ALIAS[n] || n; }
     // iso -> slug Karte (aus BUSINESS aufgebaut)
     var isoToSlug = {};
     Object.values(BUSINESS).forEach(function(list) {
@@ -175,19 +181,105 @@
         if (map._count === 0) return true;
         return !!map[landName.toLowerCase()];
     }
+
+    // === Direktlink: Zwischenseite /reisen ueberspringen ==================
+    // Gleiche Regel wie auf der Wildart- und der Laenderseite.
+    // Datenquellen auf der Seite:
+    //   #reisen-data   -> .rd-land / .rd-wildart / .rd-slug  (Produkte)
+    //   #laender-data  -> .ld-name / .ld-intro               (Laender)
+    // Nur veroeffentlichte Eintraege werden gerendert, Entwuerfe zaehlen
+    // daher automatisch nicht mit. Keine gepflegte Tabelle mehr.
+    var _produkte = null;
+    function getProdukte() {
+        if (_produkte) return _produkte;
+        _produkte = [];
+        var src = document.getElementById('reisen-data');
+        if (!src) return _produkte;
+        src.querySelectorAll('.w-dyn-item').forEach(function (r) {
+            var l = r.querySelector('.rd-land');
+            var w = r.querySelector('.rd-wildart');
+            var g = r.querySelector('.rd-slug');
+            if (!l || !g) return;
+            var slug = (g.textContent || '').trim();
+            if (!slug) return;
+            _produkte.push({
+                land:    (l.textContent || '').trim(),
+                wildart: w ? (w.textContent || '').trim() : '',
+                slug:    slug
+            });
+        });
+        return _produkte;
+    }
+
+    // Laender, deren Einleitung im CMS leer ist -> Laenderseite ist eine
+    // leere Huelle und wird uebersprungen, sofern es genau ein Produkt gibt.
+    var _ohneText = null;
+    function hatLaenderText(landName) {
+        if (_ohneText === null) {
+            _ohneText = {};
+            var src = document.getElementById('laender-data');
+            if (src) {
+                src.querySelectorAll('.w-dyn-item').forEach(function (r) {
+                    var n = r.querySelector('.ld-name');
+                    var t = r.querySelector('.ld-intro');
+                    if (!n) return;
+                    var name = (n.textContent || '').trim();
+                    if (!name) return;
+                    _ohneText[name] = !!(t && (t.textContent || '').trim());
+                });
+            }
+        }
+        // Kein Datenblock -> im Zweifel Laenderseite anzeigen
+        if (!(landName in _ohneText)) return true;
+        return _ohneText[landName];
+    }
+
+    // Klick auf ein Land: nur ueberspringen, wenn genau ein Produkt
+    // existiert UND die Laenderseite keinen Einleitungstext hat.
+    function direktLinkLand(landName) {
+        if (!landName) return null;
+        var imLand = getProdukte().filter(function (p) { return p.land === landName; });
+        if (imLand.length !== 1) return null;
+        if (hatLaenderText(landName)) return null;
+        return '/jagdreviere/' + imLand[0].slug;
+    }
+
+    // Laender, deren einziges Produkt tatsaechlich alle gelisteten Arten
+    // abdeckt. Nur hier darf ohne Wildart-Abgleich verlinkt werden.
+    // Namibia: eine Safari, rund 30 bejagbare Arten, Feld "Wildart" =
+    // "Plainsgame". Der Eintrag greift nur, solange das Land GENAU EIN
+    // Produkt hat - kommt ein zweites dazu, faellt die Ausnahme von selbst
+    // weg. Muss mit dem Footer-Code der Wildart- und der Laenderseite
+    // uebereinstimmen.
+    var ALLE_ARTEN_ABGEDECKT = { 'Namibia': true };
+
+    // Klick auf eine Wildart: genau ein passendes Produkt im Land.
+    function direktLinkArt(landName, wildName) {
+        if (!landName || !wildName) return null;
+        var imLand = getProdukte().filter(function (p) { return p.land === landName; });
+        if (!imLand.length) return null;
+        // Ausnahme: ein Produkt, das alle Arten abdeckt
+        if (imLand.length === 1 && ALLE_ARTEN_ABGEDECKT[landName]) {
+            return '/jagdreviere/' + imLand[0].slug;
+        }
+        var passend = imLand.filter(function (p) { return p.wildart === wildName; });
+        if (passend.length === 1) return '/jagdreviere/' + passend[0].slug;
+        return null;
+    }
+    // =====================================================================
     // =====================================================================
 
     function gotoCountry(iso) {
         if (!iso) return;
-        // Sanktionierte Länder: kein Sprung, nur Hinweis
+        // Sanktionierte Länder: kein Sprung, nur Hinweis. Muss zuerst stehen.
         if (isSanctionedIso(iso)) { showSanctionNotice(); return; }
-        // Direkt-Link auf ein Produkt (Länder ohne eigene Länderseite)
-        var direct = DIRECT_PRODUCT[iso];
+        var landName = cmsLand(isoToName[iso]);
+        // Genau ein Produkt + keine Einleitung -> Produktseite statt leerer Hülle
+        var direct = direktLinkLand(landName);
         if (direct) { window.location.href = direct; return; }
         var slug = isoToSlug[iso];
         if (!slug) return;
         // Noch kein Produkt online -> Filterseite mit Vorbereitungs-Hinweis
-        var landName = isoToName[iso];
         if (!hasProduct(landName)) {
             window.location.href = REISEN_BASE + '?land_equal=' + encodeURIComponent(landName);
             return;
@@ -271,10 +363,12 @@
       ],
       'GB-SCO': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
-        { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
+        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Moorhuhn / Grouse', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84566ba5a2a81e48c0bc08_AdobeStock_55761547_Preview-p-500.jpeg' },
+        { name: 'Schneehase', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84567a4951b8b648d76d11_AdobeStock_136086068_Preview-p-500.jpeg' },
+        { name: 'Waldschnepfe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a845691332b9de342b411aa_AdobeStock_243241400_Preview-p-500.jpeg' }
       ],
       'SE': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' }
@@ -516,12 +610,15 @@
     // Baut die Filter-URL: /reisen?land_equal=Polen&wild_equal=Rothirsch
     // item.filter === 'jagdart' -> jagdart_equal statt wild_equal
     function buildAnimalUrl(iso, item) {
-        // Länder ohne eigene Länderseite: direkt aufs Produkt
-        var direct = DIRECT_PRODUCT[iso];
-        if (direct) return direct;
-        var landName = isoToName[iso] || '';
+        var landName = cmsLand(isoToName[iso] || '');
         var key = (item && item.filter === 'jagdart') ? 'jagdart_equal' : 'wild_equal';
         var value = (item && item.name) ? item.name : item;
+        // Genau ein passendes Produkt -> /reisen überspringen.
+        // Nur für Wildarten, nicht für Jagdart-Kacheln (z. B. Drückjagd).
+        if (key === 'wild_equal') {
+            var direct = direktLinkArt(landName, value);
+            if (direct) return direct;
+        }
         return REISEN_BASE +
                '?land_equal=' + encodeURIComponent(landName) +
                '&' + key + '=' + encodeURIComponent(value);
