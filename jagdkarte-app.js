@@ -1,4 +1,4 @@
-20260821_v73_kasachstan_wildarten
+// V20260821_v73_kasachstan_wildarten
 (function () {
   var retryCount = 0;
   function init() {
