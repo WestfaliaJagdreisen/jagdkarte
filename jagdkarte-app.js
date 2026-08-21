@@ -1,4 +1,4 @@
-// Version: 20260820_v72_direktlink_datengesteuert
+20260821_v73_kasachstan_wildarten
 (function () {
   var retryCount = 0;
   function init() {
@@ -78,7 +78,7 @@
       'AS': [
         {name:'Asiat. Russland', iso:'RU', slug:'russland-asien', desc:'Kamtschatka-Braunbär, Elch, Schneeschaf, Tur, Sibirischer Rehbock'},
         {name:'Iran', iso:'IR', slug:'iran', desc:'Urial, Bezoar, Schwarzwild / Keiler'},
-        {name:'Kasachstan', iso:'KZ', slug:'kasachstan', desc:'Steinbock, Maral, Saiga, Sibirischer Rehbock'},
+        {name:'Kasachstan', iso:'KZ', slug:'kasachstan', desc:'Sibirischer Steinbock, Maral, Sibirischer Rehbock, Elch'},
         {name:'Kirgisien', iso:'KG', slug:'kirgisistan', desc:'Tien Shan Argali, Steinbock'},
         {name:'Mongolei', iso:'MN', slug:'mongolei', desc:'Altai-Argali, Steinbock, Maral, Argali'},
         {name:'Nepal', iso:'NP', slug:'nepal', desc:'Blauschaf, Tahr'},
@@ -447,10 +447,10 @@
         { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'KZ': [
-        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324426d450f2e5c6202c47_Maral-p-500.jpg' },
-        { name: 'Saiga', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e86e1f24d1eb727bfda0_AdobeStock_2022281986_Preview-p-500.jpeg' },
-        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' }
+        { name: 'Sibirischer Steinbock', img: '…6a870d7a14e4b10be7ee164a_AdobeStock_1395816711_Preview-p-500.jpg' },
+        { name: 'Maral',                 img: '…6a324426d450f2e5c6202c47_Maral-p-500.jpg' },
+        { name: 'Sibirischer Rehbock',   img: '…6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
+        { name: 'Elch',                  img: '…6a316ba461042af189b89e69_Elch-p-500.jpg' }
       ],
       'KG': [
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
