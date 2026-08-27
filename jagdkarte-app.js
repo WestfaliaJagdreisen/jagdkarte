@@ -109,6 +109,7 @@
         {name:'Grönland', iso:'GL', slug:'groenland', desc:'Moschusochse, Karibu'},
         {name:'Kanada', iso:'CA', slug:'kanada', desc:'Eisbär / Polarbär, Schwarzbär, Elch, Dall-Schaf, Steinschaf'},
         {name:'Mexiko', iso:'MX', slug:'mexiko', desc:'Wüsten-Dickhornschaf / Desert Bighorn'},
+        {name:'USA', iso:'US', slug:'usa', desc:'Amerikanischer Bison'},
         {name:'Weitere Länder (Amerika)…', iso:null}
       ],
       'OC': [
@@ -302,10 +303,10 @@
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'DE': [
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'EE': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' }
@@ -315,17 +316,23 @@
         { name: 'Auerhahn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324f407155c87e79a65805_Auerhahn-p-500.jpg' },
         { name: 'Birkhahn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a32500b13633436530ca33f_Birkhahn-p-500.jpg' },
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
-        { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' }
+        { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
+        { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
       ],
       'FI': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
-        { name: 'Weißwedelhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c3761042af189b90721_Wei%C3%9Fwedelhirsch-p-500.jpg' }
+        { name: 'Weißwedelhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c3761042af189b90721_Wei%C3%9Fwedelhirsch-p-500.jpg' },
+        { name: 'Kahlwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902c47cda440349ce3632b_Kahlwild-p-500.jpg' }
       ],
       'FR': [
-        { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' }
+        { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' },
+        { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
+        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
       ],
       'GR': [
-        { name: 'Kri-Kri / Kretische Wildziege', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e91fbec4b03c4deaf958_AdobeStock_417276015_Preview-p-500.jpeg' }
+        { name: 'Kri-Kri', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e91fbec4b03c4deaf958_AdobeStock_417276015_Preview-p-500.jpeg' }
       ],
       'IE': [
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' }
@@ -351,8 +358,9 @@
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Drückjagd', filter: 'jagdart', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84306b617ad5354ba3cbbd_drueckjagd-polen-lutowko-hero-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Drückjagd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84306b617ad5354ba3cbbd_drueckjagd-polen-lutowko-hero-p-500.jpg', filter: 'jagdart' }
       ],
       'RO': [
         { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
@@ -366,25 +374,29 @@
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
-        { name: 'Moorhuhn / Grouse', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84566ba5a2a81e48c0bc08_AdobeStock_55761547_Preview-p-500.jpeg' },
+        { name: 'Grouse', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84566ba5a2a81e48c0bc08_AdobeStock_55761547_Preview-p-500.jpeg' },
         { name: 'Schneehase', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84567a4951b8b648d76d11_AdobeStock_136086068_Preview-p-500.jpeg' },
-        { name: 'Waldschnepfe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a845691332b9de342b411aa_AdobeStock_243241400_Preview-p-500.jpeg' }
+        { name: 'Waldschnepfe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a845691332b9de342b411aa_AdobeStock_243241400_Preview-p-500.jpeg' },
+        { name: 'Kahlwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902c47cda440349ce3632b_Kahlwild-p-500.jpg' },
+        { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' }
       ],
       'SE': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' }
       ],
       'RS': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' }
+        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
       ],
       'SK': [
-            { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-            { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
-            { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
-            { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-            { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-            { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
-        ],
+        { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
+        { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
+        { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' },
+        { name: 'Kahlwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902c47cda440349ce3632b_Kahlwild-p-500.jpg' }
+      ],
       'SI': [
         { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
@@ -396,10 +408,10 @@
         { name: 'Mähnenschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f006316d982255635e2a_AdobeStock_247472934_Preview-p-500.jpeg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Rothuhn / Rotes Rebhuhn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a857878840c2c6455aa5cf7_AdobeStock_390714652_Preview-p-500.jpg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Rothuhn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a857878840c2c6455aa5cf7_AdobeStock_390714652_Preview-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
       ],
       'GB-ENG': [
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
@@ -416,7 +428,7 @@
       ],
       'TR': [
         { name: 'Bezoar', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a7204ff6dd8a7a7389fd5b4_Bezoar-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'HU': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
@@ -424,37 +436,44 @@
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'BY': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
-        { name: 'Wisent / Bison', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be5b73dabaa68eb9cbc63_Wisent-p-500.jpg' },
+        { name: 'Wisent', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be5b73dabaa68eb9cbc63_Wisent-p-500.jpg' },
         { name: 'Auerhahn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324f407155c87e79a65805_Auerhahn-p-500.jpg' },
         { name: 'Birkhahn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a32500b13633436530ca33f_Birkhahn-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
       ],
       'RU': [
         { name: 'Kamtschatka-Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d3d1c92902edb59da702_Kamtschatka-Braunba%CC%88r%20-p-500.jpg' },
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
         { name: 'Schneeschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f941c46fea282382c591_AdobeStock_515686396_Preview-p-500.jpeg' },
         { name: 'Tur', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3248f49f24618c2e828ae0_Tur-p-500.jpg' },
-        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' }
+        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
+        { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' }
       ],
       'IR': [
         { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d6d2f0ec5d9df612f0be_AdobeStock_300642628_Preview-p-500.jpg' },
         { name: 'Bezoar', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a7204ff6dd8a7a7389fd5b4_Bezoar-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
       ],
       'KZ': [
         { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a870d7a14e4b10be7ee164a_AdobeStock_1395816711_Preview-p-500.jpg' },
         { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324426d450f2e5c6202c47_Maral-p-500.jpg' },
         { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
-        { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' }
+        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
+        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
       ],
       'KG': [
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Tien Shan Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fd9a6b55d253ee6a450b_tien-shan-argali-ovis-ammon-karelini-p-500.jpg' }
+        { name: 'Tien Shan Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fd9a6b55d253ee6a450b_tien-shan-argali-ovis-ammon-karelini-p-500.jpg' },
+        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' },
+        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a870d7a14e4b10be7ee164a_AdobeStock_1395816711_Preview-p-500.jpg' }
       ],
       'MN': [
         { name: 'Altai-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fc0011168a8847a0c7d6_altai-argali-schaf-ovis-ammon-ammon-altai-berge-mongolei-november-2xfx25k-p-500.jpg' },
@@ -471,14 +490,15 @@
         { name: 'Blauschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b7d769c7418708ffea7_Blauschaf-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
         { name: 'Markhor', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c6e13fb7c7dd52a0fc32_Markhor-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'TJ': [
         { name: 'Markhor', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c6e13fb7c7dd52a0fc32_Markhor-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
         { name: 'Marco-Polo-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
         { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d6d2f0ec5d9df612f0be_AdobeStock_300642628_Preview-p-500.jpg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
       ],
       'ET': [
         { name: 'Bergnyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71decf852573898cebc8c9_AdobeStock_244435321_Preview-p-500.jpeg' }
@@ -488,11 +508,22 @@
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' }
       ],
       'CM': [
-        { name: 'Riesen-Elenantilope / Lord Derby Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71cece5ab001b555dc7919_Riesen-Elenantilope-p-500.jpg' },
-        { name: 'Bongo', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a315e4bb788f4807fd647f2_Bongo-p-500.jpg' }
+        { name: 'Lord Derby Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71cece5ab001b555dc7919_Riesen-Elenantilope-p-500.jpg' },
+        { name: 'Bongo', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a315e4bb788f4807fd647f2_Bongo-p-500.jpg' },
+        { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
+        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
+        { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e780241100fcde5802b3_AdobeStock_277438835_Preview-p-500.jpeg' },
+        { name: 'Python', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9030e28dd8b344bfc51172_AdobeStock_334160520_Preview-p-500.jpeg' },
+        { name: 'Ducker', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902fa7a125a68a5374a99d_AdobeStock_1875880932_Preview-p-500.jpeg' },
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'CG': [
-        { name: 'Bongo', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a315e4bb788f4807fd647f2_Bongo-p-500.jpg' }
+        { name: 'Bongo', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a315e4bb788f4807fd647f2_Bongo-p-500.jpg' },
+        { name: 'Sitatunga', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e9e7689dbc55471436f1_AdobeStock_841806275_Preview-p-500.jpeg' },
+        { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
+        { name: 'Ducker', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902fa7a125a68a5374a99d_AdobeStock_1875880932_Preview-p-500.jpeg' },
+        { name: 'Pinselohrschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902d277f6dd44aa477aa18_AdobeStock_23873903_Preview-p-500.jpeg' }
       ],
       'MR': [
         { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
@@ -500,7 +531,8 @@
       ],
       'MU': [
         { name: 'Rusahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d5d801bdba7b0fb584a0_AdobeStock_754167344_Preview-p-500.jpeg' },
-        { name: 'Schwarzwild / Keiler', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
       ],
       'MZ': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -510,7 +542,7 @@
       'NA': [
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
-        { name: 'Elenantilope / Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8433edec63f5a82778032e_AdobeStock_102090145_Preview-p-500.jpeg' },
+        { name: 'Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8433edec63f5a82778032e_AdobeStock_102090145_Preview-p-500.jpeg' },
         { name: 'Springbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4fd9129090b6f8950bd_AdobeStock_500561686_Preview-p-500.jpeg' },
         { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
         { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
@@ -523,7 +555,10 @@
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' },
+        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90371102fd9a373f274619_AdobeStock_1987497147_Preview-p-500.jpeg' },
+        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9036bc584cd834b55f8908_AdobeStock_683083083_Preview-p-500.jpeg' },
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' }
       ],
       'ZW': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -531,7 +566,11 @@
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
-        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' }
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
+        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90371102fd9a373f274619_AdobeStock_1987497147_Preview-p-500.jpeg' },
+        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9036bc584cd834b55f8908_AdobeStock_683083083_Preview-p-500.jpeg' },
+        { name: 'Giraffe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90325e7e4ca88803dac113_Giraffe-p-500.jpg' },
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'ZA': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -540,7 +579,9 @@
         { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
         { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e780241100fcde5802b3_AdobeStock_277438835_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' },
+        { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
+        { name: 'Giraffe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90325e7e4ca88803dac113_Giraffe-p-500.jpg' }
       ],
       'TZ': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -548,8 +589,11 @@
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
         { name: 'Elefant', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be0e19662b8e5b5406c25_Elefant-p-500.jpg' },
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
-        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' },
+        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90371102fd9a373f274619_AdobeStock_1987497147_Preview-p-500.jpeg' },
+        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9036bc584cd834b55f8908_AdobeStock_683083083_Preview-p-500.jpeg' },
+        { name: 'Gerenuk', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90342feff1e6fcdd802c7f_AdobeStock_55040011_Preview-p-500.jpeg' },
+        { name: 'Kleiner Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9033bf7e4ca88803dbd82b_AdobeStock_392888040_Preview-p-500.jpeg' }
       ],
       'UG': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -565,7 +609,14 @@
       'AR': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Hirschziegenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4034d114675ed5aab8d_AdobeStock_1967901745_Preview-p-500.jpeg' },
-        { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e04700b3f3e7e3b483e0_AdobeStock_2105520599_Preview%20-p-500.jpeg' }
+        { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e04700b3f3e7e3b483e0_AdobeStock_2105520599_Preview%20-p-500.jpeg' },
+        { name: 'Axishirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a903581b1ffb2e2d1e92962_AdobeStock_2149446355_Preview-p-500.jpeg' },
+        { name: 'Davidshirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a903505fc4963db45887d1c_AdobeStock_288748484_Preview-p-500.jpeg' },
+        { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
+        { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
+        { name: 'Wasserbüffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c813898aae4f5c524b8c_Wasserbu%CC%88ffel-p-500.jpg' }
       ],
       'CL': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' }
@@ -575,17 +626,22 @@
         { name: 'Karibu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31509f2621e3dae2c9b96d_Karibu-p-500.jpg' }
       ],
       'CA': [
-        { name: 'Eisbär / Polarbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71de015f921f9d8e2041c2_AdobeStock_156323627_Preview-p-500.jpeg' },
+        { name: 'Eisbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71de015f921f9d8e2041c2_AdobeStock_156323627_Preview-p-500.jpeg' },
         { name: 'Schwarzbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d0d637799726ace8e1f9_Schwarzba%CC%88r-p-500.jpg' },
         { name: 'Puma', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71dfb84e190f1129b6fd2c_AdobeStock_310665113_Preview-p-500.jpeg' },
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
         { name: 'Karibu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31509f2621e3dae2c9b96d_Karibu-p-500.jpg' },
         { name: 'Dall-Schaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bfe8d24cd0988b1fe0cd7_Dall-Sharf-p-500.jpg' },
         { name: 'Steinschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f8d8b9b50c901ef6728d_AdobeStock_382679948_Preview-p-500.jpeg' },
-        { name: 'Schneeziege', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31502d90b787871469e341_Schneeziege-p-500.jpg' }
+        { name: 'Schneeziege', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31502d90b787871469e341_Schneeziege-p-500.jpg' },
+        { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
+        { name: 'Wolf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a565a6251ccc58bc7502e90_Wolf-p-500.jpg' }
       ],
       'MX': [
-        { name: 'Wüsten-Dickhornschaf / Desert Bighorn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a59ba80e003fc9e79524bf6_Wu%CC%88sten-Dickhornschaf-p-500.jpg' }
+        { name: 'Desert Bighorn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a59ba80e003fc9e79524bf6_Wu%CC%88sten-Dickhornschaf-p-500.jpg' }
+      ],
+      'US': [
+        { name: 'Amerikanischer Bison', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9027a700855778cbf925fb_Amerikanischer-Bison-p-500.jpg' }
       ],
       'AU': [
         { name: 'Wasserbüffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c813898aae4f5c524b8c_Wasserbu%CC%88ffel-p-500.jpg' }
@@ -593,7 +649,9 @@
       'NZ': [
         { name: 'Tahr', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324e1ea07fcea09b443730_Tahr-p-500.jpg' },
         { name: 'Wapiti', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bebd48b51648e8c091654_Wapiti-p-500.jpg' },
-        { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' }
+        { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
+        { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
+        { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' }
       ]
     };
     // Basis-Pfad zur Reisen-Filterseite
