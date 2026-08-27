@@ -48,73 +48,73 @@
 
     var BUSINESS = {
       'EU': [
-        {name:'Bulgarien', iso:'BG', slug:'bulgarien', desc:'Rothirsch, Damhirsch, Gams, Muffel, Rehbock'},
-        {name:'Deutschland', iso:'DE', slug:'deutschland', desc:'Schwarzwild / Keiler'},
-        {name:'Estland', iso:'EE', slug:'estland', desc:'Elch'},
-        {name:'Europ. Russland', iso:'RU-EU', slug:'russland-europa', desc:'Auerhahn, Birkhahn, Elch, Wolf, Sikahirsch'},
-        {name:'Finnland', iso:'FI', slug:'finnland', desc:'Elch, Weißwedelhirsch'},
-        {name:'Frankreich', iso:'FR', slug:'frankreich', desc:'Gams'},
-        {name:'Griechenland', iso:'GR', slug:'griechenland', desc:'Kri-Kri / Kretische Wildziege'},
-        {name:'Irland', iso:'IE', slug:'irland', desc:'Sikahirsch'},
-        {name:'Kroatien', iso:'HR', slug:'kroatien', desc:'Gams, Muffel, Rehbock, Rothirsch'},
-        {name:'Lettland', iso:'LV', slug:'lettland', desc:'Elch'},
-        {name:'Norwegen', iso:'NO', slug:'norwegen', desc:'Karibu'},
-        {name:'Österreich', iso:'AT', slug:'oesterreich', desc:'Gams, Steinbock'},
-        {name:'Polen', iso:'PL', slug:'polen', desc:'Damhirsch, Rothirsch, Muffel, Rehbock, Schwarzwild / Keiler'},
-        {name:'Rumänien', iso:'RO', slug:'rumaenien', desc:'Braunbär, Gams, Rothirsch, Damhirsch, Rehbock'},
-        {name:'Schottland', iso:'GB-SCO', slug:'schottland', desc:'Rothirsch, Rehbock, Sikahirsch, Fasan, Niederwild'},
-        {name:'Schweden', iso:'SE', slug:'schweden', desc:'Elch'},
-        {name:'Serbien', iso:'RS', slug:'serbien', desc:'Rothirsch, Rehbock'},
-        {name:'Slowakei', iso:'SK', slug:'slowakei', desc:'Rothirsch, Damhirsch, Muffel, Schwarzwild, Fasan, Federwild'},
-        {name:'Slowenien', iso:'SI', slug:'slowenien', desc:'Gams, Rothirsch, Rehbock, Muffel'},
-        {name:'Spanien', iso:'ES', slug:'spanien', desc:'Iberischer Steinbock, Mähnenschaf, Rehbock, Rothirsch, Schwarzwild / Keiler, Rothuhn / Rotes Rebhuhn, Federwild, Niederwild'},
-        {name:'Südengland', iso:'GB-ENG', slug:'sued-england', desc:'Rehbock, Chinesisches Wasserreh, Muntjak'},
-        {name:'Tschechien', iso:'CZ', slug:'tschechien', desc:'Muffel, Damhirsch, Rothirsch, Sikahirsch, Taube'},
-        {name:'Türkei', iso:'TR', slug:'tuerkei', desc:'Bezoar, Schwarzwild / Keiler'},
-        {name:'Ungarn', iso:'HU', slug:'ungarn', desc:'Rothirsch, Damhirsch, Rehbock, Muffel, Fasan'},
-        {name:'Weißrussland', iso:'BY', slug:'weissrussland', desc:'Elch, Wisent / Bison, Auerhahn, Birkhahn, Rothirsch'},
+        {name:'Bulgarien', iso:'BG', slug:'bulgarien'},
+        {name:'Deutschland', iso:'DE', slug:'deutschland'},
+        {name:'Estland', iso:'EE', slug:'estland'},
+        {name:'Europ. Russland', iso:'RU-EU', slug:'russland-europa'},
+        {name:'Finnland', iso:'FI', slug:'finnland'},
+        {name:'Frankreich', iso:'FR', slug:'frankreich'},
+        {name:'Griechenland', iso:'GR', slug:'griechenland'},
+        {name:'Irland', iso:'IE', slug:'irland'},
+        {name:'Kroatien', iso:'HR', slug:'kroatien'},
+        {name:'Lettland', iso:'LV', slug:'lettland'},
+        {name:'Norwegen', iso:'NO', slug:'norwegen'},
+        {name:'Österreich', iso:'AT', slug:'oesterreich'},
+        {name:'Polen', iso:'PL', slug:'polen'},
+        {name:'Rumänien', iso:'RO', slug:'rumaenien'},
+        {name:'Schottland', iso:'GB-SCO', slug:'schottland'},
+        {name:'Schweden', iso:'SE', slug:'schweden'},
+        {name:'Serbien', iso:'RS', slug:'serbien'},
+        {name:'Slowakei', iso:'SK', slug:'slowakei'},
+        {name:'Slowenien', iso:'SI', slug:'slowenien'},
+        {name:'Spanien', iso:'ES', slug:'spanien'},
+        {name:'Südengland', iso:'GB-ENG', slug:'sued-england'},
+        {name:'Tschechien', iso:'CZ', slug:'tschechien'},
+        {name:'Türkei', iso:'TR', slug:'tuerkei'},
+        {name:'Ungarn', iso:'HU', slug:'ungarn'},
+        {name:'Weißrussland', iso:'BY', slug:'weissrussland'},
         {name:'Weitere Länder (Europa)…', iso:null}
       ],
       'AS': [
-        {name:'Asiat. Russland', iso:'RU', slug:'russland-asien', desc:'Kamtschatka-Braunbär, Elch, Schneeschaf, Tur, Sibirischer Rehbock'},
-        {name:'Iran', iso:'IR', slug:'iran', desc:'Urial, Bezoar, Schwarzwild / Keiler'},
-        {name:'Kasachstan', iso:'KZ', slug:'kasachstan', desc:'Sibirischer Steinbock, Maral, Sibirischer Rehbock, Elch'},
-        {name:'Kirgisien', iso:'KG', slug:'kirgisistan', desc:'Tien Shan Argali, Steinbock'},
-        {name:'Mongolei', iso:'MN', slug:'mongolei', desc:'Altai-Argali, Steinbock, Maral, Argali'},
-        {name:'Nepal', iso:'NP', slug:'nepal', desc:'Blauschaf, Tahr'},
-        {name:'Pakistan', iso:'PK', slug:'pakistan', desc:'Markhor, Urial, Blauschaf, Steinbock'},
-        {name:'Tadschikistan', iso:'TJ', slug:'tadschikistan', desc:'Markhor, Steinbock, Marco-Polo-Argali, Urial, Schwarzwild / Keiler'},
+        {name:'Asiat. Russland', iso:'RU', slug:'russland-asien'},
+        {name:'Iran', iso:'IR', slug:'iran'},
+        {name:'Kasachstan', iso:'KZ', slug:'kasachstan'},
+        {name:'Kirgisien', iso:'KG', slug:'kirgisistan'},
+        {name:'Mongolei', iso:'MN', slug:'mongolei'},
+        {name:'Nepal', iso:'NP', slug:'nepal'},
+        {name:'Pakistan', iso:'PK', slug:'pakistan'},
+        {name:'Tadschikistan', iso:'TJ', slug:'tadschikistan'},
         {name:'Weitere Länder (Asien)…', iso:null}
       ],
       'AF': [
-        {name:'Äthiopien', iso:'ET', slug:'aethiopien', desc:'Bergnyala'},
-        {name:'Botswana', iso:'BW', slug:'botswana', desc:'Elefant, Büffel'},
-        {name:'Kamerun', iso:'CM', slug:'kamerun', desc:'Riesen-Elenantilope / Lord Derby Eland, Bongo'},
-        {name:'Kongo', iso:'CG', slug:'kongo', desc:'Bongo'},
-        {name:'Mauretanien', iso:'MR', slug:'mauretanien', desc:'Warzenschwein, Plainsgame'},
-        {name:'Mauritius', iso:'MU', slug:'mauritius', desc:'Rusahirsch, Schwarzwild / Keiler'},
-        {name:'Mosambik', iso:'MZ', slug:'mosambik', desc:'Büffel, Rappenantilope, Plainsgame'},
-        {name:'Namibia', iso:'NA', slug:'namibia', desc:'Leopard, Gepard, Kudu, Oryx, Springbock'},
-        {name:'Sambia', iso:'ZM', slug:'sambia', desc:'Büffel, Löwe, Leopard, Plainsgame'},
-        {name:'Simbabwe', iso:'ZW', slug:'simbabwe', desc:'Büffel, Elefant, Leopard, Löwe, Kudu'},
-        {name:'Südafrika', iso:'ZA', slug:'suedafrika', desc:'Büffel, Kudu, Nyala, Buschbock, Plainsgame'},
-        {name:'Tansania', iso:'TZ', slug:'tansania', desc:'Büffel, Löwe, Leopard, Elefant, Kudu'},
-        {name:'Uganda', iso:'UG', slug:'uganda', desc:'Büffel, Sitatunga'},
+        {name:'Äthiopien', iso:'ET', slug:'aethiopien'},
+        {name:'Botswana', iso:'BW', slug:'botswana'},
+        {name:'Kamerun', iso:'CM', slug:'kamerun'},
+        {name:'Kongo', iso:'CG', slug:'kongo'},
+        {name:'Mauretanien', iso:'MR', slug:'mauretanien'},
+        {name:'Mauritius', iso:'MU', slug:'mauritius'},
+        {name:'Mosambik', iso:'MZ', slug:'mosambik'},
+        {name:'Namibia', iso:'NA', slug:'namibia'},
+        {name:'Sambia', iso:'ZM', slug:'sambia'},
+        {name:'Simbabwe', iso:'ZW', slug:'simbabwe'},
+        {name:'Südafrika', iso:'ZA', slug:'suedafrika'},
+        {name:'Tansania', iso:'TZ', slug:'tansania'},
+        {name:'Uganda', iso:'UG', slug:'uganda'},
         {name:'Weitere Länder (Afrika)…', iso:null}
       ],
       'AMERIKA': [
-        {name:'Alaska', iso:'US-AK', slug:'alaska', desc:'Braunbär, Dall-Schaf, Elch, Schneeziege'},
-        {name:'Argentinien', iso:'AR', slug:'argentinien', desc:'Rothirsch, Hirschziegenantilope, Taube'},
-        {name:'Chile', iso:'CL', slug:'chile', desc:'Rothirsch'},
-        {name:'Grönland', iso:'GL', slug:'groenland', desc:'Moschusochse, Karibu'},
-        {name:'Kanada', iso:'CA', slug:'kanada', desc:'Eisbär / Polarbär, Schwarzbär, Elch, Dall-Schaf, Steinschaf'},
-        {name:'Mexiko', iso:'MX', slug:'mexiko', desc:'Wüsten-Dickhornschaf / Desert Bighorn'},
-        {name:'USA', iso:'US', slug:'usa', desc:'Amerikanischer Bison'},
+        {name:'Alaska', iso:'US-AK', slug:'alaska'},
+        {name:'Argentinien', iso:'AR', slug:'argentinien'},
+        {name:'Chile', iso:'CL', slug:'chile'},
+        {name:'Grönland', iso:'GL', slug:'groenland'},
+        {name:'Kanada', iso:'CA', slug:'kanada'},
+        {name:'Mexiko', iso:'MX', slug:'mexiko'},
+        {name:'USA', iso:'US', slug:'usa'},
         {name:'Weitere Länder (Amerika)…', iso:null}
       ],
       'OC': [
-        {name:'Australien', iso:'AU', slug:'australien', desc:'Wasserbüffel'},
-        {name:'Neuseeland', iso:'NZ', slug:'neuseeland', desc:'Tahr, Wapiti, Rothirsch'},
+        {name:'Australien', iso:'AU', slug:'australien'},
+        {name:'Neuseeland', iso:'NZ', slug:'neuseeland'},
         {name:'Weitere Länder (Ozeanien)…', iso:null}
       ]
     };
@@ -295,7 +295,8 @@
     // === Strukturierte Tierdaten pro Land =================================
     // Pro Land eine Liste von Tieren mit { name, img }.
     // name MUSS exakt dem Wildarten-Namen in Webflow entsprechen (für wild_equal).
-    // Länder ohne Eintrag hier nutzen weiterhin desc + Platzhalterbild (Fallback).
+    // Jedes Land in BUSINESS MUSS hier einen Eintrag haben. Fehlt er, wird die
+    // Galerie ausgeblendet - es gibt keinen Fallback mehr.
     var ANIMAL_DATA = {
       'BG': [
         { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' },
@@ -686,7 +687,7 @@
     var isoDataMap = {};
     Object.values(BUSINESS).forEach(function(list) {
         list.forEach(function(c) {
-            if(c.iso) isoDataMap[c.iso] = { name: c.name, desc: c.desc, img: PLACEHOLDER_IMG };
+            if(c.iso) isoDataMap[c.iso] = { name: c.name, img: PLACEHOLDER_IMG };
         });
     });
 
@@ -1131,27 +1132,17 @@
         var animalInfo = panel.querySelector('.jk-animal-info');
         if (!animalInfo) return;
 
+        // Kein Eintrag oder leere Liste (z. B. Australien): Galerie ausblenden.
+        // ANIMAL_DATA deckt alle Laender ab. Ein fehlender Eintrag ist ein Fehler
+        // und darf keine Platzhalter-Kacheln mit toten Filter-Links erzeugen.
         var structured = ANIMAL_DATA[iso];
-        var items;
-        if (structured && !structured.length) {
-            // Land ohne Galerie-Tiere (z. B. Australien): Galerie ausblenden
+        if (!structured || !structured.length) {
             animalInfo.classList.remove('jk-show');
             return;
         }
-        if (structured && structured.length) {
-            // Strukturierte Daten vorhanden (z. B. Polen): echtes Bild + Filter-Link
-            items = structured.map(function(a) {
-                return { name: a.name, img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
-            });
-        } else {
-            // Fallback: desc-String + Platzhalterbild + Filter-Link (best effort)
-            var data = isoDataMap[iso];
-            if (!data) return;
-            var animalNames = (data.desc || 'Premium Jagd').split(',').map(function(s){ return s.trim(); });
-            items = animalNames.map(function(name) {
-                return { name: name, img: PLACEHOLDER_IMG, href: buildAnimalUrl(iso, { name: name }) };
-            });
-        }
+        var items = structured.map(function(a) {
+            return { name: a.name, img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
+        });
 
         var count = items.length;
         var galleryHtml = '';
