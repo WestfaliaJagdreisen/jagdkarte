@@ -1,4 +1,4 @@
-// Version: 20260821_v73_kasachstan_wildarten
+// Version: 20260827_v74_kirgisistan_marco_polo
 (function () {
   var retryCount = 0;
   function init() {
@@ -472,6 +472,7 @@
       ],
       'KG': [
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
+        { name: 'Marco-Polo-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
         { name: 'Tien Shan Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fd9a6b55d253ee6a450b_tien-shan-argali-ovis-ammon-karelini-p-500.jpg' },
         { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' },
         { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a870d7a14e4b10be7ee164a_AdobeStock_1395816711_Preview-p-500.jpg' }
