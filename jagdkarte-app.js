@@ -1,4 +1,4 @@
-// Version: 20260827_v74_kirgisistan_marco_polo
+// Version: 20260902_v75_locale_en
 (function () {
   var retryCount = 0;
   function init() {
@@ -21,7 +21,204 @@
     }
 
     var SPARKS = window.JAGDKARTE_SPARKS || {};
-    var names = {EU:'Europa',AS:'Asien',AF:'Afrika',NA:'Nordamerika',SA:'Südamerika',OC:'Ozeanien'};
+
+    // === Locale ===========================================================
+    // Die Karte laeuft auf /jagdlaender (DE) und /en/hunting-countries (EN)
+    // mit derselben Datei. Pfade, Anzeigetexte und CMS-Namen haengen am
+    // Locale. Die versteckten Datenquellen (#reisen-data, #laender-data)
+    // liefern auf der EN-Seite englische Namen und Slugs -- ausser
+    // .rd-wildart (PlainText, nicht uebersetzt): das bleibt deutsch.
+    var _p    = window.location.pathname;
+    var IS_EN = (_p === '/en' || _p.indexOf('/en/') === 0);
+
+    var LAENDER_BASE = IS_EN ? '/en/countries/' : '/laender/';
+    var PRODUKT_BASE = IS_EN ? '/en/hunts/'     : '/jagdreisen/';
+    var REISEN_BASE  = IS_EN ? '/en/hunts'      : '/jagdreisen';
+    var ANFRAGE_BASE = IS_EN ? '/en/enquiry'    : '/anfrage';
+
+    var T = IS_EN ? {
+      cont:      {EU:'Europe', AS:'Asia', AF:'Africa', NA:'North America', SA:'South America', OC:'Oceania'},
+      contTitle: {EU:'Europe', AS:'Asia', AF:'Africa', NA:'Americas', SA:'Americas', OC:'Oceania'},
+      contItems: [['EU','Europe'],['AS','Asia'],['AF','Africa'],['NA','Americas'],['OC','Oceania']],
+      continents: 'Continents',
+      eyebrow:   '\u2014 The world is wide \u2014',
+      headline:  'Where will it take you?',
+      sub:       'Choose your continent and start your journey',
+      back:      '\u2190 Back to the world',
+      hintTouch: 'Tap a continent',
+      hintHover: 'Hover over a continent',
+      more:      'Other countries ({kont})\u2026'
+    } : {
+      cont:      {EU:'Europa', AS:'Asien', AF:'Afrika', NA:'Nordamerika', SA:'Südamerika', OC:'Ozeanien'},
+      contTitle: {EU:'Europa', AS:'Asien', AF:'Afrika', NA:'Amerika', SA:'Amerika', OC:'Ozeanien'},
+      contItems: [['EU','Europa'],['AS','Asien'],['AF','Afrika'],['NA','Amerika'],['OC','Ozeanien']],
+      continents: 'Kontinente',
+      eyebrow:   '\u2014 Die Welt ist weit \u2014',
+      headline:  'Wohin zieht es Sie?',
+      sub:       'Wählen Sie Ihren Kontinent und starten Sie Ihre Reise',
+      back:      '\u2190 Zurück zur Welt',
+      hintTouch: 'Tippen Sie auf einen Kontinent',
+      hintHover: 'Fahren Sie über einen Kontinent',
+      more:      'Weitere Länder ({kont})\u2026'
+    };
+    var names = T.cont;
+
+    // Deutscher CMS-Name (Sammlung Laender) -> englischer Name + Slug.
+    // Quelle: CMS, Locale en, Stand 2026-09-02. 55 Eintraege.
+    var LAND_EN = {
+        'USA': { name: 'USA', slug: 'usa' },
+        'Lettland': { name: 'Latvia', slug: 'latvia' },
+        'Schweden': { name: 'Sweden', slug: 'sweden' },
+        'Frankreich': { name: 'France', slug: 'france' },
+        'Chile': { name: 'Chile', slug: 'chile' },
+        'Deutschland': { name: 'Germany', slug: 'germany' },
+        'Kongo': { name: 'Republic of the Congo', slug: 'congo' },
+        'Alaska': { name: 'Alaska', slug: 'alaska' },
+        'Neuseeland': { name: 'New Zealand', slug: 'new-zealand' },
+        'Australien': { name: 'Australia', slug: 'australia' },
+        'Mexiko': { name: 'Mexico', slug: 'mexico' },
+        'Kanada': { name: 'Canada', slug: 'canada' },
+        'Grönland': { name: 'Greenland', slug: 'greenland' },
+        'Argentinien': { name: 'Argentina', slug: 'argentina' },
+        'Uganda': { name: 'Uganda', slug: 'uganda' },
+        'Tansania': { name: 'Tanzania', slug: 'tanzania' },
+        'Südafrika': { name: 'South Africa', slug: 'south-africa' },
+        'Simbabwe': { name: 'Zimbabwe', slug: 'zimbabwe' },
+        'Sambia': { name: 'Zambia', slug: 'zambia' },
+        'Namibia': { name: 'Namibia', slug: 'namibia' },
+        'Mosambik': { name: 'Mozambique', slug: 'mozambique' },
+        'Mauritius': { name: 'Mauritius', slug: 'mauritius' },
+        'Mauretanien': { name: 'Mauritania', slug: 'mauritania' },
+        'Kamerun': { name: 'Cameroon', slug: 'cameroon' },
+        'Botswana': { name: 'Botswana', slug: 'botswana' },
+        'Äthiopien': { name: 'Ethiopia', slug: 'ethiopia' },
+        'Russland Asien': { name: 'Russia (Asia)', slug: 'russia-asia' },
+        'Tadschikistan': { name: 'Tajikistan', slug: 'tajikistan' },
+        'Pakistan': { name: 'Pakistan', slug: 'pakistan' },
+        'Nepal': { name: 'Nepal', slug: 'nepal' },
+        'Mongolei': { name: 'Mongolia', slug: 'mongolia' },
+        'Kirgisistan': { name: 'Kyrgyzstan', slug: 'kyrgyzstan' },
+        'Kasachstan': { name: 'Kazakhstan', slug: 'kazakhstan' },
+        'Iran': { name: 'Iran', slug: 'iran' },
+        'Ungarn': { name: 'Hungary', slug: 'hungary' },
+        'Türkei': { name: 'Turkey', slug: 'turkey' },
+        'Tschechien': { name: 'Czech Republic', slug: 'czech-republic' },
+        'Süd-England': { name: 'Southern England', slug: 'southern-england' },
+        'Spanien': { name: 'Spain', slug: 'spain' },
+        'Slowenien': { name: 'Slovenia', slug: 'slovenia' },
+        'Slowakei': { name: 'Slovakia', slug: 'slovakia' },
+        'Serbien': { name: 'Serbia', slug: 'serbia' },
+        'Schottland': { name: 'Scotland', slug: 'scotland' },
+        'Russland Europa': { name: 'Russia (Europe)', slug: 'russia-europe' },
+        'Rumänien': { name: 'Romania', slug: 'romania' },
+        'Österreich': { name: 'Austria', slug: 'austria' },
+        'Norwegen': { name: 'Norway', slug: 'norway' },
+        'Kroatien': { name: 'Croatia', slug: 'croatia' },
+        'Irland': { name: 'Ireland', slug: 'ireland' },
+        'Griechenland': { name: 'Greece', slug: 'greece' },
+        'Finnland': { name: 'Finland', slug: 'finland' },
+        'Estland': { name: 'Estonia', slug: 'estonia' },
+        'Bulgarien': { name: 'Bulgaria', slug: 'bulgaria' },
+        'Weißrussland': { name: 'Belarus', slug: 'belarus' },
+        'Polen': { name: 'Poland', slug: 'poland' }
+    };
+    // Deutscher Wildart-Name -> englischer Name (Sammlung Wildarten, 89).
+    var WILD_EN = {
+        'Amerikanischer Bison': 'American Bison',
+        'Kahlwild': 'Red Hind',
+        'Pinselohrschwein': 'Red River Hog',
+        'Ducker': 'Duiker',
+        'Python': 'Python',
+        'Giraffe': 'Giraffe',
+        'Kirk-Dikdik': 'Kirk\'s Dik-dik',
+        'Kleiner Kudu': 'Lesser Kudu',
+        'Gerenuk': 'Gerenuk',
+        'Vielfraß': 'Wolverine',
+        'Davidshirsch': 'Pere David\'s Deer',
+        'Axishirsch': 'Axis Deer',
+        'Nilpferd': 'Hippopotamus',
+        'Krokodil': 'Crocodile',
+        'Sibirischer Steinbock': 'Siberian Ibex',
+        'Rothuhn': 'Red-legged Partridge',
+        'Waldschnepfe': 'Woodcock',
+        'Schneehase': 'Mountain Hare',
+        'Grouse': 'Grouse',
+        'Eland': 'Eland',
+        'Mähnenschaf': 'Barbary Sheep',
+        'Gepard': 'Cheetah',
+        'Sitatunga': 'Sitatunga',
+        'Kri-Kri': 'Kri-Kri Ibex',
+        'Rappenantilope': 'Sable Antelope',
+        'Buschbock': 'Bushbuck',
+        'Nyala': 'Nyala',
+        'Springbock': 'Springbok',
+        'Hirschziegenantilope': 'Blackbuck',
+        'Wasserbüffel': 'Water Buffalo',
+        'Kamtschatka-Braunbär': 'Kamchatka Brown Bear',
+        'Braunbär': 'Brown Bear',
+        'Plainsgame': 'Plains Game',
+        'Federwild': 'Wingshooting',
+        'Niederwild': 'Small Game',
+        'Steinschaf': 'Stone Sheep',
+        'Schneeschaf': 'Snow Sheep',
+        'Argali': 'Argali',
+        'Altai-Argali': 'Altai Argali',
+        'Tien Shan Argali': 'Tien Shan Argali',
+        'Wolf': 'Wolf',
+        'Lord Derby Eland': 'Lord Derby Eland',
+        'Warzenschwein': 'Warthog',
+        'Taube': 'Dove and Pigeon',
+        'Puma': 'Puma',
+        'Schwarzbär': 'Black Bear',
+        'Eisbär': 'Polar Bear',
+        'Desert Bighorn': 'Desert Bighorn',
+        'Bezoar': 'Bezoar Ibex',
+        'Fasan': 'Pheasant',
+        'Birkhahn': 'Black Grouse',
+        'Auerhahn': 'Capercaillie',
+        'Iberischer Steinbock': 'Iberian Ibex',
+        'Dall-Schaf': 'Dall Sheep',
+        'Chinesisches Wasserreh': 'Chinese Water Deer',
+        'Kudu': 'Greater Kudu',
+        'Oryx': 'Gemsbok',
+        'Wapiti': 'Elk',
+        'Bergnyala': 'Mountain Nyala',
+        'Bongo': 'Bongo',
+        'Leopard': 'Leopard',
+        'Nashorn': 'Rhinoceros',
+        'Elefant': 'Elephant',
+        'Büffel': 'Buffalo',
+        'Löwe': 'Lion',
+        'Gams': 'Chamois',
+        'Schneeziege': 'Mountain Goat',
+        'Tahr': 'Tahr',
+        'Markhor': 'Markhor',
+        'Steinbock': 'Ibex',
+        'Blauschaf': 'Blue Sheep',
+        'Tur': 'Tur',
+        'Urial': 'Urial',
+        'Marco-Polo-Argali': 'Marco Polo Sheep',
+        'Moschusochse': 'Muskox',
+        'Wisent': 'European Bison',
+        'Elch': 'Moose',
+        'Karibu': 'Caribou',
+        'Rusahirsch': 'Rusa Deer',
+        'Sikahirsch': 'Sika Deer',
+        'Maral': 'Maral',
+        'Muntjak': 'Muntjac',
+        'Sibirischer Rehbock': 'Siberian Roebuck',
+        'Weißwedelhirsch': 'Whitetail Deer',
+        'Schwarzwild': 'Wild Boar',
+        'Rothirsch': 'Red Stag',
+        'Rehbock': 'Roebuck',
+        'Muffel': 'Mouflon',
+        'Damhirsch': 'Fallow Deer'
+    };
+    var JAGDART_EN = { 'Drückjagd': 'Driven Hunt', 'Pirsch': 'Spot and Stalk', 'Ansitz': 'Stand Hunting' };
+
+    function wildLabel(n)    { return IS_EN ? (WILD_EN[n] || n) : n; }
+    function jagdartLabel(n) { return IS_EN ? (JAGDART_EN[n] || n) : n; }
+    // =====================================================================
     var NS = 'http://www.w3.org/2000/svg';
 
     var usIndex = DATA.findIndex(function(c) { return c.iso === 'US'; });
@@ -73,7 +270,7 @@
         {name:'Türkei', iso:'TR', slug:'tuerkei'},
         {name:'Ungarn', iso:'HU', slug:'ungarn'},
         {name:'Weißrussland', iso:'BY', slug:'weissrussland'},
-        {name:'Weitere Länder (Europa)…', iso:null}
+        {name:'Weitere Länder (Europa)…', iso:null, more:'EU'}
       ],
       'AS': [
         {name:'Asiat. Russland', iso:'RU', slug:'russland-asien'},
@@ -84,7 +281,7 @@
         {name:'Nepal', iso:'NP', slug:'nepal'},
         {name:'Pakistan', iso:'PK', slug:'pakistan'},
         {name:'Tadschikistan', iso:'TJ', slug:'tadschikistan'},
-        {name:'Weitere Länder (Asien)…', iso:null}
+        {name:'Weitere Länder (Asien)…', iso:null, more:'AS'}
       ],
       'AF': [
         {name:'Äthiopien', iso:'ET', slug:'aethiopien'},
@@ -100,7 +297,7 @@
         {name:'Südafrika', iso:'ZA', slug:'suedafrika'},
         {name:'Tansania', iso:'TZ', slug:'tansania'},
         {name:'Uganda', iso:'UG', slug:'uganda'},
-        {name:'Weitere Länder (Afrika)…', iso:null}
+        {name:'Weitere Länder (Afrika)…', iso:null, more:'AF'}
       ],
       'AMERIKA': [
         {name:'Alaska', iso:'US-AK', slug:'alaska'},
@@ -110,19 +307,15 @@
         {name:'Kanada', iso:'CA', slug:'kanada'},
         {name:'Mexiko', iso:'MX', slug:'mexiko'},
         {name:'USA', iso:'US', slug:'usa'},
-        {name:'Weitere Länder (Amerika)…', iso:null}
+        {name:'Weitere Länder (Amerika)…', iso:null, more:'NA'}
       ],
       'OC': [
         {name:'Australien', iso:'AU', slug:'australien'},
         {name:'Neuseeland', iso:'NZ', slug:'neuseeland'},
-        {name:'Weitere Länder (Ozeanien)…', iso:null}
+        {name:'Weitere Länder (Ozeanien)…', iso:null, more:'OC'}
       ]
     };
 
-    // === Länderseiten-Navigation =========================================
-    // Basis-Pfad zu den CMS-Länderseiten. Relativ -> funktioniert auf
-    // Vorschau-Domain UND echter Domain.
-    var LAENDER_BASE = '/laender/';
     // === Anzeigename -> CMS-Name =========================================
     // Nur noetig, wo der Kartentext bewusst vom Namen in der Sammlung
     // "Laender" abweicht. Der angezeigte Text bleibt unveraendert;
@@ -134,12 +327,29 @@
         'Asiat. Russland': 'Russland Asien',
         'Europ. Russland': 'Russland Europa'
     };
-    function cmsLand(n) { return LAND_ALIAS[n] || n; }
+    // Deutscher CMS-Name (nach Alias). Bleibt auch auf EN deutsch --
+    // gebraucht als Schluessel fuer LAND_EN.
+    function landDe(n) { return LAND_ALIAS[n] || n; }
+    // Name, wie er in den Datenquellen der aktuellen Seite steht
+    // (DE: deutsch, EN: englisch). Fuer Abgleich und land_equal.
+    function cmsLand(n) {
+        var d = landDe(n);
+        return (IS_EN && LAND_EN[d]) ? LAND_EN[d].name : d;
+    }
+    // Anzeigetext in Liste und Tooltip.
+    function landLabel(c) {
+        if (!c.iso) return T.more.replace('{kont}', T.contTitle[c.more] || '');
+        if (!IS_EN) return c.name;               // DE: Kartentext bleibt wie in BUSINESS
+        var d = landDe(c.name);
+        return LAND_EN[d] ? LAND_EN[d].name : c.name;
+    }
     // iso -> slug Karte (aus BUSINESS aufgebaut)
     var isoToSlug = {};
     Object.values(BUSINESS).forEach(function(list) {
         list.forEach(function(c) {
-            if (c.iso && c.slug) isoToSlug[c.iso] = c.slug;
+            if (!c.iso || !c.slug) return;
+            var d = landDe(c.name);
+            isoToSlug[c.iso] = (IS_EN && LAND_EN[d]) ? LAND_EN[d].slug : c.slug;
         });
     });
     // === Sanktionierte Länder (EU-Sanktionen) ============================
@@ -242,7 +452,7 @@
         var imLand = getProdukte().filter(function (p) { return p.land === landName; });
         if (imLand.length !== 1) return null;
         if (hatLaenderText(landName)) return null;
-        return '/jagdreviere/' + imLand[0].slug;
+        return PRODUKT_BASE + imLand[0].slug;
     }
 
     // Laender, deren einziges Produkt tatsaechlich alle gelisteten Arten
@@ -261,10 +471,11 @@
         if (!imLand.length) return null;
         // Ausnahme: ein Produkt, das alle Arten abdeckt
         if (imLand.length === 1 && ALLE_ARTEN_ABGEDECKT[landName]) {
-            return '/jagdreviere/' + imLand[0].slug;
+            return PRODUKT_BASE + imLand[0].slug;
         }
+        // wildName ist der DEUTSCHE Name: .rd-wildart ist auch auf EN deutsch.
         var passend = imLand.filter(function (p) { return p.wildart === wildName; });
-        if (passend.length === 1) return '/jagdreviere/' + passend[0].slug;
+        if (passend.length === 1) return PRODUKT_BASE + passend[0].slug;
         return null;
     }
     // =====================================================================
@@ -656,10 +867,6 @@
         { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' }
       ]
     };
-    // Basis-Pfad zur Reisen-Filterseite
-    var REISEN_BASE = '/reisen';
-    // Basis-Pfad zur Anfrage-Seite
-    var ANFRAGE_BASE = '/anfrage';
     // iso -> Land-Name Karte (für land_equal), aus BUSINESS aufgebaut
     var isoToName = {};
     Object.values(BUSINESS).forEach(function(list) {
@@ -672,13 +879,16 @@
     function buildAnimalUrl(iso, item) {
         var landName = cmsLand(isoToName[iso] || '');
         var key = (item && item.filter === 'jagdart') ? 'jagdart_equal' : 'wild_equal';
-        var value = (item && item.name) ? item.name : item;
-        // Genau ein passendes Produkt -> /reisen überspringen.
+        var valueDe = (item && item.name) ? item.name : item;
+        // Genau ein passendes Produkt -> Filterseite überspringen.
         // Nur für Wildarten, nicht für Jagdart-Kacheln (z. B. Drückjagd).
         if (key === 'wild_equal') {
-            var direct = direktLinkArt(landName, value);
+            var direct = direktLinkArt(landName, valueDe);
             if (direct) return direct;
         }
+        // Filterwert in der Sprache der Zielseite (Finsweet filtert nach
+        // den lokalisierten Referenznamen).
+        var value = (key === 'jagdart_equal') ? jagdartLabel(valueDe) : wildLabel(valueDe);
         return REISEN_BASE +
                '?land_equal=' + encodeURIComponent(landName) +
                '&' + key + '=' + encodeURIComponent(value);
@@ -688,7 +898,7 @@
     var isoDataMap = {};
     Object.values(BUSINESS).forEach(function(list) {
         list.forEach(function(c) {
-            if(c.iso) isoDataMap[c.iso] = { name: c.name, img: PLACEHOLDER_IMG };
+            if(c.iso) isoDataMap[c.iso] = { name: landLabel(c), img: PLACEHOLDER_IMG };
         });
     });
 
@@ -703,7 +913,7 @@
       return set;
     }
 
-    var CONT_TITLE = {EU:'Europa', AS:'Asien', AF:'Afrika', NA:'Amerika', SA:'Amerika', OC:'Ozeanien'};
+    var CONT_TITLE = T.contTitle;
 
     var CAMERAS = {
       'EU': { cx: 580, cy: 120, scale: 1.4, dx: 0, dy: 0, pTop: '15%', pHeight: '88%' },
@@ -733,20 +943,20 @@
       'OC': { focusX: 28, focusY: 35, scale: 1.8 }
     };
     var CONT_CENTER = {
-      'EU': { cx: 530, cy: 150, name: 'Europa' },
-      'AS': { cx: 760, cy: 175, name: 'Asien' },
-      'AF': { cx: 520, cy: 250, name: 'Afrika' },
-      'NA': { cx: 250, cy: 220, name: 'Amerika' },
-      'SA': { cx: 250, cy: 220, name: 'Amerika' },
-      'OC': { cx: 890, cy: 320, name: 'Ozeanien' }
+      'EU': { cx: 530, cy: 150, name: T.contTitle.EU },
+      'AS': { cx: 760, cy: 175, name: T.contTitle.AS },
+      'AF': { cx: 520, cy: 250, name: T.contTitle.AF },
+      'NA': { cx: 250, cy: 220, name: T.contTitle.NA },
+      'SA': { cx: 250, cy: 220, name: T.contTitle.SA },
+      'OC': { cx: 890, cy: 320, name: T.contTitle.OC }
     };
 
     mount.innerHTML =
       '<div class="jk-stage">' +
-        '<div class="jk-eyebrow">— Die Welt ist weit —</div>' +
-        '<div class="jk-headline">Wohin zieht es Sie?</div>' +
-        '<div class="jk-sub">Wählen Sie Ihren Kontinent und starten Sie Ihre Reise</div>' +
-        '<div class="jk-back">← Zurück zur Welt</div>' +
+        '<div class="jk-eyebrow">' + T.eyebrow + '</div>' +
+        '<div class="jk-headline">' + T.headline + '</div>' +
+        '<div class="jk-sub">' + T.sub + '</div>' +
+        '<div class="jk-back">' + T.back + '</div>' +
         '<div class="jk-viewport"><div class="jk-rotor">' +
           '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg1"></svg></div>' +
           '<div class="jk-globe"><svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="jk-svg2"></svg></div>' +
@@ -916,14 +1126,14 @@
       noAutoSpin = isTouchLayout();
       stageEl.classList.toggle('jk-touch', noAutoSpin);
       if (svg2) svg2.parentNode.style.display = noAutoSpin ? 'none' : '';
-      if (hint) hint.textContent = noAutoSpin ? 'Tippen Sie auf einen Kontinent' : 'Fahren Sie über einen Kontinent';
+      if (hint) hint.textContent = noAutoSpin ? T.hintTouch : T.hintHover;
     }
     // Touch-Layout: Kontinent-Liste unter der Weltkarte (tippbar)
     var contList = mount.querySelector('.jk-cont-list');
     if (contList) {
-      var CONT_ITEMS = [['EU','Europa'],['AS','Asien'],['AF','Afrika'],['NA','Amerika'],['OC','Ozeanien']];
+      var CONT_ITEMS = T.contItems;
       contList.innerHTML =
-        '<h3 class="jk-panel-title jk-cl-title">Kontinente</h3>' +
+        '<h3 class="jk-panel-title jk-cl-title">' + T.continents + '</h3>' +
         '<div class="jk-cl-items">' +
         CONT_ITEMS.map(function(c){
           return '<div class="jk-cl-item" data-cont="' + c[0] + '">' + c[1] + '</div>';
@@ -1142,15 +1352,17 @@
             return;
         }
         var items = structured.map(function(a) {
-            return { name: a.name, img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
+            var isJagdart = a.filter === 'jagdart';
+            return { name: a.name, label: isJagdart ? jagdartLabel(a.name) : wildLabel(a.name),
+                     img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
         });
 
         var count = items.length;
         var galleryHtml = '';
         items.forEach(function(it) {
             galleryHtml += '<a class="jk-animal-item" href="' + it.href + '" data-iso="' + iso + '" data-animal="' + it.name + '">' +
-                             '<img class="jk-animal-img" src="' + it.img + '" alt="' + it.name + '" />' +
-                             '<div class="jk-animal-name">' + it.name + '</div>' +
+                             '<img class="jk-animal-img" src="' + it.img + '" alt="' + it.label + '" />' +
+                             '<div class="jk-animal-name">' + it.label + '</div>' +
                            '</a>';
         });
 
@@ -1251,7 +1463,7 @@
       var listHtml = '<h3 class="jk-panel-title">' + (CONT_TITLE[cont] || names[cont]) + '</h3><div class="jk-list-area"><ul class="jk-country-list' + (list.length <= 8 ? ' jk-single-col' : '') + '">';
       list.forEach(function(c) {
         var cls = c.iso ? '' : ' class="jk-more"';
-        listHtml += '<li data-iso="' + (c.iso || '') + '"' + cls + '>' + c.name + '</li>';
+        listHtml += '<li data-iso="' + (c.iso || '') + '"' + cls + '>' + landLabel(c) + '</li>';
       });
       listHtml += '</ul></div>';
       listHtml += '<div class="jk-animal-info"><div class="jk-animal-gallery"></div></div>';
