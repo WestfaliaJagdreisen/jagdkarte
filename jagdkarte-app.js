@@ -1,4 +1,4 @@
-// Version: 20260902_v76_en_sort_headline
+// Version: 20260902_v77_wildart_bilingual
 (function () {
   var retryCount = 0;
   function init() {
@@ -473,8 +473,11 @@
         if (imLand.length === 1 && ALLE_ARTEN_ABGEDECKT[landName]) {
             return PRODUKT_BASE + imLand[0].slug;
         }
-        // wildName ist der DEUTSCHE Name: .rd-wildart ist auch auf EN deutsch.
-        var passend = imLand.filter(function (p) { return p.wildart === wildName; });
+        // wildName ist der deutsche Name aus ANIMAL_DATA. .rd-wildart ist
+        // seit 2026-09-02 auf EN uebersetzt (Produkte EN-Texte), kann aber
+        // bei noch nicht uebersetzten Produkten deutsch bleiben -> beide pruefen.
+        var wildEn = wildLabel(wildName);
+        var passend = imLand.filter(function (p) { return p.wildart === wildName || p.wildart === wildEn; });
         if (passend.length === 1) return PRODUKT_BASE + passend[0].slug;
         return null;
     }
