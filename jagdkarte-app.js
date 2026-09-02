@@ -1,4 +1,4 @@
-// Version: 20260902_v75_locale_en
+// Version: 20260902_v76_en_sort_headline
 (function () {
   var retryCount = 0;
   function init() {
@@ -42,7 +42,7 @@
       contItems: [['EU','Europe'],['AS','Asia'],['AF','Africa'],['NA','Americas'],['OC','Oceania']],
       continents: 'Continents',
       eyebrow:   '\u2014 The world is wide \u2014',
-      headline:  'Where will it take you?',
+      headline:  'Where does the hunt take you?',
       sub:       'Choose your continent and start your journey',
       back:      '\u2190 Back to the world',
       hintTouch: 'Tap a continent',
@@ -902,9 +902,22 @@
         });
     });
 
+    // BUSINESS ist nach deutschem Namen sortiert. Auf EN wird nach dem
+    // englischen Anzeigenamen sortiert; der "Other countries"-Platzhalter
+    // (iso null) bleibt am Ende. Ergebnis wird je Kontinent gecacht.
+    var _listCache = {};
     function getBusinessList(cont) {
-      if (cont === 'NA' || cont === 'SA') return BUSINESS['AMERIKA'];
-      return BUSINESS[cont] || [];
+      var key = (cont === 'NA' || cont === 'SA') ? 'AMERIKA' : cont;
+      var raw = BUSINESS[key] || [];
+      if (!IS_EN) return raw;
+      if (_listCache[key]) return _listCache[key];
+      var laender = raw.filter(function (c) { return c.iso; });
+      var rest    = raw.filter(function (c) { return !c.iso; });
+      laender.sort(function (a, b) {
+        return landLabel(a).localeCompare(landLabel(b), 'en');
+      });
+      _listCache[key] = laender.concat(rest);
+      return _listCache[key];
     }
     function getServiceIsoSet(cont) {
       var list = getBusinessList(cont);
