@@ -1,4 +1,4 @@
-// Version: 20260910_v79_wildarten_lizenzbilder
+// Version: 20260910_v80_hirschziegenantilope
 (function () {
   var retryCount = 0;
   function init() {
@@ -824,7 +824,7 @@
       ],
       'AR': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
-        { name: 'Hirschziegenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4034d114675ed5aab8d_AdobeStock_1967901745_Preview-p-500.jpeg' },
+        { name: 'Hirschziegenantilope', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2ae0f86a9cb994f7d80d1_hirschziegenantilope-argentinien-suedamerika-jagd-p-500.jpg' },
         { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf3f8c0e87dd5c674f_taube-p-500.jpg' },
         { name: 'Axishirsch', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3c99c3dc9114b5854de_axishirsch-p-500.jpg' },
         { name: 'Davidshirsch', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cab6a258561b6d0874_davidshirsch-p-500.jpg' },
@@ -1688,4 +1688,3 @@
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();
- 
