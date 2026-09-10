@@ -1,4 +1,4 @@
-// Version: 20260902_v77_wildart_bilingual
+// Version: 20260910_v78_gepard_bild_prio_liste
 (function () {
   var retryCount = 0;
   function init() {
@@ -72,7 +72,7 @@
         'Frankreich': { name: 'France', slug: 'france' },
         'Chile': { name: 'Chile', slug: 'chile' },
         'Deutschland': { name: 'Germany', slug: 'germany' },
-        'Kongo': { name: 'Republic of the Congo', slug: 'congo' },
+        'Kongo': { name: 'Congo', slug: 'congo' },
         'Alaska': { name: 'Alaska', slug: 'alaska' },
         'Neuseeland': { name: 'New Zealand', slug: 'new-zealand' },
         'Australien': { name: 'Australia', slug: 'australia' },
@@ -764,7 +764,7 @@
         { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
         { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
-        { name: 'Gepard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71eac2241100fcde5b0c44_AdobeStock_583889140_Preview-p-500.jpeg' },
+        { name: 'Gepard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa266b7c9fc07bcca278971_Gepard-p-500.jpg' },
         { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
       ],
       'ZM': [
@@ -905,21 +905,40 @@
         });
     });
 
-    // BUSINESS ist nach deutschem Namen sortiert. Auf EN wird nach dem
-    // englischen Anzeigenamen sortiert; der "Other countries"-Platzhalter
-    // (iso null) bleibt am Ende. Ergebnis wird je Kontinent gecacht.
+    // Reihenfolge der Laenderliste: Prioritaetslaender zuerst (in dieser
+    // Reihenfolge), alles Uebrige alphabetisch. Schluessel sind ISO-Codes,
+    // damit DE und EN dieselbe Reihenfolge zeigen.
+    var LIST_PRIO = {
+      'EU': ['PL', 'SK', 'ES', 'BY', 'SI', 'GB-SCO', 'TR', 'AT'],
+      'AS': ['KZ', 'TJ', 'KG', 'MN', 'NP'],
+      'AF': ['NA', 'ZW', 'ZA', 'TZ', 'CG']
+    };
+
+    // BUSINESS ist nach deutschem Namen sortiert; der Rest bleibt auf DE in
+    // dieser Reihenfolge und wird auf EN nach dem englischen Anzeigenamen
+    // sortiert. Der "Other countries"-Platzhalter (iso null) bleibt am Ende.
+    // Ergebnis wird je Kontinent gecacht.
     var _listCache = {};
     function getBusinessList(cont) {
       var key = (cont === 'NA' || cont === 'SA') ? 'AMERIKA' : cont;
-      var raw = BUSINESS[key] || [];
-      if (!IS_EN) return raw;
       if (_listCache[key]) return _listCache[key];
-      var laender = raw.filter(function (c) { return c.iso; });
-      var rest    = raw.filter(function (c) { return !c.iso; });
-      laender.sort(function (a, b) {
-        return landLabel(a).localeCompare(landLabel(b), 'en');
+      var raw  = BUSINESS[key] || [];
+      var prio = LIST_PRIO[key] || [];
+      var oben = [];
+      prio.forEach(function (iso) {
+        var hit = raw.filter(function (c) { return c.iso === iso; })[0];
+        if (hit) oben.push(hit);
       });
-      _listCache[key] = laender.concat(rest);
+      var unten = raw.filter(function (c) {
+        return c.iso && prio.indexOf(c.iso) === -1;
+      });
+      var mehr = raw.filter(function (c) { return !c.iso; });
+      if (IS_EN) {
+        unten.sort(function (a, b) {
+          return landLabel(a).localeCompare(landLabel(b), 'en');
+        });
+      }
+      _listCache[key] = oben.concat(unten, mehr);
       return _listCache[key];
     }
     function getServiceIsoSet(cont) {
