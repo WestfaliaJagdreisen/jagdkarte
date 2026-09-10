@@ -1,4 +1,4 @@
-// Version: 20260910_v78_gepard_bild_prio_liste
+// Version: 20260910_v79_wildarten_lizenzbilder
 (function () {
   var retryCount = 0;
   function init() {
@@ -8,9 +8,9 @@
         if (retryCount < 40) { retryCount++; setTimeout(init, 50); }
         return;
     }
-
+ 
     var DATA = window.JAGDKARTE_DATA;
-
+ 
     var hasEH = DATA.some(function(c) { return c.iso === 'EH'; });
     if (!hasEH) {
         DATA.push({ iso: 'EH', cont: 'AF', d: 'M422,191L423,190L425,190L426,190L427,190L428,190L429,189L430,188L430,187L430,186L430,185L431,184L432,184L433,182L434,182L435,180L436,179L436,180L436,181L436,183L436,184L436,185L434,185L433,186L433,188L433,189L433,191L432,191L431,191L429,191L427,191L425,191L423,191Z' });
@@ -19,9 +19,9 @@
     if (!hasXS) {
         DATA.push({ iso: 'XS', cont: 'AF', d: 'M603,228L601,228L600,228L599,227L598,227L597,227L596,227L595,226L594,226L593,226L592,225L591,225L591,224L590,223L589,223L589,222L588,221L588,220L588,219L589,219L590,218L595,217L600,216L605,216L611,217L610,217L609,218L608,218L607,218L606,219L605,219L605,220L605,222L605,223L605,224L605,225L604,226L603,227Z' });
     }
-
+ 
     var SPARKS = window.JAGDKARTE_SPARKS || {};
-
+ 
     // === Locale ===========================================================
     // Die Karte laeuft auf /jagdlaender (DE) und /en/hunting-countries (EN)
     // mit derselben Datei. Pfade, Anzeigetexte und CMS-Namen haengen am
@@ -30,12 +30,12 @@
     // .rd-wildart (PlainText, nicht uebersetzt): das bleibt deutsch.
     var _p    = window.location.pathname;
     var IS_EN = (_p === '/en' || _p.indexOf('/en/') === 0);
-
+ 
     var LAENDER_BASE = IS_EN ? '/en/countries/' : '/laender/';
     var PRODUKT_BASE = IS_EN ? '/en/hunts/'     : '/jagdreisen/';
     var REISEN_BASE  = IS_EN ? '/en/hunts'      : '/jagdreisen';
     var ANFRAGE_BASE = IS_EN ? '/en/enquiry'    : '/anfrage';
-
+ 
     var T = IS_EN ? {
       cont:      {EU:'Europe', AS:'Asia', AF:'Africa', NA:'North America', SA:'South America', OC:'Oceania'},
       contTitle: {EU:'Europe', AS:'Asia', AF:'Africa', NA:'Americas', SA:'Americas', OC:'Oceania'},
@@ -62,7 +62,7 @@
       more:      'Weitere Länder ({kont})\u2026'
     };
     var names = T.cont;
-
+ 
     // Deutscher CMS-Name (Sammlung Laender) -> englischer Name + Slug.
     // Quelle: CMS, Locale en, Stand 2026-09-02. 55 Eintraege.
     var LAND_EN = {
@@ -215,12 +215,12 @@
         'Damhirsch': 'Fallow Deer'
     };
     var JAGDART_EN = { 'Drückjagd': 'Driven Hunt', 'Pirsch': 'Spot and Stalk', 'Ansitz': 'Stand Hunting' };
-
+ 
     function wildLabel(n)    { return IS_EN ? (WILD_EN[n] || n) : n; }
     function jagdartLabel(n) { return IS_EN ? (JAGDART_EN[n] || n) : n; }
     // =====================================================================
     var NS = 'http://www.w3.org/2000/svg';
-
+ 
     var usIndex = DATA.findIndex(function(c) { return c.iso === 'US'; });
     var hasAk = DATA.findIndex(function(c) { return c.iso === 'US-AK'; });
     if (usIndex > -1 && hasAk === -1) {
@@ -239,10 +239,10 @@
         DATA[usIndex].d = mainland.join('');
         DATA.push({ iso: 'US-AK', cont: 'NA', d: alaska.join('') });
     }
-
+ 
     var maUnified = 'M422,191L422,189L423,189L424,188L424,187L424,186L425,185L425,184L426,183L427,183L427,182L428,182L428,181L428,179L429,178L429,178L430,177L431,176L432,175L432,174L433,173L433,173L434,172L436,172L438,171L438,171L440,170L440,169L441,169L442,168L442,167L443,166L442,165L442,164L442,163L443,162L443,161L444,161L444,160L444,159L445,158L446,158L447,157L448,157L449,156L450,156L450,155L451,154L452,153L453,151L453,151L454,150L455,151L455,152L456,152L457,152L458,152L460,152L461,152L462,152L463,152L464,153L464,153L465,155L465,156L465,157L465,158L465,159L467,160L466,160L465,161L464,161L462,161L461,161L461,162L459,162L459,163L459,164L459,165L458,165L457,166L456,166L455,167L454,168L453,168L451,168L450,168L449,168L448,169L447,169L446,170L445,170L445,172L445,173L445,174L445,176L445,177L445,178L443,178L442,178L441,178L439,178L438,178L436,178L436,179L436,180L436,181L436,183L436,184L436,185L434,185L433,186L433,188L433,189L433,191L432,191L431,191L429,191L427,191L425,191L423,191Z';
     var soUnified = 'M599,232L599,231L600,231L601,230L601,229L602,229L603,228L601,228L600,228L599,227L598,227L597,227L596,227L595,226L594,226L593,226L592,225L591,225L591,224L590,223L589,223L589,222L588,221L588,220L588,219L589,219L590,218L595,217L600,216L605,216L611,217L610,217L609,218L608,218L607,218L606,219L605,219L605,220L605,222L605,223L605,224L605,225L604,226L603,227Z';
-
+ 
     var BUSINESS = {
       'EU': [
         {name:'Bulgarien', iso:'BG', slug:'bulgarien'},
@@ -315,7 +315,7 @@
         {name:'Weitere Länder (Ozeanien)…', iso:null, more:'OC'}
       ]
     };
-
+ 
     // === Anzeigename -> CMS-Name =========================================
     // Nur noetig, wo der Kartentext bewusst vom Namen in der Sammlung
     // "Laender" abweicht. Der angezeigte Text bleibt unveraendert;
@@ -366,7 +366,7 @@
         }
     }
     // =====================================================================
-
+ 
 // === Produkt-Verfügbarkeit ===========================================
     // Liest den versteckten CMS-Datenblock (#reisen-data) auf der Seite.
     // Länder ohne veröffentlichtes Produkt führen NICHT auf die (noch leere)
@@ -392,7 +392,7 @@
         if (map._count === 0) return true;
         return !!map[landName.toLowerCase()];
     }
-
+ 
     // === Direktlink: Zwischenseite /reisen ueberspringen ==================
     // Gleiche Regel wie auf der Wildart- und der Laenderseite.
     // Datenquellen auf der Seite:
@@ -421,7 +421,7 @@
         });
         return _produkte;
     }
-
+ 
     // Laender, deren Einleitung im CMS leer ist -> Laenderseite ist eine
     // leere Huelle und wird uebersprungen, sofern es genau ein Produkt gibt.
     var _ohneText = null;
@@ -444,7 +444,7 @@
         if (!(landName in _ohneText)) return true;
         return _ohneText[landName];
     }
-
+ 
     // Klick auf ein Land: nur ueberspringen, wenn genau ein Produkt
     // existiert UND die Laenderseite keinen Einleitungstext hat.
     function direktLinkLand(landName) {
@@ -454,7 +454,7 @@
         if (hatLaenderText(landName)) return null;
         return PRODUKT_BASE + imLand[0].slug;
     }
-
+ 
     // Laender, deren einziges Produkt tatsaechlich alle gelisteten Arten
     // abdeckt. Nur hier darf ohne Wildart-Abgleich verlinkt werden.
     // Namibia: eine Safari, rund 30 bejagbare Arten, Feld "Wildart" =
@@ -463,7 +463,7 @@
     // weg. Muss mit dem Footer-Code der Wildart- und der Laenderseite
     // uebereinstimmen.
     var ALLE_ARTEN_ABGEDECKT = { 'Namibia': true };
-
+ 
     // Klick auf eine Wildart: genau ein passendes Produkt im Land.
     function direktLinkArt(landName, wildName) {
         if (!landName || !wildName) return null;
@@ -483,7 +483,7 @@
     }
     // =====================================================================
     // =====================================================================
-
+ 
     function gotoCountry(iso) {
         if (!iso) return;
         // Sanktionierte Länder: kein Sprung, nur Hinweis. Muss zuerst stehen.
@@ -503,9 +503,9 @@
         window.location.href = LAENDER_BASE + slug;
     }
     // =====================================================================
-
+ 
     var PLACEHOLDER_IMG = 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6a031a630ef91eab1f78673f_Frame%201321316194.png';
-
+ 
     // === Strukturierte Tierdaten pro Land =================================
     // Pro Land eine Liste von Tieren mit { name, img }.
     // name MUSS exakt dem Wildarten-Namen in Webflow entsprechen (für wild_equal).
@@ -533,7 +533,7 @@
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
         { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb3f8c0e87dd5c6602_federwild-p-500.jpg' }
       ],
       'FI': [
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
@@ -544,10 +544,10 @@
         { name: 'Gams', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31500127433dcc539f3efd_Gams-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb3f8c0e87dd5c6602_federwild-p-500.jpg' }
       ],
       'GR': [
-        { name: 'Kri-Kri', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e91fbec4b03c4deaf958_AdobeStock_417276015_Preview-p-500.jpeg' }
+        { name: 'Kri-Kri', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cc535bba064604b6ec_kri-kri-p-500.jpg' }
       ],
       'IE': [
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' }
@@ -574,7 +574,7 @@
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' },
         { name: 'Drückjagd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84306b617ad5354ba3cbbd_drueckjagd-polen-lutowko-hero-p-500.jpg', filter: 'jagdart' }
       ],
       'RO': [
@@ -588,10 +588,10 @@
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
-        { name: 'Grouse', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84566ba5a2a81e48c0bc08_AdobeStock_55761547_Preview-p-500.jpeg' },
-        { name: 'Schneehase', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84567a4951b8b648d76d11_AdobeStock_136086068_Preview-p-500.jpeg' },
-        { name: 'Waldschnepfe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a845691332b9de342b411aa_AdobeStock_243241400_Preview-p-500.jpeg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' },
+        { name: 'Grouse', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb8048c5665b0b1a9c_grouse-p-500.jpg' },
+        { name: 'Schneehase', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ceb5e6b3d6e2a04000_schneehase-p-500.jpg' },
+        { name: 'Waldschnepfe', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3d062afa1f1edcb56c7_waldschnepfe-p-500.jpg' },
         { name: 'Kahlwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902c47cda440349ce3632b_Kahlwild-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' }
       ],
@@ -601,7 +601,7 @@
       'RS': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' }
       ],
       'SK': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
@@ -609,7 +609,7 @@
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb3f8c0e87dd5c6602_federwild-p-500.jpg' },
         { name: 'Kahlwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902c47cda440349ce3632b_Kahlwild-p-500.jpg' }
       ],
       'SI': [
@@ -620,12 +620,12 @@
       ],
       'ES': [
         { name: 'Iberischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2c00bbdda9d7b4b3bbf626_Iberischer%20Steinbock-p-500.jpg' },
-        { name: 'Mähnenschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f006316d982255635e2a_AdobeStock_247472934_Preview-p-500.jpeg' },
+        { name: 'Mähnenschaf', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccaf0ed8a26fc81496_maehnenschaf-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Rothuhn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a857878840c2c6455aa5cf7_AdobeStock_390714652_Preview-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Rothuhn', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cec324bef0054fcde4_rothuhn-p-500.jpg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
       ],
       'GB-ENG': [
@@ -638,8 +638,8 @@
         { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Sikahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316bce264fa2125946f76f_Sikahirsch-p-500.jpg' },
-        { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e04700b3f3e7e3b483e0_AdobeStock_2105520599_Preview%20-p-500.jpeg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
+        { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf3f8c0e87dd5c674f_taube-p-500.jpg' },
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb3f8c0e87dd5c6602_federwild-p-500.jpg' }
       ],
       'TR': [
         { name: 'Bezoar', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a7204ff6dd8a7a7389fd5b4_Bezoar-p-500.jpg' },
@@ -651,7 +651,7 @@
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
         { name: 'Fasan', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3251c2d1c038858975f515_Fasan-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'BY': [
@@ -661,25 +661,25 @@
         { name: 'Birkhahn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a32500b13633436530ca33f_Birkhahn-p-500.jpg' },
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e4797e8b2ee88c2d5e37_AdobeStock_60499461_Preview-p-500.jpeg' }
+        { name: 'Federwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb3f8c0e87dd5c6602_federwild-p-500.jpg' }
       ],
       'RU': [
         { name: 'Kamtschatka-Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d3d1c92902edb59da702_Kamtschatka-Braunba%CC%88r%20-p-500.jpg' },
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
-        { name: 'Schneeschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f941c46fea282382c591_AdobeStock_515686396_Preview-p-500.jpeg' },
+        { name: 'Schneeschaf', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf57b600403aa8eae1_schneeschaf-p-500.jpg' },
         { name: 'Tur', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3248f49f24618c2e828ae0_Tur-p-500.jpg' },
         { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
         { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' }
       ],
       'IR': [
-        { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d6d2f0ec5d9df612f0be_AdobeStock_300642628_Preview-p-500.jpg' },
+        { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfd86e62ca03092e5d_urial-p-500.jpg' },
         { name: 'Bezoar', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a7204ff6dd8a7a7389fd5b4_Bezoar-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
       ],
       'KZ': [
-        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a870d7a14e4b10be7ee164a_AdobeStock_1395816711_Preview-p-500.jpg' },
-        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324426d450f2e5c6202c47_Maral-p-500.jpg' },
+        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock-p-500.jpg' },
+        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' },
         { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
@@ -689,12 +689,12 @@
         { name: 'Marco-Polo-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
         { name: 'Tien Shan Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fd9a6b55d253ee6a450b_tien-shan-argali-ovis-ammon-karelini-p-500.jpg' },
         { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' },
-        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a870d7a14e4b10be7ee164a_AdobeStock_1395816711_Preview-p-500.jpg' }
+        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock-p-500.jpg' }
       ],
       'MN': [
-        { name: 'Altai-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fc0011168a8847a0c7d6_altai-argali-schaf-ovis-ammon-ammon-altai-berge-mongolei-november-2xfx25k-p-500.jpg' },
+        { name: 'Altai-Argali', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2ad55859d0a554bdf10c1_altai-argali-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324426d450f2e5c6202c47_Maral-p-500.jpg' },
+        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' },
         { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
       ],
       'NP': [
@@ -702,7 +702,7 @@
         { name: 'Tahr', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a324e1ea07fcea09b443730_Tahr-p-500.jpg' }
       ],
       'PK': [
-        { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d6d2f0ec5d9df612f0be_AdobeStock_300642628_Preview-p-500.jpg' },
+        { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfd86e62ca03092e5d_urial-p-500.jpg' },
         { name: 'Blauschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b7d769c7418708ffea7_Blauschaf-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
         { name: 'Markhor', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c6e13fb7c7dd52a0fc32_Markhor-p-500.jpg' },
@@ -712,12 +712,12 @@
         { name: 'Markhor', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c6e13fb7c7dd52a0fc32_Markhor-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
         { name: 'Marco-Polo-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
-        { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d6d2f0ec5d9df612f0be_AdobeStock_300642628_Preview-p-500.jpg' },
+        { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfd86e62ca03092e5d_urial-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
         { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
       ],
       'ET': [
-        { name: 'Bergnyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71decf852573898cebc8c9_AdobeStock_244435321_Preview-p-500.jpeg' }
+        { name: 'Bergnyala', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3c93afc2f1a03c44abf_bergnyala-p-500.jpg' }
       ],
       'BW': [
         { name: 'Elefant', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be0e19662b8e5b5406c25_Elefant-p-500.jpg' },
@@ -727,54 +727,54 @@
         { name: 'Lord Derby Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71cece5ab001b555dc7919_Riesen-Elenantilope-p-500.jpg' },
         { name: 'Bongo', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a315e4bb788f4807fd647f2_Bongo-p-500.jpg' },
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
-        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
-        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
-        { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e780241100fcde5802b3_AdobeStock_277438835_Preview-p-500.jpeg' },
-        { name: 'Python', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9030e28dd8b344bfc51172_AdobeStock_334160520_Preview-p-500.jpeg' },
-        { name: 'Ducker', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902fa7a125a68a5374a99d_AdobeStock_1875880932_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cef92c3260b7033e27_rappenantilope-p-500.jpg' },
+        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3d0d86e62ca03092ef0_warzenschwein-p-500.jpg' },
+        { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3c98048c5665b0b1983_buschbock-p-500.jpg' },
+        { name: 'Python', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd9c3dc9114b58584e_python-p-500.jpg' },
+        { name: 'Ducker', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ca3f8c0e87dd5c65ad_ducker-p-500.jpg' },
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' }
       ],
       'CG': [
         { name: 'Bongo', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a315e4bb788f4807fd647f2_Bongo-p-500.jpg' },
-        { name: 'Sitatunga', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e9e7689dbc55471436f1_AdobeStock_841806275_Preview-p-500.jpeg' },
+        { name: 'Sitatunga', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc071007_sitatunga-p-500.jpg' },
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
-        { name: 'Ducker', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902fa7a125a68a5374a99d_AdobeStock_1875880932_Preview-p-500.jpeg' },
-        { name: 'Pinselohrschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a902d277f6dd44aa477aa18_AdobeStock_23873903_Preview-p-500.jpeg' }
+        { name: 'Ducker', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ca3f8c0e87dd5c65ad_ducker-p-500.jpg' },
+        { name: 'Pinselohrschwein', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd4bdbd2441b7b262b_pinselohrschwein-p-500.jpg' }
       ],
       'MR': [
-        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3d0d86e62ca03092ef0_warzenschwein-p-500.jpg' },
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' }
       ],
       'MU': [
-        { name: 'Rusahirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d5d801bdba7b0fb584a0_AdobeStock_754167344_Preview-p-500.jpeg' },
+        { name: 'Rusahirsch', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ce8b6dc4784f42cc7c_rusahirsch-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' }
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' }
       ],
       'MZ': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
-        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cef92c3260b7033e27_rappenantilope-p-500.jpg' },
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' }
       ],
       'NA': [
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
-        { name: 'Eland', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8433edec63f5a82778032e_AdobeStock_102090145_Preview-p-500.jpeg' },
-        { name: 'Springbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4fd9129090b6f8950bd_AdobeStock_500561686_Preview-p-500.jpeg' },
-        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e1427c7b887079957689_AdobeStock_276711129_Preview-p-500.jpeg' },
-        { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
-        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
+        { name: 'Eland', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ca9c3dc9114b58561e_eland-p-500.jpg' },
+        { name: 'Springbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc07101c_springbock-p-500.jpg' },
+        { name: 'Warzenschwein', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3d0d86e62ca03092ef0_warzenschwein-p-500.jpg' },
+        { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd9c3dc9114b5857cf_nyala-p-500.jpg' },
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cef92c3260b7033e27_rappenantilope-p-500.jpg' },
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
         { name: 'Gepard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa266b7c9fc07bcca278971_Gepard-p-500.jpg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' }
       ],
       'ZM': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' },
-        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90371102fd9a373f274619_AdobeStock_1987497147_Preview-p-500.jpeg' },
-        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9036bc584cd834b55f8908_AdobeStock_683083083_Preview-p-500.jpeg' },
-        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' },
+        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cc62afa1f1edcb510c_krokodil-p-500.jpg' },
+        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd535bba064604b757_nilpferd-p-500.jpg' },
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cef92c3260b7033e27_rappenantilope-p-500.jpg' }
       ],
       'ZW': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
@@ -782,20 +782,20 @@
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
-        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e8102aae218ef2b575b7_AdobeStock_480330301_Preview-p-500.jpeg' },
-        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90371102fd9a373f274619_AdobeStock_1987497147_Preview-p-500.jpeg' },
-        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9036bc584cd834b55f8908_AdobeStock_683083083_Preview-p-500.jpeg' },
+        { name: 'Rappenantilope', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cef92c3260b7033e27_rappenantilope-p-500.jpg' },
+        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cc62afa1f1edcb510c_krokodil-p-500.jpg' },
+        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd535bba064604b757_nilpferd-p-500.jpg' },
         { name: 'Giraffe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90325e7e4ca88803dac113_Giraffe-p-500.jpg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' }
       ],
       'ZA': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
         { name: 'Nashorn', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f10ff4143d10e0c80bdb_Nashorn-p-500.jpg' },
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
-        { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e696a461f3c1a4c379da_AdobeStock_875178405_Preview-p-500.jpeg' },
+        { name: 'Nyala', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd9c3dc9114b5857cf_nyala-p-500.jpg' },
         { name: 'Oryx', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316a933e00868b42a7c945_Oryx-p-500.jpg' },
-        { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e780241100fcde5802b3_AdobeStock_277438835_Preview-p-500.jpeg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' },
+        { name: 'Buschbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3c98048c5665b0b1983_buschbock-p-500.jpg' },
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
         { name: 'Giraffe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90325e7e4ca88803dac113_Giraffe-p-500.jpg' }
       ],
@@ -805,16 +805,16 @@
         { name: 'Leopard', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b0ca4ae15542e83310e_Leopard-p-500.jpg' },
         { name: 'Elefant', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be0e19662b8e5b5406c25_Elefant-p-500.jpg' },
         { name: 'Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314f9559060451a50311c3_Kudu-p-500.jpg' },
-        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e18fb8934933c7f034c1_AdobeStock_55304670_Preview-p-500.jpeg' },
-        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90371102fd9a373f274619_AdobeStock_1987497147_Preview-p-500.jpeg' },
-        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9036bc584cd834b55f8908_AdobeStock_683083083_Preview-p-500.jpeg' },
-        { name: 'Gerenuk', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a90342feff1e6fcdd802c7f_AdobeStock_55040011_Preview-p-500.jpeg' },
-        { name: 'Kleiner Kudu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a9033bf7e4ca88803dbd82b_AdobeStock_392888040_Preview-p-500.jpeg' }
+        { name: 'Plainsgame', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd7310ac88b7993571_plainsgame-p-500.jpg' },
+        { name: 'Krokodil', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cc62afa1f1edcb510c_krokodil-p-500.jpg' },
+        { name: 'Nilpferd', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd535bba064604b757_nilpferd-p-500.jpg' },
+        { name: 'Gerenuk', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cb85c584d9bc070e46_gerenuk-p-500.jpg' },
+        { name: 'Kleiner Kudu', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cc7310ac88b79934f7_kleiner-kudu-p-500.jpg' }
       ],
       'UG': [
         { name: 'Büffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a314fd6cb8b83ceb26cf2ba_Bu%CC%88ffel-p-500.jpg' },
         { name: 'Löwe', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg' },
-        { name: 'Sitatunga', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e9e7689dbc55471436f1_AdobeStock_841806275_Preview-p-500.jpeg' }
+        { name: 'Sitatunga', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc071007_sitatunga-p-500.jpg' }
       ],
       'US-AK': [
         { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
@@ -825,12 +825,12 @@
       'AR': [
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Hirschziegenantilope', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e4034d114675ed5aab8d_AdobeStock_1967901745_Preview-p-500.jpeg' },
-        { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71e04700b3f3e7e3b483e0_AdobeStock_2105520599_Preview%20-p-500.jpeg' },
-        { name: 'Axishirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a903581b1ffb2e2d1e92962_AdobeStock_2149446355_Preview-p-500.jpeg' },
-        { name: 'Davidshirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a903505fc4963db45887d1c_AdobeStock_288748484_Preview-p-500.jpeg' },
+        { name: 'Taube', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf3f8c0e87dd5c674f_taube-p-500.jpg' },
+        { name: 'Axishirsch', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3c99c3dc9114b5854de_axishirsch-p-500.jpg' },
+        { name: 'Davidshirsch', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cab6a258561b6d0874_davidshirsch-p-500.jpg' },
         { name: 'Damhirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg' },
         { name: 'Muffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c8957679ed2cbd1c0f9_Muffel-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e2af9ea88b91962004e2_AdobeStock_550119392_Preview-p-500.jpeg' },
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
         { name: 'Wasserbüffel', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c813898aae4f5c524b8c_Wasserbu%CC%88ffel-p-500.jpg' }
       ],
@@ -842,13 +842,13 @@
         { name: 'Karibu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31509f2621e3dae2c9b96d_Karibu-p-500.jpg' }
       ],
       'CA': [
-        { name: 'Eisbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71de015f921f9d8e2041c2_AdobeStock_156323627_Preview-p-500.jpeg' },
+        { name: 'Eisbär', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ca2a3fdfca07ec8f44_eisbaer-p-500.jpg' },
         { name: 'Schwarzbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d0d637799726ace8e1f9_Schwarzba%CC%88r-p-500.jpg' },
-        { name: 'Puma', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71dfb84e190f1129b6fd2c_AdobeStock_310665113_Preview-p-500.jpeg' },
+        { name: 'Puma', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cd3afc2f1a03c44dbf_puma-p-500.jpg' },
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
         { name: 'Karibu', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31509f2621e3dae2c9b96d_Karibu-p-500.jpg' },
         { name: 'Dall-Schaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bfe8d24cd0988b1fe0cd7_Dall-Sharf-p-500.jpg' },
-        { name: 'Steinschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71f8d8b9b50c901ef6728d_AdobeStock_382679948_Preview-p-500.jpeg' },
+        { name: 'Steinschaf', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfb1cb84c6a8ccce91_steinschaf-p-500.jpg' },
         { name: 'Schneeziege', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a31502d90b787871469e341_Schneeziege-p-500.jpg' },
         { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' },
         { name: 'Wolf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a565a6251ccc58bc7502e90_Wolf-p-500.jpg' }
@@ -897,14 +897,14 @@
                '&' + key + '=' + encodeURIComponent(value);
     }
     // =====================================================================
-
+ 
     var isoDataMap = {};
     Object.values(BUSINESS).forEach(function(list) {
         list.forEach(function(c) {
             if(c.iso) isoDataMap[c.iso] = { name: landLabel(c), img: PLACEHOLDER_IMG };
         });
     });
-
+ 
     // Reihenfolge der Laenderliste: Prioritaetslaender zuerst (in dieser
     // Reihenfolge), alles Uebrige alphabetisch. Schluessel sind ISO-Codes,
     // damit DE und EN dieselbe Reihenfolge zeigen.
@@ -913,7 +913,7 @@
       'AS': ['KZ', 'TJ', 'KG', 'MN', 'NP'],
       'AF': ['NA', 'ZW', 'ZA', 'TZ', 'CG']
     };
-
+ 
     // BUSINESS ist nach deutschem Namen sortiert; der Rest bleibt auf DE in
     // dieser Reihenfolge und wird auf EN nach dem englischen Anzeigenamen
     // sortiert. Der "Other countries"-Platzhalter (iso null) bleibt am Ende.
@@ -947,9 +947,9 @@
       list.forEach(function(c){ if(c.iso) set[c.iso] = true; });
       return set;
     }
-
+ 
     var CONT_TITLE = T.contTitle;
-
+ 
     var CAMERAS = {
       'EU': { cx: 580, cy: 120, scale: 1.4, dx: 0, dy: 0, pTop: '15%', pHeight: '88%' },
       'AF': { cx: 560, cy: 280, scale: 1.4, dx: 0, dy: 0, pTop: '22%', pHeight: '80%' },
@@ -985,7 +985,7 @@
       'SA': { cx: 250, cy: 220, name: T.contTitle.SA },
       'OC': { cx: 890, cy: 320, name: T.contTitle.OC }
     };
-
+ 
     mount.innerHTML =
       '<div class="jk-stage">' +
         '<div class="jk-eyebrow">' + T.eyebrow + '</div>' +
@@ -1002,7 +1002,7 @@
         '<div class="jk-cont-label"><div class="jk-cl-name"></div></div>' +
         '<div class="jk-tooltip jk-hide"><div class="jk-tt-name"></div></div>' +
       '</div>';
-
+ 
     // iOS: Containerhoehe an der Viewport-Hoehe fixieren.
     // Browserleisten-Ein/Ausblenden aendert innerHeight nur leicht -> ignorieren.
     // Rotation aendert die Breite -> neu setzen (sonst wird die Karte beschnitten).
@@ -1018,7 +1018,7 @@
         if (Math.abs(window.innerWidth - lockW) > 40) lockHeight();   // nur echte Rotation
       });
     }
-
+ 
     var stageEl = mount.querySelector('.jk-stage');
     var viewport = mount.querySelector('.jk-viewport');
     var rotor = mount.querySelector('.jk-rotor');
@@ -1031,10 +1031,10 @@
     var tooltip = mount.querySelector('.jk-tooltip');
     var contLabel = mount.querySelector('.jk-cont-label');
     var svg2 = mount.querySelector('.jk-svg2');
-
+ 
     var iso2cont = {};
     DATA.forEach(function(d) { iso2cont[d.iso] = d.cont; });
-
+ 
     var SIMPLIFY = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) ? 0.8 : 0;
     function jkPerpSq(p, a, b) {
       var dx = b[0]-a[0], dy = b[1]-a[1];
@@ -1075,7 +1075,7 @@
       return out;
     }
     var SPARK_R = (('ontouchstart' in window) || navigator.maxTouchPoints > 0) ? 1.4 : 0.8;
-
+ 
     // Alle Service-Laender ueber alle Kontinente (fuer die Welt-Hervorhebung)
     var ALL_SERVICE_ISOS = (function () {
       var set = {};
@@ -1084,7 +1084,7 @@
       });
       return set;
     })();
-
+ 
     function fill(svg, drawSparks) {
       DATA.forEach(function (c) {
         var p = document.createElementNS(NS, 'path');
@@ -1107,7 +1107,7 @@
         if (!contSparks[key]) contSparks[key] = [];
         SPARKS[iso].forEach(function (pt) { contSparks[key].push({ pt: pt, iso: iso, cont: sc }); });
       });
-
+ 
       var ANCHOR_N = 4, ANCHOR_T = 24;
       var anchorSet = {};
       Object.keys(contSparks).forEach(function (key) {
@@ -1119,7 +1119,7 @@
           anchorSet[o.iso + '|' + o.pt[0] + '|' + o.pt[1]] = k;
         }
       });
-
+ 
       Object.keys(SPARKS).forEach(function (iso) {
         var sparkCont = iso2cont[iso];
         SPARKS[iso].forEach(function (pt) {
@@ -1127,7 +1127,7 @@
           d.setAttribute('cx', pt[0]); d.setAttribute('cy', pt[1]);
           d.setAttribute('class', 'jk-spark');
           if (sparkCont) d.dataset.cont = sparkCont;
-
+ 
           var anchorKey = iso + '|' + pt[0] + '|' + pt[1];
           if (anchorSet[anchorKey] !== undefined) {
             var k = anchorSet[anchorKey];
@@ -1146,13 +1146,13 @@
     }
     fill(mount.querySelector('.jk-svg1'), true);
     fill(mount.querySelector('.jk-svg2'), true);
-
+ 
     var zoomed = false, halfWidth = 0, offset = 0;
     var autoVel = 0, velocity = 0, userInertia = 0;
     var dragging = false, lastX = 0, lastT = 0, lastFrame = 0, activeSvg = null;
     var currentHoverIso = null, isHoveringCont = false, currentZoomCont = null;
     var zoomClickReady = false, zoomReadyTimer = null;
-
+ 
     function isTouchLayout() {
       return (stageEl.offsetWidth <= 1024) || (stageEl.offsetHeight > stageEl.offsetWidth);
     }
@@ -1180,12 +1180,12 @@
         if (item) zoomTo(item.dataset.cont);
       });
     }
-
+ 
     applyTouchLayout();
     window.addEventListener('resize', applyTouchLayout);
-
+ 
     function allPaths() { return mount.querySelectorAll('.jk-country'); }
-
+ 
     function measure() {
       var sw = stageEl.offsetWidth, sh = stageEl.offsetHeight;
       var RATIO = 2.0;
@@ -1224,12 +1224,12 @@
       globes.forEach(function(g){ g.style.transition = 'none'; });
       mount.querySelectorAll('svg').forEach(function(s){ s.style.transition = 'none'; });
       rotor.style.transition = 'none';
-
+ 
       measure();
       if (zoomed && currentZoomCont && activeSvg) {
         applyZoomTransform(currentZoomCont, activeSvg);
       }
-
+ 
       void mount.offsetWidth;
       requestAnimationFrame(function(){
         globes.forEach(function(g){ g.style.transition = ''; });
@@ -1237,7 +1237,7 @@
         mount.querySelectorAll('svg').forEach(function(s){ s.style.transition = ''; });
       });
     }
-
+ 
     measure();
     window.addEventListener('resize', relayout);
     window.addEventListener('orientationchange', function() {
@@ -1248,12 +1248,12 @@
       setTimeout(relayout, 1000);
     });
     function wrap(v) { while (v <= -halfWidth) v += halfWidth; while (v > 0) v -= halfWidth; return v; }
-
+ 
     function frame(t) {
       if (!lastFrame) lastFrame = t;
       var dt = t - lastFrame; lastFrame = t;
       if (dt > 100) dt = 16;
-
+ 
       if (!dragging && !zoomed) {
         if (noAutoSpin) {
         } else {
@@ -1269,7 +1269,7 @@
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
-
+ 
     function pointerDown(e) {
       if (zoomed || noAutoSpin) return;
       dragging = true; viewport.classList.add('jk-grabbing');
@@ -1296,31 +1296,31 @@
     function pointerUp() { if (!dragging) return; dragging = false; viewport.classList.remove('jk-grabbing'); }
     viewport.addEventListener('mousedown', pointerDown); window.addEventListener('mousemove', pointerMove); window.addEventListener('mouseup', pointerUp);
     viewport.addEventListener('touchstart', pointerDown, {passive:true}); window.addEventListener('touchmove', pointerMove, {passive:false}); window.addEventListener('touchend', pointerUp);
-
+ 
     var downX = 0, moved = false;
     viewport.addEventListener('mousedown', function(e){ downX = e.clientX; moved = false; });
     viewport.addEventListener('mousemove', function(e){ if(dragging && Math.abs(e.clientX-downX)>5) moved = true; });
     viewport.addEventListener('touchstart', function(e){ if(e.touches[0]) { downX = e.touches[0].clientX; moved = false; } }, {passive:true});
     viewport.addEventListener('touchmove', function(e){ if(e.touches[0] && dragging && Math.abs(e.touches[0].clientX-downX)>5) moved = true; }, {passive:true});
-
+ 
     var labelCont = null;
     function showContLabel(cont, e) {
       var cfg = CONT_CENTER[cont];
       if (!cfg) return;
       var key = (cont === 'NA' || cont === 'SA') ? 'AMERIKA' : cont;
-
+ 
       var svg = e ? e.target.closest('svg') : mount.querySelector('.jk-svg1');
       if (!svg) svg = mount.querySelector('.jk-svg1');
-
+ 
       var svgRect = svg.getBoundingClientRect();
       var stageRect = stageEl.getBoundingClientRect();
       var px = svgRect.left + (cfg.cx / 1000) * svgRect.width - stageRect.left;
       var py = svgRect.top + (cfg.cy / 500) * svgRect.height - stageRect.top;
-
+ 
       contLabel.querySelector('.jk-cl-name').textContent = cfg.name || names[cont] || '';
       contLabel.style.left = px + 'px';
       contLabel.style.top = py + 'px';
-
+ 
       if (labelCont !== key) {
         contLabel.classList.remove('jk-show');
         void contLabel.offsetWidth;
@@ -1332,16 +1332,16 @@
       contLabel.classList.remove('jk-show');
       labelCont = null;
     }
-
+ 
     var hoverTimeout;
     function hoverCont(cont, on, e) {
       if (zoomed) return;
-
+ 
       var isAm = (cont === 'NA' || cont === 'SA');
       if (on) {
         clearTimeout(hoverTimeout);
         isHoveringCont = true;
-
+ 
         allPaths().forEach(function (p) { p.classList.remove('jk-hover', 'jk-dim'); });
         allPaths().forEach(function (p) {
           var c = p.dataset.cont;
@@ -1358,7 +1358,7 @@
         }, 120);
       }
     }
-
+ 
     function showMapTooltip(iso, centerX, topY) {
         var data = isoDataMap[iso];
         if (!data) return;
@@ -1372,12 +1372,12 @@
         tooltip.classList.remove('jk-show');
         tooltip.classList.add('jk-hide');
     }
-
+ 
     function renderAnimalInfo(iso) {
         if (('ontouchstart' in window) || navigator.maxTouchPoints > 0) return;
         var animalInfo = panel.querySelector('.jk-animal-info');
         if (!animalInfo) return;
-
+ 
         // Kein Eintrag oder leere Liste (z. B. Australien): Galerie ausblenden.
         // ANIMAL_DATA deckt alle Laender ab. Ein fehlender Eintrag ist ein Fehler
         // und darf keine Platzhalter-Kacheln mit toten Filter-Links erzeugen.
@@ -1391,7 +1391,7 @@
             return { name: a.name, label: isJagdart ? jagdartLabel(a.name) : wildLabel(a.name),
                      img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
         });
-
+ 
         var count = items.length;
         var galleryHtml = '';
         items.forEach(function(it) {
@@ -1400,7 +1400,7 @@
                              '<div class="jk-animal-name">' + it.label + '</div>' +
                            '</a>';
         });
-
+ 
         var galleryEl = animalInfo.querySelector('.jk-animal-gallery');
         // >5 Arten: zweite Reihe, Kachelgroesse bleibt wie bei 5 pro Reihe
         var rowCls = count > 5 ? ' jk-two-rows' : '';
@@ -1408,12 +1408,12 @@
         galleryEl.innerHTML = galleryHtml;
         animalInfo.classList.add('jk-show');
     }
-
+ 
     function applyZoomTransform(cont, clickedSvg) {
       var cam = CAMERAS[cont] || { cx: 550, cy: 250, scale: 1.5, dx: 0, dy: 0, pTop: '15%', pHeight: '70%' };
       var cx_pct = ((cam.cx + cam.dx) / 1000) * 100;
       var cy_pct = ((cam.cy + cam.dy) / 500) * 100;
-
+ 
       var isPortraitLayout = stageEl.offsetHeight > stageEl.offsetWidth;
       var isCoarseLandscape = !isPortraitLayout &&
                               window.matchMedia && window.matchMedia('(pointer: coarse)').matches &&
@@ -1434,7 +1434,7 @@
         focusY = 50;
         finalScale = cam.scale;
       }
-
+ 
       clickedSvg.style.transformOrigin = '0 0';
       clickedSvg.style.transform = 'translate(' + focusX + '%, ' + focusY + '%) scale(' + finalScale + ') translate(-' + cx_pct + '%, -' + cy_pct + '%)';
       if (isPortraitLayout) {
@@ -1445,25 +1445,25 @@
         panel.style.height = '100%';
       }
     }
-
+ 
     function zoomTo(cont, clickEvent) {
       clearTimeout(hoverTimeout);
       isHoveringCont = false;
-
+ 
       zoomed = true; dragging = false; moved = false; currentHoverIso = null; hideMapTooltip(); hideContLabel();
       viewport.classList.remove('jk-grabbing');
       stageEl.classList.add('jk-darken', 'jk-zoomed');
-
+ 
       var isAm = (cont === 'NA' || cont === 'SA');
       var serviceSet = getServiceIsoSet(cont);
       var clickedSvg = (noAutoSpin || !clickEvent) ? mount.querySelector('.jk-svg1') : clickEvent.target.closest('svg');
       activeSvg = clickedSvg;
-
+ 
       allPaths().forEach(function (p) {
           p.classList.remove('jk-hover', 'jk-dim', 'jk-service', 'jk-nonservice', 'jk-active-hover');
           var c = p.dataset.cont;
           var keepVisible = isAm ? (c === 'NA' || c === 'SA') : (c === cont);
-
+ 
           if (!keepVisible) {
               p.style.opacity = 0; p.style.pointerEvents = 'none';
           } else {
@@ -1474,26 +1474,26 @@
               }
           }
       });
-
+ 
       mount.querySelectorAll('.jk-spark').forEach(function(s) {
           var c = s.dataset.cont;
           var keepVisible = isAm ? (c === 'NA' || c === 'SA') : (c === cont);
           s.style.display = keepVisible ? '' : 'none';
       });
-
+ 
       currentZoomCont = cont;
       clickedSvg.style.transition = 'transform 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
       applyZoomTransform(cont, clickedSvg);
-
+ 
       var isSvg2 = clickedSvg.classList.contains('jk-svg2');
       var targetOffset = isSvg2 ? -halfWidth : 0;
       rotor.style.transition = 'transform 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
       rotor.style.transform = 'translateX(' + targetOffset + 'px)';
       offset = targetOffset;
-
+ 
       eyebrow.style.opacity = 0; headline.style.opacity = 0; sub.style.opacity = 0;
       setTimeout(function () { back.classList.add('jk-show'); }, 700);
-
+ 
       var list = getBusinessList(cont);
       var listHtml = '<h3 class="jk-panel-title">' + (CONT_TITLE[cont] || names[cont]) + '</h3><div class="jk-list-area"><ul class="jk-country-list' + (list.length <= 8 ? ' jk-single-col' : '') + '">';
       list.forEach(function(c) {
@@ -1504,7 +1504,7 @@
       listHtml += '<div class="jk-animal-info"><div class="jk-animal-gallery"></div></div>';
       panel.innerHTML = listHtml;
       panel.dataset.cont = (cont === 'NA' || cont === 'SA') ? 'AMERIKA' : cont;
-
+ 
       panel.querySelectorAll('li').forEach(function(li) {
         var iso = li.dataset.iso;
         if (!iso) {
@@ -1561,7 +1561,7 @@
           });
         }
       });
-
+ 
       // Service-Land-Klicks laufen zentral über einen delegierten Listener auf stageEl
       // (siehe Init-Bereich). Hier nur den Ready-Timer neu starten.
       // Fix: vorher wurden bei jedem zoomTo neue Listener auf die Pfade gebunden,
@@ -1582,7 +1582,7 @@
       });
       setTimeout(function() { panel.classList.add('jk-show'); }, 500);
     }
-
+ 
     function reset() {
       zoomed = false; activeSvg = null; currentHoverIso = null; currentZoomCont = null; hideMapTooltip(); hideContLabel();
       zoomClickReady = false;
@@ -1591,11 +1591,11 @@
       userInertia = 0;
       velocity = autoVel;
       isHoveringCont = false;
-
+ 
       stageEl.classList.remove('jk-darken', 'jk-zoomed');
-
+ 
       panel.classList.remove('jk-show');
-
+ 
       allPaths().forEach(function (p) {
           p.style.opacity = ''; p.style.pointerEvents = '';
           p.classList.remove('jk-hover', 'jk-dim', 'jk-service', 'jk-nonservice', 'jk-active-hover');
@@ -1607,18 +1607,18 @@
       });
       rotor.style.transition = '';
       back.classList.remove('jk-show');
-
+ 
       eyebrow.style.opacity = '1'; headline.style.opacity = '1'; sub.style.opacity = '1';
       if (noAutoSpin) { offset = 0; setTimeout(function(){ rotor.style.transition=''; rotor.style.transform='translateX(0px)'; }, 820); }
       setTimeout(function() { panel.innerHTML = ''; panel.removeAttribute('style'); }, 450);
     }
-
+ 
     stageEl.addEventListener('mouseover', function(e) {
         if (!zoomed || !activeSvg) return;
         if (!zoomClickReady) return;
         if (noAutoSpin) return;
         var isPath = e.target.tagName === 'path' && e.target.classList.contains('jk-service');
-
+ 
         if (isPath) {
             var iso = e.target.dataset.iso;
             var rect = e.target.getBoundingClientRect();
@@ -1627,22 +1627,22 @@
             var topY = rect.top - stageRect.top - 15;
             if (topY < 35) topY = 35;
             showMapTooltip(iso, centerX, topY);
-
+ 
             if (currentHoverIso !== iso) {
                 currentHoverIso = iso;
                 panel.querySelectorAll('li.jk-active-hover').forEach(function(li) { li.classList.remove('jk-active-hover'); });
                 activeSvg.querySelectorAll('path.jk-active-hover').forEach(function(p) { p.classList.remove('jk-active-hover'); });
-
+ 
                 var li = panel.querySelector('li[data-iso="'+iso+'"]');
                 if (li) li.classList.add('jk-active-hover');
                 e.target.classList.add('jk-active-hover');
                 if (e.target.nextElementSibling) e.target.parentNode.appendChild(e.target);
-
+ 
                 renderAnimalInfo(iso);
             }
         }
     });
-
+ 
     allPaths().forEach(function (p) {
       var cont = p.dataset.cont;
       p.addEventListener('mouseenter', function (e) { if (!zoomed) hoverCont(cont, true, e); });
@@ -1651,7 +1651,7 @@
           if (!zoomed && !moved) { e.stopPropagation(); zoomTo(cont, e); }
       });
     });
-
+ 
     // Delegierter Klick auf Service-Länder im gezoomten Zustand.
     // Einmal registriert -> keine Residual-Listener mehr.
     stageEl.addEventListener('click', function (ev) {
@@ -1662,7 +1662,7 @@
         gotoCountry(t.dataset.iso);
       }
     });
-
+ 
     back.addEventListener('click', reset);
     stageEl.addEventListener('click', function (e) {
       if (!zoomed || moved) return;
@@ -1673,7 +1673,7 @@
       if (e.target.tagName === 'path' && e.target.classList.contains('jk-service')) return;
       reset();
     });
-
+ 
     // Deep-Link: /jagdlaender?kontinent=afrika -> direkt in den Kontinent fliegen
     var DEEP_CONT = { europa: 'EU', asien: 'AS', afrika: 'AF', nordamerika: 'NA', suedamerika: 'SA', ozeanien: 'OC' };
     try {
@@ -1688,3 +1688,4 @@
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();
+ 
