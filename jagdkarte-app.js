@@ -163,7 +163,7 @@
         'Schneeschaf': 'Snow Sheep',
         'Argali': 'Argali',
         'Altai-Argali': 'Altai Argali',
-        'Tien Shan Argali': 'Tien Shan Argali',
+        'Marco-Polo-Argali (Tien-Shan)': 'Marco Polo Sheep (Tien Shan)',
         'Wolf': 'Wolf',
         'Lord Derby Eland': 'Lord Derby Eland',
         'Warzenschwein': 'Warthog',
@@ -197,7 +197,7 @@
         'Blauschaf': 'Blue Sheep',
         'Tur': 'Tur',
         'Urial': 'Urial',
-        'Marco-Polo-Argali': 'Marco Polo Sheep',
+        'Marco-Polo-Argali (Pamir)': 'Marco Polo Sheep (Pamir)',
         'Moschusochse': 'Muskox',
         'Wisent': 'European Bison',
         'Elch': 'Moose',
@@ -625,8 +625,7 @@
         { name: 'Rothirsch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c62180c70cd1a28753e_Rothirsch-p-500.jpg' },
         { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
         { name: 'Rothuhn', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cec324bef0054fcde4_rothuhn-p-500.jpg' },
-        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' },
-        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
+        { name: 'Niederwild', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ccf92c3260b7033d9e_niederwild-p-500.jpg' }
       ],
       'GB-ENG': [
         { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
@@ -668,34 +667,26 @@
         { name: 'Elch', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316ba461042af189b89e69_Elch-p-500.jpg' },
         { name: 'Schneeschaf', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf57b600403aa8eae1_schneeschaf-p-500.jpg' },
         { name: 'Tur', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3248f49f24618c2e828ae0_Tur-p-500.jpg' },
-        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
-        { name: 'Braunbär', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d4e64e6c03eb37ba6a44_Ba%CC%88r-p-500.jpg' }
+        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' }
       ],
       'IR': [
         { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfd86e62ca03092e5d_urial-p-500.jpg' },
         { name: 'Bezoar', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a7204ff6dd8a7a7389fd5b4_Bezoar-p-500.jpg' },
-        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'KZ': [
-        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock-p-500.jpg' },
+        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa2c58c3f8c0e87dd5ce899_6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock.jpeg' },
         { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' },
-        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' },
-        { name: 'Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg' },
-        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' }
+        { name: 'Sibirischer Rehbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a3bdc0a6406e004cee0a6e1_Siberian_roe_deer-p-500.jpg' }
       ],
       'KG': [
-        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Marco-Polo-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
-        { name: 'Tien Shan Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71fd9a6b55d253ee6a450b_tien-shan-argali-ovis-ammon-karelini-p-500.jpg' },
-        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' },
-        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock-p-500.jpg' }
+        { name: 'Marco-Polo-Argali (Tien-Shan)', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa3d0dc93fbfba55989f93f_tien-shan-argali-ovis-ammon-karelini-p-500.jpg' },
+        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa2c58c3f8c0e87dd5ce899_6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock.jpeg' }
       ],
       'MN': [
         { name: 'Altai-Argali', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2ad55859d0a554bdf10c1_altai-argali-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' },
-        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
+        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' }
       ],
       'NP': [
         { name: 'Blauschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b7d769c7418708ffea7_Blauschaf-p-500.jpg' },
@@ -710,11 +701,10 @@
       ],
       'TJ': [
         { name: 'Markhor', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c6e13fb7c7dd52a0fc32_Markhor-p-500.jpg' },
-        { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Marco-Polo-Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
+        { name: 'Sibirischer Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa2c58c3f8c0e87dd5ce899_6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock.jpeg' },
+        { name: 'Marco-Polo-Argali (Pamir)', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2be2b4308695b359013e1e_Argali-p-500.jpg' },
         { name: 'Urial', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfd86e62ca03092e5d_urial-p-500.jpg' },
-        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' },
-        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
+        { name: 'Schwarzwild', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a200b8bc57357009eff2cc9_Schwarzwild-p-500.jpg' }
       ],
       'ET': [
         { name: 'Bergnyala', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3c93afc2f1a03c44abf_bergnyala-p-500.jpg' }
