@@ -686,7 +686,8 @@
       'MN': [
         { name: 'Altai-Argali', img: 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2ad55859d0a554bdf10c1_altai-argali-p-500.jpg' },
         { name: 'Steinbock', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d1c94e6c03eb37b84d1c_Steinbock-p-500.jpg' },
-        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' }
+        { name: 'Maral', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a8c408ab14d8125a9128ab9_Maral-p-500.jpg' },
+        { name: 'Argali', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a72e6d776f7f30f492bfc49_Argali-p-500.jpg' }
       ],
       'NP': [
         { name: 'Blauschaf', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316b7d769c7418708ffea7_Blauschaf-p-500.jpg' },
