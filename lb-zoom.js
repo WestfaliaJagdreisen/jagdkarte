@@ -1,4 +1,4 @@
-/*! lb-zoom.js v1.0.0 — Westfalia Jagdreisen
+/*! lb-zoom.js v1.0.1 — Westfalia Jagdreisen
  *  Pinch-Zoom, Doppeltipp und Ziehen für BILDER in der Webflow-Lightbox.
  *
  *  Koexistenz mit dem vorhandenen Wisch-Blättern (Site-Footer):
@@ -17,14 +17,28 @@
  *  Transform liegt auf .w-lightbox-img, NICHT auf .w-lightbox-frame —
  *  dessen transform wird von pin() im Blätter-Skript benutzt.
  *
+ *  ⚠️ v1.0.1 — ENDLOSSCHLEIFE BEHOBEN (v1.0.0 hat die Seite eingefroren).
+ *  classList.remove() schreibt das class-Attribut auch dann neu, wenn die
+ *  Klasse gar nicht vorhanden ist. Zusammen mit attributeFilter:['class']
+ *  ergibt das eine Endlosschleife aus Microtasks — der Main-Thread kommt
+ *  nie zum Rendern, die ganze Seite reagiert nicht mehr. Jedes remove()
+ *  auf documentElement MUSS daher durch contains() abgesichert sein.
+ *  Das Untertitel-Skript im Site-Footer nutzt dasselbe Muster gefahrlos,
+ *  weil es das style-Attribut schreibt — das filtert der Observer weg.
+ *
  *  中文：图片双指缩放 / 双击 / 拖动。1× 时完全不干预现有手势；
  *  >1× 时摘掉 data-pull-ready 关掉翻页，捕获阶段拦住横滑。
  *  视频不做（跨域 iframe 收不到 touch），留给 v2 的伪全屏。
+ *
+ *  ⚠️ v1.0.1 修复死循环：classList.remove() 即使目标 class 不存在，
+ *  也会重写 class 属性并触发 attributeFilter:['class'] 的观察器，
+ *  造成微任务无限循环、整站卡死。凡是在这个观察器回调链上动
+ *  documentElement 的 class，必须先 contains() 判断。
  */
 (function () {
   'use strict';
   if (window.__wfLbZoom) return;
-  window.__wfLbZoom = '1.0.0';
+  window.__wfLbZoom = '1.0.1';
 
   var MAX_SCALE = 4;      // 最大倍数
   var DBL_SCALE = 2.5;    // 双击放大到
@@ -33,6 +47,12 @@
   var DBL_MS    = 300;    // 双击判定：两次间隔
   var DBL_PX    = 30;     // 双击判定：两次位移
   var ANIM_MS   = 220;
+
+  var DE = document.documentElement;
+
+  /* Jedes Schreiben auf DE.classList muss abgesichert sein — siehe Kopf. */
+  function deOn()  { if (!DE.classList.contains('lb-z-on')) DE.classList.add('lb-z-on'); }
+  function deOff() { if (DE.classList.contains('lb-z-on'))  DE.classList.remove('lb-z-on'); }
 
   var st = document.createElement('style');
   st.setAttribute('data-lb-zoom', '1');
@@ -59,7 +79,7 @@
   }
 
   function setup(view) {
-    document.documentElement.classList.remove('lb-z-on');
+    deOff();
 
     var fig = view.querySelector('.w-lightbox-figure');
     if (!fig) return;
@@ -71,7 +91,7 @@
     var base = null, pinch = null, drag = null;
     var lastTap = 0, lastX = 0, lastY = 0, animTimer = null;
 
-    function vw() { return document.documentElement.clientWidth; }
+    function vw() { return DE.clientWidth; }
     function vh() {
       return (window.visualViewport && window.visualViewport.height) || window.innerHeight;
     }
@@ -108,13 +128,13 @@
     }
 
     function lock() {
-      document.documentElement.classList.add('lb-z-on');
+      deOn();
       view.removeAttribute('data-pull-ready');   // Blättern aus
       view.style.touchAction = 'none';
     }
 
     function unlock() {
-      document.documentElement.classList.remove('lb-z-on');
+      deOff();
       view.style.touchAction = '';
       var b = parseFloat(view.getAttribute('data-base') || '0');
       if (b || b === 0) { try { view.scrollTop = b; } catch (e) {} }
@@ -247,10 +267,9 @@
     }
   }).observe(document.body, { childList: true, subtree: true });
 
-  // Lightbox geschlossen -> Zustandsklasse sicher entfernen
+  /* Lightbox geschlossen -> Zustandsklasse entfernen.
+     deOff() prüft contains() — ohne diese Prüfung: Endlosschleife (v1.0.0). */
   new MutationObserver(function () {
-    if (!document.documentElement.classList.contains('w-lightbox-noscroll')) {
-      document.documentElement.classList.remove('lb-z-on');
-    }
-  }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    if (!DE.classList.contains('w-lightbox-noscroll')) deOff();
+  }).observe(DE, { attributes: true, attributeFilter: ['class'] });
 })();
