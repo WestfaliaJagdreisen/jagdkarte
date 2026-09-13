@@ -1,4 +1,4 @@
-// Version: 20260910_v80_hirschziegenantilope
+// Version: 20260913_v81_timer_race_fix
 (function () {
   var retryCount = 0;
   function init() {
@@ -1143,6 +1143,10 @@
     var dragging = false, lastX = 0, lastT = 0, lastFrame = 0, activeSvg = null;
     var currentHoverIso = null, isHoveringCont = false, currentZoomCont = null;
     var zoomClickReady = false, zoomReadyTimer = null;
+    // Generationszaehler: jeder zoomTo()/reset()-Aufruf erhoeht ihn.
+    // Verzoegerte Callbacks aus einer aelteren Generation steigen aus,
+    // statt in den inzwischen aufgebauten neuen Zustand hineinzuschreiben.
+    var stateSeq = 0;
  
     function isTouchLayout() {
       return (stageEl.offsetWidth <= 1024) || (stageEl.offsetHeight > stageEl.offsetWidth);
@@ -1238,7 +1242,12 @@
       setTimeout(relayout, 600);
       setTimeout(relayout, 1000);
     });
-    function wrap(v) { while (v <= -halfWidth) v += halfWidth; while (v > 0) v -= halfWidth; return v; }
+    function wrap(v) {
+      if (!(halfWidth > 0)) return v;   // sonst Endlosschleife (Stage-Breite 0)
+      while (v <= -halfWidth) v += halfWidth;
+      while (v > 0) v -= halfWidth;
+      return v;
+    }
  
     function frame(t) {
       if (!lastFrame) lastFrame = t;
@@ -1438,6 +1447,7 @@
     }
  
     function zoomTo(cont, clickEvent) {
+      var mySeq = ++stateSeq;
       clearTimeout(hoverTimeout);
       isHoveringCont = false;
  
@@ -1483,7 +1493,7 @@
       offset = targetOffset;
  
       eyebrow.style.opacity = 0; headline.style.opacity = 0; sub.style.opacity = 0;
-      setTimeout(function () { back.classList.add('jk-show'); }, 700);
+      setTimeout(function () { if (mySeq !== stateSeq) return; back.classList.add('jk-show'); }, 700);
  
       var list = getBusinessList(cont);
       var listHtml = '<h3 class="jk-panel-title">' + (CONT_TITLE[cont] || names[cont]) + '</h3><div class="jk-list-area"><ul class="jk-country-list' + (list.length <= 8 ? ' jk-single-col' : '') + '">';
@@ -1563,6 +1573,7 @@
       zoomReadyTimer = setTimeout(function(){ zoomClickReady = true; }, 1300);
       [50, 200, 500, 900, 1250].forEach(function(delay) {
         setTimeout(function() {
+          if (mySeq !== stateSeq) return;
           allPaths().forEach(function(p) { p.classList.remove('jk-active-hover'); });
           panel.querySelectorAll('li.jk-active-hover').forEach(function(li){ li.classList.remove('jk-active-hover'); });
           hideMapTooltip();
@@ -1571,10 +1582,11 @@
           if (animalInfo) animalInfo.classList.remove('jk-show');
         }, delay);
       });
-      setTimeout(function() { panel.classList.add('jk-show'); }, 500);
+      setTimeout(function() { if (mySeq !== stateSeq) return; panel.classList.add('jk-show'); }, 500);
     }
  
     function reset() {
+      var mySeq = ++stateSeq;
       zoomed = false; activeSvg = null; currentHoverIso = null; currentZoomCont = null; hideMapTooltip(); hideContLabel();
       zoomClickReady = false;
       clearTimeout(zoomReadyTimer);
@@ -1600,8 +1612,8 @@
       back.classList.remove('jk-show');
  
       eyebrow.style.opacity = '1'; headline.style.opacity = '1'; sub.style.opacity = '1';
-      if (noAutoSpin) { offset = 0; setTimeout(function(){ rotor.style.transition=''; rotor.style.transform='translateX(0px)'; }, 820); }
-      setTimeout(function() { panel.innerHTML = ''; panel.removeAttribute('style'); }, 450);
+      if (noAutoSpin) { offset = 0; setTimeout(function(){ if (mySeq !== stateSeq) return; rotor.style.transition=''; rotor.style.transform='translateX(0px)'; }, 820); }
+      setTimeout(function() { if (mySeq !== stateSeq) return; panel.innerHTML = ''; panel.removeAttribute('style'); }, 450);
     }
  
     stageEl.addEventListener('mouseover', function(e) {
@@ -1657,6 +1669,8 @@
     back.addEventListener('click', reset);
     stageEl.addEventListener('click', function (e) {
       if (!zoomed || moved) return;
+      // Waehrend des 1,3s-Einflugs zaehlt ein Fehlklick nicht als "Weg-Klick".
+      if (!zoomClickReady) return;
       if (e.target.closest('.jk-country-list li')) return;
       var gal = e.target.closest('.jk-animal-info');
       if (gal && gal.classList.contains('jk-show')) return;
