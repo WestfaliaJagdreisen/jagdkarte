@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.1
+/*! Westfalia pdf-modal v1.0.2
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -13,6 +13,12 @@
  *  Datei, bevor Seite 1 erscheint - beim 10,2-MB-Katalog gemessene 23,6 s auf
  *  4 Mbit. Mit Range-Requests sind es 2,5 s und rund 0,6 MB. Dazu ein
  *  unbestimmter Ladebalken: bei Range-Laden ist ein Prozentwert bedeutungslos.
+ *
+ *  v1.0.2: Doppelseite fuer Katalog und Preisliste. Umschlag allein, danach
+ *  2|3, 4|5 - bei der Preisliste durch die gedruckten Folios belegt (PDF-Seite 3
+ *  traegt "Seite 3", ungerade Folios liegen im Druck rechts), beim Katalog durch
+ *  die Zeitleiste, die ueber 2|3 durchlaeuft. Broschueren bleiben einseitig.
+ *  Umschaltbar; unter 1024 px oder im Hochformat faellt alles auf Einzelseite.
  */
 (function () {
   'use strict';
@@ -30,6 +36,8 @@
   var MAX_PIXELS = 12e6;   /* Canvas-Obergrenze, iOS kippt darueber */
   var SWIPE_PX = 60;
   var SWIPE_MAX_Y = 45;
+  var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
+  var SPREAD_MIN_W = 1024;                   /* darunter wird eine Doppelseite unleserlich */
 
   var T = {
     de: {
@@ -44,7 +52,9 @@
       zoomIn: 'Vergrößern',
       zoomOut: 'Verkleinern',
       copied: 'Link kopiert',
-      page: 'Seite'
+      page: 'Seite',
+      twoPage: 'Doppelseite',
+      onePage: 'Einzelseite'
     },
     en: {
       loading: 'Loading brochure …',
@@ -58,7 +68,9 @@
       zoomIn: 'Zoom in',
       zoomOut: 'Zoom out',
       copied: 'Link copied',
-      page: 'Page'
+      page: 'Page',
+      twoPage: 'Two pages',
+      onePage: 'Single page'
     }
   };
 
@@ -74,7 +86,7 @@
   var libPromise = null;
   var doc = null;
   var loadingTask = null;
-  var renderTask = null;
+  var renderTasks = [];
   var seq = 0;            /* Generationszaehler: alle spaeten Callbacks steigen aus */
   var pageNo = 1;
   var pageCount = 0;
@@ -86,6 +98,8 @@
   var open = false;
   var histPushed = false;
   var rerenderTimer = null;
+  var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
+  var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
 
   /* ---------- Helfer ---------- */
   function isPdfHref(h) { return /\.pdf(\?|#|$)/i.test(h || ''); }
@@ -134,8 +148,10 @@
       '@keyframes wf-pdf-slide{from{transform:translateX(-100%)}to{transform:translateX(100%)}}',
       '#wf-pdf-view{flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;',
       'display:flex;touch-action:pan-x pan-y;padding:1rem .5rem}',
-      '#wf-pdf-stage{margin:auto;position:relative;transform-origin:center center}',
-      '#wf-pdf-canvas{display:block;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:none}',
+      '#wf-pdf-stage{margin:auto;position:relative;display:flex;transform-origin:center center;',
+      'box-shadow:0 10px 40px rgba(0,0,0,.5)}',
+      '#wf-pdf-canvas,#wf-pdf-canvas2{display:block;background:#fff;max-width:none}',
+      '#wf-pdf-canvas2{display:none}',
       '#wf-pdf-msg{color:#F5F1E8;text-align:center;font-size:.92rem;line-height:1.7;padding:2rem 1.5rem}',
       '#wf-pdf-msg a{color:#C9A961;text-decoration:underline;display:inline-block;margin-top:.6rem}',
       '#wf-pdf-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:.5rem;',
@@ -167,13 +183,15 @@
       '<div id="wf-pdf-prog"></div>' +
       '<div id="wf-pdf-bar">' +
         '<div id="wf-pdf-title"></div>' +
+        '<button class="wf-pdf-btn" data-act="spread" style="display:none"></button>' +
         '<button class="wf-pdf-btn wf-pdf-zoom" data-act="out">' + icon('<circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-4.4-4.4"/>') + '</button>' +
         '<button class="wf-pdf-btn wf-pdf-zoom" data-act="in">' + icon('<circle cx="11" cy="11" r="7"/><path d="M8 11h6M11 8v6M20 20l-4.4-4.4"/>') + '</button>' +
         '<button class="wf-pdf-btn" data-act="dl">' + icon('<path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 20h16"/>') + '</button>' +
         '<button class="wf-pdf-btn" data-act="share">' + icon('<path d="M12 15V4M8 7.5 12 3.5l4 4M5 13v6.5h14V13"/>') + '</button>' +
         '<button class="wf-pdf-btn" data-act="close">' + icon('<path d="M6 6l12 12M18 6 6 18"/>') + '</button>' +
       '</div>' +
-      '<div id="wf-pdf-view"><div id="wf-pdf-stage"><canvas id="wf-pdf-canvas"></canvas></div><div id="wf-pdf-msg"></div></div>' +
+      '<div id="wf-pdf-view"><div id="wf-pdf-stage"><canvas id="wf-pdf-canvas"></canvas>' +
+        '<canvas id="wf-pdf-canvas2"></canvas></div><div id="wf-pdf-msg"></div></div>' +
       '<div id="wf-pdf-foot">' +
         '<button class="wf-pdf-btn" data-act="prev">' + icon('<path d="M14.5 5 8 12l6.5 7"/>') + '</button>' +
         '<div id="wf-pdf-pageno"></div>' +
@@ -193,12 +211,14 @@
       view: o.querySelector('#wf-pdf-view'),
       stage: o.querySelector('#wf-pdf-stage'),
       canvas: o.querySelector('#wf-pdf-canvas'),
+      canvas2: o.querySelector('#wf-pdf-canvas2'),
       msg: o.querySelector('#wf-pdf-msg'),
       foot: o.querySelector('#wf-pdf-foot'),
       pageno: o.querySelector('#wf-pdf-pageno'),
       toast: toast
     };
     el.ctx = el.canvas.getContext('2d', { alpha: false });
+    el.ctx2 = el.canvas2.getContext('2d', { alpha: false });
 
     o.addEventListener('click', onUiClick, false);
     o.addEventListener('dblclick', onDblClick, false);
@@ -242,12 +262,51 @@
     return libPromise;
   }
 
+  /* ---------- Doppelseite ---------- */
+  function roomForSpread() {
+    return window.innerWidth >= SPREAD_MIN_W && window.innerWidth > window.innerHeight;
+  }
+
+  function spreadNow() {
+    if (!spreadDoc || !roomForSpread()) return false;
+    return spreadPref === null ? true : spreadPref;
+  }
+
+  function leftOf(n) { return n === 1 ? 1 : (n % 2 === 0 ? n : n - 1); }
+
+  function twoUp() { return spreadNow() && pageNo > 1 && pageNo + 1 <= pageCount; }
+
+  function nextPage() { return spreadNow() ? (pageNo === 1 ? 2 : pageNo + 2) : pageNo + 1; }
+  function prevPage() { return spreadNow() ? (pageNo <= 2 ? 1 : pageNo - 2) : pageNo - 1; }
+
+  function syncSpread() {
+    var btn = el.root.querySelector('[data-act="spread"]');
+    if (!btn) return;
+    btn.style.display = (spreadDoc && roomForSpread()) ? 'flex' : 'none';
+    var on = spreadNow();
+    btn.innerHTML = icon(on
+      ? '<rect x="6.5" y="4" width="11" height="16" rx="1"/>'
+      : '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/>');
+    btn.setAttribute('aria-label', t(on ? 'onePage' : 'twoPage'));
+    btn.setAttribute('title', t(on ? 'onePage' : 'twoPage'));
+    if (on && pageNo > 1) pageNo = leftOf(pageNo);
+  }
+
+  function cancelRender() {
+    for (var i = 0; i < renderTasks.length; i++) {
+      try { renderTasks[i].cancel(); } catch (e) {}
+    }
+    renderTasks = [];
+  }
+
   /* ---------- Oeffnen / Schliessen ---------- */
-  function openUrl(url, title) {
+  function openUrl(url, title, view) {
     if (!el) build();
     curUrl = url;
     curTitle = title;
     curFile = fileName(url);
+    spreadPref = null;
+    spreadDoc = view === 'spread' ? true : (view === 'single' ? false : SPREAD_RE.test(curFile));
     pageNo = 1;
     zoom = 1;
     pageCount = 0;
@@ -255,11 +314,13 @@
 
     el.title.textContent = title;
     el.canvas.style.display = 'none';
+    el.canvas2.style.display = 'none';
     el.stage.style.transform = '';
     el.foot.style.visibility = 'hidden';
     el.pageno.textContent = '';
     msg(t('loading'));
     label();
+    syncSpread();
 
     lockScroll();
     el.root.classList.add('is-on');
@@ -334,10 +395,11 @@
     if (!open) return;
     open = false;
     seq++;
-    if (renderTask) { try { renderTask.cancel(); } catch (e) {} renderTask = null; }
+    cancelRender();
     if (loadingTask) { try { loadingTask.destroy(); } catch (e) {} loadingTask = null; }
     if (doc) { try { doc.destroy(); } catch (e) {} doc = null; }
     el.canvas.width = el.canvas.height = 0;
+    el.canvas2.width = el.canvas2.height = 0;
     busy(false);
     el.root.classList.remove('is-on');
     document.removeEventListener('keydown', onKey, false);
@@ -375,12 +437,15 @@
   }
 
   /* ---------- Rendern ---------- */
-  function fitScale(vp1) {
+  function fitScale(vp1, cols) {
+    cols = cols || 1;
     var availW = el.view.clientWidth - 16;
     var availH = el.view.clientHeight - 32;
     if (availW < 80 || availH < 80) return 1;
-    var byW = availW / vp1.width;
+    var byW = availW / (vp1.width * cols);
     var byH = availH / vp1.height;
+    /* Doppelseite immer ganz sichtbar - halb abgeschnitten waere sie sinnlos */
+    if (cols > 1) return Math.min(byW, byH);
     /* Schmal/Touch: Breite fuellen, vertikal scrollen. Desktop: ganze Seite. */
     var narrow = window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches;
     return narrow ? byW : Math.min(byW, byH);
@@ -388,29 +453,47 @@
 
   function render(my) {
     if (!doc || my !== seq) return;
-    if (renderTask) { try { renderTask.cancel(); } catch (e) {} renderTask = null; }
+    cancelRender();
     busy(true);
     var n = pageNo;
-    doc.getPage(n).then(function (page) {
-      if (my !== seq || n !== pageNo) return;
-      var vp1 = page.getViewport({ scale: 1 });
-      var scale = fitScale(vp1) * zoom;
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var w = vp1.width * scale, h = vp1.height * scale;
-      if (w * h * dpr * dpr > MAX_PIXELS) dpr = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
-      var vp = page.getViewport({ scale: scale * dpr });
+    var nums = twoUp() ? [n, n + 1] : [n];
+    var jobs = [];
+    for (var j = 0; j < nums.length; j++) jobs.push(doc.getPage(nums[j]));
 
-      el.canvas.width = Math.max(1, Math.floor(vp.width));
-      el.canvas.height = Math.max(1, Math.floor(vp.height));
-      el.canvas.style.width = Math.floor(vp.width / dpr) + 'px';
-      el.canvas.style.height = Math.floor(vp.height / dpr) + 'px';
+    Promise.all(jobs).then(function (pages) {
+      if (my !== seq || n !== pageNo) return;
+      var vp1 = pages[0].getViewport({ scale: 1 });
+      var cols = pages.length;
+      var scale = fitScale(vp1, cols) * zoom;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      /* Pixelbudget gilt fuer die ganze Buehne, nicht je Canvas - sonst
+         sprengt die Doppelseite auf Retina den iOS-Canvasspeicher. */
+      var w = vp1.width * scale * cols, h = vp1.height * scale;
+      if (w * h * dpr * dpr > MAX_PIXELS) dpr = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
       el.stage.style.transform = '';
 
-      renderTask = page.render({ canvasContext: el.ctx, viewport: vp });
-      return renderTask.promise;
+      var cvs = [el.canvas, el.canvas2];
+      var proms = [];
+      for (var i = 0; i < cvs.length; i++) {
+        if (i >= cols) {
+          cvs[i].style.display = 'none';
+          cvs[i].width = cvs[i].height = 0;
+          continue;
+        }
+        var vp = pages[i].getViewport({ scale: scale * dpr });
+        cvs[i].width = Math.max(1, Math.floor(vp.width));
+        cvs[i].height = Math.max(1, Math.floor(vp.height));
+        cvs[i].style.width = Math.floor(vp.width / dpr) + 'px';
+        cvs[i].style.height = Math.floor(vp.height / dpr) + 'px';
+        cvs[i].style.display = 'block';
+        var task = pages[i].render({ canvasContext: i === 0 ? el.ctx : el.ctx2, viewport: vp });
+        renderTasks.push(task);
+        proms.push(task.promise);
+      }
+      return Promise.all(proms);
     }).then(function () {
       if (my !== seq) return;
-      renderTask = null;
+      renderTasks = [];
       busy(false);
       pager();
     })['catch'](function (e) {
@@ -422,16 +505,16 @@
   }
 
   function pager() {
-    el.pageno.textContent = pageNo + ' / ' + pageCount;
+    el.pageno.textContent = (twoUp() ? pageNo + '\u2013' + (pageNo + 1) : pageNo) + ' / ' + pageCount;
     var p = el.root.querySelector('[data-act="prev"]');
     var n = el.root.querySelector('[data-act="next"]');
     if (p) p.disabled = pageNo <= 1;
-    if (n) n.disabled = pageNo >= pageCount;
+    if (n) n.disabled = nextPage() > pageCount;
   }
 
   function go(d) {
     if (!doc) return;
-    var n = pageNo + d;
+    var n = d > 0 ? nextPage() : prevPage();
     if (n < 1 || n > pageCount) return;
     pageNo = n;
     zoom = 1;
@@ -507,10 +590,17 @@
     else if (a === 'out') setZoom(zoom / 1.35);
     else if (a === 'dl') download();
     else if (a === 'share') share();
+    else if (a === 'spread') {
+      spreadPref = !spreadNow();
+      if (spreadPref && pageNo > 1) pageNo = leftOf(pageNo);
+      zoom = 1;
+      syncSpread();
+      render(seq);
+    }
   }
 
   function onDblClick(e) {
-    if (!el.canvas.contains(e.target)) return;
+    if (!el.stage.contains(e.target)) return;
     e.preventDefault();
     var r = el.view.getBoundingClientRect();
     setZoom(zoom > 1.05 ? 1 : DBL_ZOOM, e.clientX - r.left, e.clientY - r.top);
@@ -582,7 +672,7 @@
   window.addEventListener('resize', function () {
     if (!open || !doc) return;
     clearTimeout(rerenderTimer);
-    rerenderTimer = setTimeout(function () { render(seq); }, 180);
+    rerenderTimer = setTimeout(function () { syncSpread(); render(seq); }, 180);
   }, false);
 
   /* ---------- Klick-Delegation (Bubble-Phase!) ---------- */
@@ -595,6 +685,6 @@
     if (!isPdfHref(href)) return;
     if (!('Promise' in window) || !document.body.closest) return;   /* zu alt: Neuer Tab bleibt */
     e.preventDefault();
-    openUrl(a.href, titleFrom(a, href));
+    openUrl(a.href, titleFrom(a, href), a.getAttribute('data-pdf-view'));
   }, false);
 })();
