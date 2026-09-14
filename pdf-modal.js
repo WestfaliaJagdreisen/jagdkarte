@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.0
+/*! Westfalia pdf-modal v1.0.1
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -8,6 +8,11 @@
  *    download_klick feuert unveraendert weiter.
  *  - Kein stopPropagation, nur preventDefault.
  *  - PDF.js wird erst beim ersten Oeffnen geladen (~0,4 MB + Worker).
+ *
+ *  v1.0.1: disableStream + disableAutoFetch. Ohne das laedt PDF.js die ganze
+ *  Datei, bevor Seite 1 erscheint - beim 10,2-MB-Katalog gemessene 23,6 s auf
+ *  4 Mbit. Mit Range-Requests sind es 2,5 s und rund 0,6 MB. Dazu ein
+ *  unbestimmter Ladebalken: bei Range-Laden ist ein Prozentwert bedeutungslos.
  */
 (function () {
   'use strict';
@@ -122,9 +127,11 @@
       '#wf-pdf .wf-pdf-btn:disabled{opacity:.28;cursor:default;background:transparent}',
       '#wf-pdf .wf-pdf-btn svg{width:1.25rem;height:1.25rem;fill:none;stroke:currentColor;',
       'stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}',
-      '#wf-pdf-prog{position:absolute;left:0;top:0;height:2px;width:0;background:#C9A961;',
-      'transition:width .2s ease;opacity:0}',
-      '#wf-pdf-prog.is-on{opacity:1}',
+      '#wf-pdf-prog{position:absolute;left:0;top:0;height:2px;width:100%;opacity:0;',
+      'background:linear-gradient(90deg,transparent,#C9A961 45%,#C9A961 55%,transparent);',
+      'transform:translateX(-100%);transition:opacity .2s ease}',
+      '#wf-pdf-prog.is-on{opacity:1;animation:wf-pdf-slide 1.15s linear infinite}',
+      '@keyframes wf-pdf-slide{from{transform:translateX(-100%)}to{transform:translateX(100%)}}',
       '#wf-pdf-view{flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;',
       'display:flex;touch-action:pan-x pan-y;padding:1rem .5rem}',
       '#wf-pdf-stage{margin:auto;position:relative;transform-origin:center center}',
@@ -270,40 +277,38 @@
   function load(my) {
     lib().then(function (p) {
       if (my !== seq) return;
-      progress(0.02);
+      busy(true);
       loadingTask = p.getDocument({
         url: curUrl,
         isEvalSupported: false,           /* Gegenmassnahme zu CVE-2024-4367 */
+        disableStream: true,              /* nicht die ganze Datei streamen ... */
+        disableAutoFetch: true,           /* ... sondern nur die Bytes der Seite */
         cMapUrl: PDFJS + 'cmaps/',
         cMapPacked: true,
         standardFontDataUrl: PDFJS + 'standard_fonts/'
       });
-      loadingTask.onProgress = function (d) {
-        if (my !== seq || !d || !d.total) return;
-        progress(Math.max(0.02, d.loaded / d.total));
-      };
       return loadingTask.promise;
     }).then(function (d) {
       if (my !== seq || !d) return;
       doc = d;
       pageCount = d.numPages;
-      progress(1);
       msg('');
       el.canvas.style.display = 'block';
       el.foot.style.visibility = pageCount > 1 ? 'visible' : 'hidden';
       render(my);
     })['catch'](function (e) {
       if (my !== seq) return;
-      progress(0);
+      busy(false);
       fail();
       if (window.console) console.warn('[pdf-modal]', e);
     });
   }
 
-  function progress(p) {
-    el.prog.classList.toggle('is-on', p > 0 && p < 1);
-    el.prog.style.width = Math.round(p * 100) + '%';
-    if (p >= 1) setTimeout(function () { el.prog.classList.remove('is-on'); el.prog.style.width = '0'; }, 260);
+  /* Unbestimmter Balken: beim Range-Laden weiss niemand, wie viel noch fehlt.
+     Laeuft auch beim Blaettern, weil jede Seite ihre Bytes selbst holt. */
+  function busy(on) {
+    if (!el) return;
+    el.prog.classList.toggle('is-on', !!on);
   }
 
   function msg(text) {
@@ -333,6 +338,7 @@
     if (loadingTask) { try { loadingTask.destroy(); } catch (e) {} loadingTask = null; }
     if (doc) { try { doc.destroy(); } catch (e) {} doc = null; }
     el.canvas.width = el.canvas.height = 0;
+    busy(false);
     el.root.classList.remove('is-on');
     document.removeEventListener('keydown', onKey, false);
     window.removeEventListener('popstate', onPop, false);
@@ -383,6 +389,7 @@
   function render(my) {
     if (!doc || my !== seq) return;
     if (renderTask) { try { renderTask.cancel(); } catch (e) {} renderTask = null; }
+    busy(true);
     var n = pageNo;
     doc.getPage(n).then(function (page) {
       if (my !== seq || n !== pageNo) return;
@@ -404,10 +411,12 @@
     }).then(function () {
       if (my !== seq) return;
       renderTask = null;
+      busy(false);
       pager();
     })['catch'](function (e) {
       if (e && e.name === 'RenderingCancelledException') return;
       if (my !== seq) return;
+      busy(false);
       if (window.console) console.warn('[pdf-modal] render', e);
     });
   }
