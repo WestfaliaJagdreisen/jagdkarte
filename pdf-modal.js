@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.2
+/*! Westfalia pdf-modal v1.0.3
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -19,6 +19,11 @@
  *  traegt "Seite 3", ungerade Folios liegen im Druck rechts), beim Katalog durch
  *  die Zeitleiste, die ueber 2|3 durchlaeuft. Broschueren bleiben einseitig.
  *  Umschaltbar; unter 1024 px oder im Hochformat faellt alles auf Einzelseite.
+ *
+ *  v1.0.3: gestrichelter Bund in der Doppelseite. Die Linie sitzt als
+ *  border-left auf der rechten Seite, nicht bei 50% der Buehne - die Seiten
+ *  sind nicht immer gleich breit (Katalog S. 91 misst 635 pt statt 638),
+ *  bei 50% laege der Strich dann neben der Naht statt darauf.
  */
 (function () {
   'use strict';
@@ -152,6 +157,8 @@
       'box-shadow:0 10px 40px rgba(0,0,0,.5)}',
       '#wf-pdf-canvas,#wf-pdf-canvas2{display:block;background:#fff;max-width:none}',
       '#wf-pdf-canvas2{display:none}',
+      /* Bund: sitzt exakt auf der Naht, weil er an der rechten Seite haengt */
+      '#wf-pdf-stage.is-spread #wf-pdf-canvas2{border-left:1px dashed rgba(62,53,48,.38)}',
       '#wf-pdf-msg{color:#F5F1E8;text-align:center;font-size:.92rem;line-height:1.7;padding:2rem 1.5rem}',
       '#wf-pdf-msg a{color:#C9A961;text-decoration:underline;display:inline-block;margin-top:.6rem}',
       '#wf-pdf-foot{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:.5rem;',
@@ -315,6 +322,7 @@
     el.title.textContent = title;
     el.canvas.style.display = 'none';
     el.canvas2.style.display = 'none';
+    el.stage.classList.remove('is-spread');
     el.stage.style.transform = '';
     el.foot.style.visibility = 'hidden';
     el.pageno.textContent = '';
@@ -471,6 +479,7 @@
       var w = vp1.width * scale * cols, h = vp1.height * scale;
       if (w * h * dpr * dpr > MAX_PIXELS) dpr = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
       el.stage.style.transform = '';
+      el.stage.classList.toggle('is-spread', cols > 1);
 
       var cvs = [el.canvas, el.canvas2];
       var proms = [];
