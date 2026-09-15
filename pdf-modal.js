@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.4
+/*! Westfalia pdf-modal v1.0.5
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -30,6 +30,14 @@
  *  die Buehne nach dem Auslaufen kurz auf die alte Seite zurueck. Gearbeitet
  *  wird mit CSS-Animationen statt inline-transform, weil der Pinch-Zoom
  *  dasselbe Attribut belegt. prefers-reduced-motion schaltet sie ab.
+ *
+ *  v1.0.5: echtes Blaettern statt Querschieben. Das umschlagende Blatt ist eine
+ *  Kopie der alten Seite (drawImage aus dem noch stehenden Canvas), die per
+ *  rotateY um den Bund kippt; die neue Seite wird darunter gerendert. Ein
+ *  zweites Overlay haelt die andere Haelfte der alten Doppelseite fest, bis das
+ *  Blatt die 90 Grad passiert - sonst springt sie schon beim Start um.
+ *  Nach jedem Rendern werden die Seiten des naechsten Schritts vorgeholt,
+ *  damit unter dem kippenden Blatt nicht kurz nichts steht.
  */
 (function () {
   'use strict';
@@ -49,7 +57,7 @@
   var SWIPE_MAX_Y = 45;
   var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
   var SPREAD_MIN_W = 1024;                   /* darunter wird eine Doppelseite unleserlich */
-  var ANIM_MS = 170;
+  var ANIM_MS = 420;
 
   var T = {
     de: {
@@ -112,9 +120,8 @@
   var rerenderTimer = null;
   var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
   var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
-  var outClass = '';       /* laeuft noch, bis die neue Seite gerendert ist */
-  var inClass = '';        /* wird nach dem Rendern einmalig gespielt */
   var animSeq = 0;         /* schnelles Durchklicken darf nicht rueckwaerts landen */
+  var holdTimer = null;
 
   /* ---------- Helfer ---------- */
   function isPdfHref(h) { return /\.pdf(\?|#|$)/i.test(h || ''); }
@@ -167,15 +174,21 @@
       'box-shadow:0 10px 40px rgba(0,0,0,.5)}',
       '#wf-pdf-canvas,#wf-pdf-canvas2{display:block;background:#fff;max-width:none}',
       '#wf-pdf-canvas2{display:none}',
-      '@keyframes wf-pdf-out-l{to{transform:translateX(-7%);opacity:0}}',
-      '@keyframes wf-pdf-out-r{to{transform:translateX(7%);opacity:0}}',
-      '@keyframes wf-pdf-in-l{from{transform:translateX(-7%);opacity:0}}',
-      '@keyframes wf-pdf-in-r{from{transform:translateX(7%);opacity:0}}',
-      '#wf-pdf-stage.wf-out-l{animation:wf-pdf-out-l .17s ease-in forwards}',
-      '#wf-pdf-stage.wf-out-r{animation:wf-pdf-out-r .17s ease-in forwards}',
-      '#wf-pdf-stage.wf-in-l{animation:wf-pdf-in-l .2s ease-out}',
-      '#wf-pdf-stage.wf-in-r{animation:wf-pdf-in-r .2s ease-out}',
-      '@media(prefers-reduced-motion:reduce){#wf-pdf-stage{animation:none!important}}',
+      /* Blaettern: Perspektive sitzt auf der Buehne, das Blatt kippt darin */
+      '#wf-pdf-stage{perspective:2000px}',
+      '#wf-pdf-hold,#wf-pdf-flip{position:absolute;top:0;display:none;z-index:2}',
+      '#wf-pdf-hold{z-index:1}',
+      '#wf-pdf-flip{transform-style:preserve-3d;will-change:transform}',
+      '#wf-pdf-flip-face,#wf-pdf-flip-back{position:absolute;left:0;top:0;',
+      'width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}',
+      '#wf-pdf-flip-back{transform:rotateY(180deg);background:#fbfaf6;',
+      'box-shadow:inset 0 0 60px rgba(62,53,48,.09)}',
+      '#wf-pdf-hold canvas,#wf-pdf-flip canvas{display:block;width:100%;height:100%}',
+      '@keyframes wf-pdf-turn-f{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}',
+      '@keyframes wf-pdf-turn-b{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}',
+      '#wf-pdf-flip.wf-turn-f{animation:wf-pdf-turn-f .42s cubic-bezier(.4,.05,.3,1) forwards}',
+      '#wf-pdf-flip.wf-turn-b{animation:wf-pdf-turn-b .42s cubic-bezier(.4,.05,.3,1) forwards}',
+      '@media(prefers-reduced-motion:reduce){#wf-pdf-flip{animation:none!important}}',
       /* Bund: sitzt exakt auf der Naht, weil er an der rechten Seite haengt */
       '#wf-pdf-stage.is-spread #wf-pdf-canvas2{border-left:1px dashed rgba(62,53,48,.38)}',
       '#wf-pdf-msg{color:#F5F1E8;text-align:center;font-size:.92rem;line-height:1.7;padding:2rem 1.5rem}',
@@ -217,7 +230,11 @@
         '<button class="wf-pdf-btn" data-act="close">' + icon('<path d="M6 6l12 12M18 6 6 18"/>') + '</button>' +
       '</div>' +
       '<div id="wf-pdf-view"><div id="wf-pdf-stage"><canvas id="wf-pdf-canvas"></canvas>' +
-        '<canvas id="wf-pdf-canvas2"></canvas></div><div id="wf-pdf-msg"></div></div>' +
+        '<canvas id="wf-pdf-canvas2"></canvas>' +
+        '<div id="wf-pdf-hold"><canvas id="wf-pdf-hold-c"></canvas></div>' +
+        '<div id="wf-pdf-flip"><canvas id="wf-pdf-flip-face"></canvas>' +
+        '<div id="wf-pdf-flip-back"></div></div>' +
+        '</div><div id="wf-pdf-msg"></div></div>' +
       '<div id="wf-pdf-foot">' +
         '<button class="wf-pdf-btn" data-act="prev">' + icon('<path d="M14.5 5 8 12l6.5 7"/>') + '</button>' +
         '<div id="wf-pdf-pageno"></div>' +
@@ -238,6 +255,10 @@
       stage: o.querySelector('#wf-pdf-stage'),
       canvas: o.querySelector('#wf-pdf-canvas'),
       canvas2: o.querySelector('#wf-pdf-canvas2'),
+      hold: o.querySelector('#wf-pdf-hold'),
+      holdC: o.querySelector('#wf-pdf-hold-c'),
+      flip: o.querySelector('#wf-pdf-flip'),
+      flipC: o.querySelector('#wf-pdf-flip-face'),
       msg: o.querySelector('#wf-pdf-msg'),
       foot: o.querySelector('#wf-pdf-foot'),
       pageno: o.querySelector('#wf-pdf-pageno'),
@@ -324,31 +345,89 @@
 
   function clearAnim() {
     animSeq++;
-    el.stage.classList.remove('wf-out-l', 'wf-out-r', 'wf-in-l', 'wf-in-r');
-    outClass = inClass = '';
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    el.flip.classList.remove('wf-turn-f', 'wf-turn-b');
+    el.flip.style.display = 'none';
+    el.hold.style.display = 'none';
   }
 
-  /* Spielt cls und ruft cb, wenn es durch ist. Der Timeout ist die
-     Rueckfallebene: animationend bleibt aus, wenn der Tab im Hintergrund
-     liegt oder die Klasse schon anlag. */
-  function playAnim(cls, keep, cb) {
-    if (reducedMotion()) { cb(); return; }
-    clearAnim();                 /* erhoeht animSeq - erst danach die eigene Marke ziehen */
+  /* Kopiert das stehende Bild eines Canvas in ein Overlay, samt CSS-Groesse
+     und Position. Muss vor dem Neurendern laufen - render() setzt canvas.width
+     und loescht damit das alte Bild. */
+  function snap(target, src, leftPx) {
+    if (!src || !src.width) return false;
+    var c = target === el.flip ? el.flipC : el.holdC;
+    c.width = src.width;
+    c.height = src.height;
+    c.getContext('2d').drawImage(src, 0, 0);
+    target.style.left = leftPx + 'px';
+    target.style.width = src.style.width;
+    target.style.height = src.style.height;
+    target.style.display = 'block';
+    return true;
+  }
+
+  /* Blaettert: altes Blatt kippt um den Bund, neue Seite entsteht darunter.
+     fin laeuft ueber animationend, der Timeout ist die Rueckfallebene fuer
+     Hintergrundtabs, in denen animationend ausbleibt. */
+  function turn(fwd, after) {
+    if (reducedMotion() || !doc) { clearAnim(); after(); return; }
+
+    var two = twoUp();
+    var lw = el.canvas.offsetWidth;
+    /* Vorwaerts kippt die rechte Seite um ihre linke Kante (den Bund),
+       rueckwaerts die linke Seite um ihre rechte Kante. Einzelseitig ist
+       es jeweils die ganze Seite. */
+    var sheet = two ? (fwd ? el.canvas2 : el.canvas) : el.canvas;
+    var sheetLeft = (two && fwd) ? lw : 0;
+    var keep = two ? (fwd ? el.canvas : el.canvas2) : null;
+    var keepLeft = (two && fwd) ? 0 : lw;
+
+    var okSheet = snap(el.flip, sheet, sheetLeft);
+    if (!okSheet) { clearAnim(); after(); return; }
+    if (keep) snap(el.hold, keep, keepLeft);
+
+    el.flip.style.transformOrigin = fwd ? 'left center' : 'right center';
+    clearAnim();                       /* erhoeht animSeq */
     var mine = ++animSeq;
-    void el.stage.offsetWidth;
-    el.stage.classList.add(cls);
-    if (keep) outClass = cls;
+    el.flip.style.display = 'block';
+    if (keep) el.hold.style.display = 'block';
+    void el.flip.offsetWidth;
+    el.flip.classList.add(fwd ? 'wf-turn-f' : 'wf-turn-b');
+
+    /* Die festgehaltene Haelfte darf weg, sobald das Blatt darueber liegt */
+    holdTimer = setTimeout(function () {
+      if (mine === animSeq) el.hold.style.display = 'none';
+    }, ANIM_MS / 2);
+
     var done = false;
     var fin = function () {
       if (done) return;
       done = true;
-      el.stage.removeEventListener('animationend', fin, false);
-      if (mine !== animSeq) return;          /* inzwischen weitergeklickt */
-      if (!keep) el.stage.classList.remove(cls);
-      cb();
+      el.flip.removeEventListener('animationend', fin, false);
+      if (mine !== animSeq) return;
+      el.flip.classList.remove('wf-turn-f', 'wf-turn-b');
+      el.flip.style.display = 'none';
+      el.hold.style.display = 'none';
     };
-    el.stage.addEventListener('animationend', fin, false);
-    setTimeout(fin, ANIM_MS + 140);
+    el.flip.addEventListener('animationend', fin, false);
+    setTimeout(fin, ANIM_MS + 160);
+
+    after();                           /* neue Seite sofort darunter rendern */
+  }
+
+  /* Seiten des naechsten Schritts vorholen, damit unter dem kippenden Blatt
+     nicht kurz eine leere Flaeche steht (disableAutoFetch holt sonst erst
+     beim Rendern). */
+  function prefetch() {
+    if (!doc) return;
+    var ns = spreadNow() ? (pageNo === 1 ? 2 : pageNo + 2) : pageNo + 1;
+    var list = [ns];
+    if (spreadNow() && ns > 1) list.push(ns + 1);
+    for (var i = 0; i < list.length; i++) {
+      var k = list[i];
+      if (k >= 1 && k <= pageCount) doc.getPage(k)['catch'](function () {});
+    }
   }
 
   function cancelRender() {
@@ -559,13 +638,7 @@
       renderTasks = [];
       busy(false);
       pager();
-      if (inClass) {
-        var cls = inClass;
-        inClass = '';
-        playAnim(cls, false, function () {});
-      } else if (outClass) {
-        clearAnim();
-      }
+      prefetch();
     })['catch'](function (e) {
       if (e && e.name === 'RenderingCancelledException') return;
       if (my !== seq) return;
@@ -588,17 +661,16 @@
     if (n < 1 || n > pageCount) return;
     var fwd = d > 0;
     var my = seq;
-    /* Seitenstand sofort setzen, nicht erst nach der Animation: sonst
-       verschluckt schnelles Durchklicken alle Klicks bis auf den letzten,
-       weil jeder neue Klick noch vom alten pageNo aus rechnet. */
-    pageNo = n;
-    zoom = 1;
-    pager();
-    playAnim(fwd ? 'wf-out-l' : 'wf-out-r', true, function () {
+    turn(fwd, function () {
       if (my !== seq) return;
+      /* Seitenstand erst hier, aber synchron: das kippende Blatt zeigt noch
+         die alte Seite, darunter entsteht schon die neue. Schnelles
+         Durchklicken summiert sich trotzdem, weil turn() sofort zurueckkehrt. */
+      pageNo = n;
+      zoom = 1;
       el.view.scrollTop = 0;
       el.view.scrollLeft = 0;
-      inClass = fwd ? 'wf-in-r' : 'wf-in-l';
+      pager();
       render(seq);
     });
   }
