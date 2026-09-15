@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.6
+/*! Westfalia pdf-modal v1.0.8
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -29,6 +29,17 @@
  *  Vorabholung aus 1.0.5 bleibt drin: sie beschleunigt das Blaettern
  *  unabhaengig von jeder Animation, weil disableAutoFetch die Bytes einer
  *  Seite sonst erst beim Rendern holt.
+ *
+ *  v1.0.7: Pinch-Zoom springt nicht mehr. Drei Ursachen: der Ursprung lag in
+ *  der Buehnenmitte statt zwischen den Fingern, der Live-Transform wurde beim
+ *  Loslassen sofort entfernt (Bild schrumpfte zurueck und sprang 90 ms spaeter
+ *  wieder hoch), und der neue Scrollstand wurde gesetzt, bevor die Canvas ihre
+ *  neue Groesse hatten - der Browser kappt ihn dann am alten Maximum.
+ *
+ *  v1.0.8: hoch/runter wischen blaettert ebenfalls - aber nur, wenn die Seite
+ *  vertikal gar nicht scrollt. Sonst wuerde die Geste dem Lesen einer langen
+ *  Seite die Bewegung wegnehmen. Bei Hochformat-A4 auf dem Telefon passt die
+ *  Seite komplett ins Bild, dort greift es also immer.
  */
 (function () {
   'use strict';
@@ -108,6 +119,7 @@
   var open = false;
   var histPushed = false;
   var rerenderTimer = null;
+  var pendingScroll = null;   /* erst nach dem Neurendern anwendbar */
   var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
   var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
 
@@ -340,6 +352,8 @@
     el.title.textContent = title;
     el.canvas.style.display = 'none';
     el.canvas2.style.display = 'none';
+    pendingScroll = null;
+    el.stage.style.transformOrigin = '';
     el.stage.classList.remove('is-spread');
     el.stage.style.transform = '';
     el.foot.style.visibility = 'hidden';
@@ -497,6 +511,7 @@
       var w = vp1.width * scale * cols, h = vp1.height * scale;
       if (w * h * dpr * dpr > MAX_PIXELS) dpr = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
       el.stage.style.transform = '';
+      el.stage.style.transformOrigin = '';
       el.stage.classList.toggle('is-spread', cols > 1);
 
       var cvs = [el.canvas, el.canvas2];
@@ -516,6 +531,13 @@
         var task = pages[i].render({ canvasContext: i === 0 ? el.ctx : el.ctx2, viewport: vp });
         renderTasks.push(task);
         proms.push(task.promise);
+      }
+      /* Jetzt stehen die neuen CSS-Groessen - erst ab hier ist der Scrollbereich
+         gross genug, dass der gemerkte Stand nicht gekappt wird. */
+      if (pendingScroll) {
+        el.view.scrollLeft = Math.max(0, pendingScroll.left);
+        el.view.scrollTop = Math.max(0, pendingScroll.top);
+        pendingScroll = null;
       }
       return Promise.all(proms);
     }).then(function () {
@@ -546,28 +568,32 @@
     if (n < 1 || n > pageCount) return;
     pageNo = n;
     zoom = 1;
+    pendingScroll = null;
     el.view.scrollTop = 0;
     el.view.scrollLeft = 0;
     render(seq);
   }
 
-  function setZoom(z, ax, ay) {
+  function setZoom(z, ax, ay, now) {
     z = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z));
-    if (Math.abs(z - zoom) < 0.01) return;
+    if (Math.abs(z - zoom) < 0.005) {
+      if (now) { el.stage.style.transform = ''; el.stage.style.transformOrigin = ''; }
+      return;
+    }
     var old = zoom;
     zoom = z;
-    /* Scrollposition um den Zoompunkt halten */
+    /* Zoompunkt festhalten. Der Scrollstand wird NICHT hier gesetzt: die
+       Buehne hat noch die alte Groesse, der Browser wuerde den Wert am
+       alten Maximum kappen - genau das war das Springen. */
     var r = z / old;
     var cx = (ax == null ? el.view.clientWidth / 2 : ax);
     var cy = (ay == null ? el.view.clientHeight / 2 : ay);
-    var sl = (el.view.scrollLeft + cx) * r - cx;
-    var st = (el.view.scrollTop + cy) * r - cy;
+    pendingScroll = {
+      left: (el.view.scrollLeft + cx) * r - cx,
+      top: (el.view.scrollTop + cy) * r - cy
+    };
     clearTimeout(rerenderTimer);
-    rerenderTimer = setTimeout(function () {
-      render(seq);
-      el.view.scrollLeft = Math.max(0, sl);
-      el.view.scrollTop = Math.max(0, st);
-    }, 90);
+    rerenderTimer = setTimeout(function () { render(seq); }, now ? 0 : 90);
   }
 
   /* ---------- Download / Teilen ---------- */
@@ -652,8 +678,15 @@
   }
 
   /* Touch: 2 Finger = Pinch (Live-Transform, danach scharf neu rendern),
-     1 Finger bei Zoom 1 = horizontal wischen blaettert. */
+     1 Finger bei Zoom 1 = wischen blaettert - seitwaerts immer, hoch/runter
+     nur wenn nichts zu scrollen ist. */
   var tState = null;
+
+  /* Scrollt die Ansicht ueberhaupt vertikal? Wenn ja, gehoert die Geste dem
+     Scrollen und nicht dem Blaettern. */
+  function scrollable() {
+    return el.view.scrollHeight - el.view.clientHeight > 4;
+  }
 
   function dist(a, b) {
     var dx = a.clientX - b.clientX, dy = a.clientY - b.clientY;
@@ -663,7 +696,15 @@
   function onTouchStart(e) {
     if (e.touches.length === 2) {
       e.preventDefault();
-      tState = { mode: 'pinch', d0: dist(e.touches[0], e.touches[1]), k: 1 };
+      var sr = el.stage.getBoundingClientRect();
+      var vr = el.view.getBoundingClientRect();
+      var mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      var my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      /* Ursprung auf die Fingermitte legen. Vorher lag er in der Buehnenmitte,
+         dadurch wanderte das Bild waehrend der Geste unter den Fingern weg. */
+      el.stage.style.transformOrigin = (mx - sr.left) + 'px ' + (my - sr.top) + 'px';
+      tState = { mode: 'pinch', d0: dist(e.touches[0], e.touches[1]), k: 1,
+                 ax: mx - vr.left, ay: my - vr.top };
     } else if (e.touches.length === 1) {
       tState = { mode: 'swipe', x: e.touches[0].clientX, y: e.touches[0].clientY };
     }
@@ -683,16 +724,28 @@
   function onTouchEnd(e) {
     if (!tState) return;
     if (tState.mode === 'pinch') {
-      var k = tState.k;
-      el.stage.style.transform = '';
+      var k = tState.k, ax = tState.ax, ay = tState.ay;
       tState = null;
-      if (Math.abs(k - 1) > 0.02) setZoom(zoom * k);
+      /* Transform bleibt stehen, bis das scharfe Rendering da ist. Frueher
+         wurde hier zurueckgesetzt - das Bild schrumpfte auf die alte Groesse
+         und sprang kurz darauf wieder hoch. */
+      if (Math.abs(k - 1) > 0.02) {
+        setZoom(zoom * k, ax, ay, true);
+      } else {
+        el.stage.style.transform = '';
+        el.stage.style.transformOrigin = '';
+      }
       return;
     }
     if (tState.mode === 'swipe' && zoom <= 1.05 && e.changedTouches && e.changedTouches.length === 1) {
       var dx = e.changedTouches[0].clientX - tState.x;
       var dy = e.changedTouches[0].clientY - tState.y;
-      if (Math.abs(dx) > SWIPE_PX && Math.abs(dy) < SWIPE_MAX_Y) go(dx < 0 ? 1 : -1);
+      if (Math.abs(dx) > SWIPE_PX && Math.abs(dy) < SWIPE_MAX_Y) {
+        go(dx < 0 ? 1 : -1);
+      } else if (Math.abs(dy) > SWIPE_PX && Math.abs(dx) < SWIPE_MAX_Y && !scrollable()) {
+        /* Hochwischen heisst weiter, wie beim Scrollen durch eine Liste */
+        go(dy < 0 ? 1 : -1);
+      }
     }
     tState = null;
   }
