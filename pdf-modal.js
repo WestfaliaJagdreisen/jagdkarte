@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.5
+/*! Westfalia pdf-modal v1.0.6
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -25,19 +25,10 @@
  *  sind nicht immer gleich breit (Katalog S. 91 misst 635 pt statt 638),
  *  bei 50% laege der Strich dann neben der Naht statt darauf.
  *
- *  v1.0.4: Blaetteranimation. Die alte Seite schiebt sich raus und bleibt per
- *  fill-mode dort liegen, bis die neue fertig gerendert ist - sonst schnappt
- *  die Buehne nach dem Auslaufen kurz auf die alte Seite zurueck. Gearbeitet
- *  wird mit CSS-Animationen statt inline-transform, weil der Pinch-Zoom
- *  dasselbe Attribut belegt. prefers-reduced-motion schaltet sie ab.
- *
- *  v1.0.5: echtes Blaettern statt Querschieben. Das umschlagende Blatt ist eine
- *  Kopie der alten Seite (drawImage aus dem noch stehenden Canvas), die per
- *  rotateY um den Bund kippt; die neue Seite wird darunter gerendert. Ein
- *  zweites Overlay haelt die andere Haelfte der alten Doppelseite fest, bis das
- *  Blatt die 90 Grad passiert - sonst springt sie schon beim Start um.
- *  Nach jedem Rendern werden die Seiten des naechsten Schritts vorgeholt,
- *  damit unter dem kippenden Blatt nicht kurz nichts steht.
+ *  v1.0.6: ohne Blaetteranimation - Basis ist 1.0.3, nicht 1.0.5. Die
+ *  Vorabholung aus 1.0.5 bleibt drin: sie beschleunigt das Blaettern
+ *  unabhaengig von jeder Animation, weil disableAutoFetch die Bytes einer
+ *  Seite sonst erst beim Rendern holt.
  */
 (function () {
   'use strict';
@@ -57,7 +48,6 @@
   var SWIPE_MAX_Y = 45;
   var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
   var SPREAD_MIN_W = 1024;                   /* darunter wird eine Doppelseite unleserlich */
-  var ANIM_MS = 420;
 
   var T = {
     de: {
@@ -120,8 +110,6 @@
   var rerenderTimer = null;
   var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
   var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
-  var animSeq = 0;         /* schnelles Durchklicken darf nicht rueckwaerts landen */
-  var holdTimer = null;
 
   /* ---------- Helfer ---------- */
   function isPdfHref(h) { return /\.pdf(\?|#|$)/i.test(h || ''); }
@@ -174,21 +162,6 @@
       'box-shadow:0 10px 40px rgba(0,0,0,.5)}',
       '#wf-pdf-canvas,#wf-pdf-canvas2{display:block;background:#fff;max-width:none}',
       '#wf-pdf-canvas2{display:none}',
-      /* Blaettern: Perspektive sitzt auf der Buehne, das Blatt kippt darin */
-      '#wf-pdf-stage{perspective:2000px}',
-      '#wf-pdf-hold,#wf-pdf-flip{position:absolute;top:0;display:none;z-index:2}',
-      '#wf-pdf-hold{z-index:1}',
-      '#wf-pdf-flip{transform-style:preserve-3d;will-change:transform}',
-      '#wf-pdf-flip-face,#wf-pdf-flip-back{position:absolute;left:0;top:0;',
-      'width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}',
-      '#wf-pdf-flip-back{transform:rotateY(180deg);background:#fbfaf6;',
-      'box-shadow:inset 0 0 60px rgba(62,53,48,.09)}',
-      '#wf-pdf-hold canvas,#wf-pdf-flip canvas{display:block;width:100%;height:100%}',
-      '@keyframes wf-pdf-turn-f{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}',
-      '@keyframes wf-pdf-turn-b{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}',
-      '#wf-pdf-flip.wf-turn-f{animation:wf-pdf-turn-f .42s cubic-bezier(.4,.05,.3,1) forwards}',
-      '#wf-pdf-flip.wf-turn-b{animation:wf-pdf-turn-b .42s cubic-bezier(.4,.05,.3,1) forwards}',
-      '@media(prefers-reduced-motion:reduce){#wf-pdf-flip{animation:none!important}}',
       /* Bund: sitzt exakt auf der Naht, weil er an der rechten Seite haengt */
       '#wf-pdf-stage.is-spread #wf-pdf-canvas2{border-left:1px dashed rgba(62,53,48,.38)}',
       '#wf-pdf-msg{color:#F5F1E8;text-align:center;font-size:.92rem;line-height:1.7;padding:2rem 1.5rem}',
@@ -230,11 +203,7 @@
         '<button class="wf-pdf-btn" data-act="close">' + icon('<path d="M6 6l12 12M18 6 6 18"/>') + '</button>' +
       '</div>' +
       '<div id="wf-pdf-view"><div id="wf-pdf-stage"><canvas id="wf-pdf-canvas"></canvas>' +
-        '<canvas id="wf-pdf-canvas2"></canvas>' +
-        '<div id="wf-pdf-hold"><canvas id="wf-pdf-hold-c"></canvas></div>' +
-        '<div id="wf-pdf-flip"><canvas id="wf-pdf-flip-face"></canvas>' +
-        '<div id="wf-pdf-flip-back"></div></div>' +
-        '</div><div id="wf-pdf-msg"></div></div>' +
+        '<canvas id="wf-pdf-canvas2"></canvas></div><div id="wf-pdf-msg"></div></div>' +
       '<div id="wf-pdf-foot">' +
         '<button class="wf-pdf-btn" data-act="prev">' + icon('<path d="M14.5 5 8 12l6.5 7"/>') + '</button>' +
         '<div id="wf-pdf-pageno"></div>' +
@@ -255,10 +224,6 @@
       stage: o.querySelector('#wf-pdf-stage'),
       canvas: o.querySelector('#wf-pdf-canvas'),
       canvas2: o.querySelector('#wf-pdf-canvas2'),
-      hold: o.querySelector('#wf-pdf-hold'),
-      holdC: o.querySelector('#wf-pdf-hold-c'),
-      flip: o.querySelector('#wf-pdf-flip'),
-      flipC: o.querySelector('#wf-pdf-flip-face'),
       msg: o.querySelector('#wf-pdf-msg'),
       foot: o.querySelector('#wf-pdf-foot'),
       pageno: o.querySelector('#wf-pdf-pageno'),
@@ -339,86 +304,8 @@
     if (on && pageNo > 1) pageNo = leftOf(pageNo);
   }
 
-  function reducedMotion() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  }
-
-  function clearAnim() {
-    animSeq++;
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
-    el.flip.classList.remove('wf-turn-f', 'wf-turn-b');
-    el.flip.style.display = 'none';
-    el.hold.style.display = 'none';
-  }
-
-  /* Kopiert das stehende Bild eines Canvas in ein Overlay, samt CSS-Groesse
-     und Position. Muss vor dem Neurendern laufen - render() setzt canvas.width
-     und loescht damit das alte Bild. */
-  function snap(target, src, leftPx) {
-    if (!src || !src.width) return false;
-    var c = target === el.flip ? el.flipC : el.holdC;
-    c.width = src.width;
-    c.height = src.height;
-    c.getContext('2d').drawImage(src, 0, 0);
-    target.style.left = leftPx + 'px';
-    target.style.width = src.style.width;
-    target.style.height = src.style.height;
-    target.style.display = 'block';
-    return true;
-  }
-
-  /* Blaettert: altes Blatt kippt um den Bund, neue Seite entsteht darunter.
-     fin laeuft ueber animationend, der Timeout ist die Rueckfallebene fuer
-     Hintergrundtabs, in denen animationend ausbleibt. */
-  function turn(fwd, after) {
-    if (reducedMotion() || !doc) { clearAnim(); after(); return; }
-
-    var two = twoUp();
-    var lw = el.canvas.offsetWidth;
-    /* Vorwaerts kippt die rechte Seite um ihre linke Kante (den Bund),
-       rueckwaerts die linke Seite um ihre rechte Kante. Einzelseitig ist
-       es jeweils die ganze Seite. */
-    var sheet = two ? (fwd ? el.canvas2 : el.canvas) : el.canvas;
-    var sheetLeft = (two && fwd) ? lw : 0;
-    var keep = two ? (fwd ? el.canvas : el.canvas2) : null;
-    var keepLeft = (two && fwd) ? 0 : lw;
-
-    var okSheet = snap(el.flip, sheet, sheetLeft);
-    if (!okSheet) { clearAnim(); after(); return; }
-    if (keep) snap(el.hold, keep, keepLeft);
-
-    el.flip.style.transformOrigin = fwd ? 'left center' : 'right center';
-    clearAnim();                       /* erhoeht animSeq */
-    var mine = ++animSeq;
-    el.flip.style.display = 'block';
-    if (keep) el.hold.style.display = 'block';
-    void el.flip.offsetWidth;
-    el.flip.classList.add(fwd ? 'wf-turn-f' : 'wf-turn-b');
-
-    /* Die festgehaltene Haelfte darf weg, sobald das Blatt darueber liegt */
-    holdTimer = setTimeout(function () {
-      if (mine === animSeq) el.hold.style.display = 'none';
-    }, ANIM_MS / 2);
-
-    var done = false;
-    var fin = function () {
-      if (done) return;
-      done = true;
-      el.flip.removeEventListener('animationend', fin, false);
-      if (mine !== animSeq) return;
-      el.flip.classList.remove('wf-turn-f', 'wf-turn-b');
-      el.flip.style.display = 'none';
-      el.hold.style.display = 'none';
-    };
-    el.flip.addEventListener('animationend', fin, false);
-    setTimeout(fin, ANIM_MS + 160);
-
-    after();                           /* neue Seite sofort darunter rendern */
-  }
-
-  /* Seiten des naechsten Schritts vorholen, damit unter dem kippenden Blatt
-     nicht kurz eine leere Flaeche steht (disableAutoFetch holt sonst erst
-     beim Rendern). */
+  /* Seiten des naechsten Schritts vorholen. disableAutoFetch holt die Bytes
+     sonst erst beim Rendern, das kostet beim Blaettern sichtbar Zeit. */
   function prefetch() {
     if (!doc) return;
     var ns = spreadNow() ? (pageNo === 1 ? 2 : pageNo + 2) : pageNo + 1;
@@ -453,7 +340,6 @@
     el.title.textContent = title;
     el.canvas.style.display = 'none';
     el.canvas2.style.display = 'none';
-    clearAnim();
     el.stage.classList.remove('is-spread');
     el.stage.style.transform = '';
     el.foot.style.visibility = 'hidden';
@@ -536,7 +422,6 @@
     open = false;
     seq++;
     cancelRender();
-    clearAnim();
     if (loadingTask) { try { loadingTask.destroy(); } catch (e) {} loadingTask = null; }
     if (doc) { try { doc.destroy(); } catch (e) {} doc = null; }
     el.canvas.width = el.canvas.height = 0;
@@ -659,20 +544,11 @@
     if (!doc) return;
     var n = d > 0 ? nextPage() : prevPage();
     if (n < 1 || n > pageCount) return;
-    var fwd = d > 0;
-    var my = seq;
-    turn(fwd, function () {
-      if (my !== seq) return;
-      /* Seitenstand erst hier, aber synchron: das kippende Blatt zeigt noch
-         die alte Seite, darunter entsteht schon die neue. Schnelles
-         Durchklicken summiert sich trotzdem, weil turn() sofort zurueckkehrt. */
-      pageNo = n;
-      zoom = 1;
-      el.view.scrollTop = 0;
-      el.view.scrollLeft = 0;
-      pager();
-      render(seq);
-    });
+    pageNo = n;
+    zoom = 1;
+    el.view.scrollTop = 0;
+    el.view.scrollLeft = 0;
+    render(seq);
   }
 
   function setZoom(z, ax, ay) {
