@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.3
+/*! Westfalia pdf-modal v1.0.4
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -24,6 +24,12 @@
  *  border-left auf der rechten Seite, nicht bei 50% der Buehne - die Seiten
  *  sind nicht immer gleich breit (Katalog S. 91 misst 635 pt statt 638),
  *  bei 50% laege der Strich dann neben der Naht statt darauf.
+ *
+ *  v1.0.4: Blaetteranimation. Die alte Seite schiebt sich raus und bleibt per
+ *  fill-mode dort liegen, bis die neue fertig gerendert ist - sonst schnappt
+ *  die Buehne nach dem Auslaufen kurz auf die alte Seite zurueck. Gearbeitet
+ *  wird mit CSS-Animationen statt inline-transform, weil der Pinch-Zoom
+ *  dasselbe Attribut belegt. prefers-reduced-motion schaltet sie ab.
  */
 (function () {
   'use strict';
@@ -43,6 +49,7 @@
   var SWIPE_MAX_Y = 45;
   var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
   var SPREAD_MIN_W = 1024;                   /* darunter wird eine Doppelseite unleserlich */
+  var ANIM_MS = 170;
 
   var T = {
     de: {
@@ -105,6 +112,9 @@
   var rerenderTimer = null;
   var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
   var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
+  var outClass = '';       /* laeuft noch, bis die neue Seite gerendert ist */
+  var inClass = '';        /* wird nach dem Rendern einmalig gespielt */
+  var animSeq = 0;         /* schnelles Durchklicken darf nicht rueckwaerts landen */
 
   /* ---------- Helfer ---------- */
   function isPdfHref(h) { return /\.pdf(\?|#|$)/i.test(h || ''); }
@@ -157,6 +167,15 @@
       'box-shadow:0 10px 40px rgba(0,0,0,.5)}',
       '#wf-pdf-canvas,#wf-pdf-canvas2{display:block;background:#fff;max-width:none}',
       '#wf-pdf-canvas2{display:none}',
+      '@keyframes wf-pdf-out-l{to{transform:translateX(-7%);opacity:0}}',
+      '@keyframes wf-pdf-out-r{to{transform:translateX(7%);opacity:0}}',
+      '@keyframes wf-pdf-in-l{from{transform:translateX(-7%);opacity:0}}',
+      '@keyframes wf-pdf-in-r{from{transform:translateX(7%);opacity:0}}',
+      '#wf-pdf-stage.wf-out-l{animation:wf-pdf-out-l .17s ease-in forwards}',
+      '#wf-pdf-stage.wf-out-r{animation:wf-pdf-out-r .17s ease-in forwards}',
+      '#wf-pdf-stage.wf-in-l{animation:wf-pdf-in-l .2s ease-out}',
+      '#wf-pdf-stage.wf-in-r{animation:wf-pdf-in-r .2s ease-out}',
+      '@media(prefers-reduced-motion:reduce){#wf-pdf-stage{animation:none!important}}',
       /* Bund: sitzt exakt auf der Naht, weil er an der rechten Seite haengt */
       '#wf-pdf-stage.is-spread #wf-pdf-canvas2{border-left:1px dashed rgba(62,53,48,.38)}',
       '#wf-pdf-msg{color:#F5F1E8;text-align:center;font-size:.92rem;line-height:1.7;padding:2rem 1.5rem}',
@@ -299,6 +318,39 @@
     if (on && pageNo > 1) pageNo = leftOf(pageNo);
   }
 
+  function reducedMotion() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function clearAnim() {
+    animSeq++;
+    el.stage.classList.remove('wf-out-l', 'wf-out-r', 'wf-in-l', 'wf-in-r');
+    outClass = inClass = '';
+  }
+
+  /* Spielt cls und ruft cb, wenn es durch ist. Der Timeout ist die
+     Rueckfallebene: animationend bleibt aus, wenn der Tab im Hintergrund
+     liegt oder die Klasse schon anlag. */
+  function playAnim(cls, keep, cb) {
+    if (reducedMotion()) { cb(); return; }
+    clearAnim();                 /* erhoeht animSeq - erst danach die eigene Marke ziehen */
+    var mine = ++animSeq;
+    void el.stage.offsetWidth;
+    el.stage.classList.add(cls);
+    if (keep) outClass = cls;
+    var done = false;
+    var fin = function () {
+      if (done) return;
+      done = true;
+      el.stage.removeEventListener('animationend', fin, false);
+      if (mine !== animSeq) return;          /* inzwischen weitergeklickt */
+      if (!keep) el.stage.classList.remove(cls);
+      cb();
+    };
+    el.stage.addEventListener('animationend', fin, false);
+    setTimeout(fin, ANIM_MS + 140);
+  }
+
   function cancelRender() {
     for (var i = 0; i < renderTasks.length; i++) {
       try { renderTasks[i].cancel(); } catch (e) {}
@@ -322,6 +374,7 @@
     el.title.textContent = title;
     el.canvas.style.display = 'none';
     el.canvas2.style.display = 'none';
+    clearAnim();
     el.stage.classList.remove('is-spread');
     el.stage.style.transform = '';
     el.foot.style.visibility = 'hidden';
@@ -404,6 +457,7 @@
     open = false;
     seq++;
     cancelRender();
+    clearAnim();
     if (loadingTask) { try { loadingTask.destroy(); } catch (e) {} loadingTask = null; }
     if (doc) { try { doc.destroy(); } catch (e) {} doc = null; }
     el.canvas.width = el.canvas.height = 0;
@@ -505,6 +559,13 @@
       renderTasks = [];
       busy(false);
       pager();
+      if (inClass) {
+        var cls = inClass;
+        inClass = '';
+        playAnim(cls, false, function () {});
+      } else if (outClass) {
+        clearAnim();
+      }
     })['catch'](function (e) {
       if (e && e.name === 'RenderingCancelledException') return;
       if (my !== seq) return;
@@ -525,11 +586,21 @@
     if (!doc) return;
     var n = d > 0 ? nextPage() : prevPage();
     if (n < 1 || n > pageCount) return;
+    var fwd = d > 0;
+    var my = seq;
+    /* Seitenstand sofort setzen, nicht erst nach der Animation: sonst
+       verschluckt schnelles Durchklicken alle Klicks bis auf den letzten,
+       weil jeder neue Klick noch vom alten pageNo aus rechnet. */
     pageNo = n;
     zoom = 1;
-    el.view.scrollTop = 0;
-    el.view.scrollLeft = 0;
-    render(seq);
+    pager();
+    playAnim(fwd ? 'wf-out-l' : 'wf-out-r', true, function () {
+      if (my !== seq) return;
+      el.view.scrollTop = 0;
+      el.view.scrollLeft = 0;
+      inClass = fwd ? 'wf-in-r' : 'wf-in-l';
+      render(seq);
+    });
   }
 
   function setZoom(z, ax, ay) {
