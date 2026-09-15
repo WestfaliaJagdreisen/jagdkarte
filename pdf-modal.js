@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.8
+/*! Westfalia pdf-modal v1.0.9
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -40,6 +40,13 @@
  *  vertikal gar nicht scrollt. Sonst wuerde die Geste dem Lesen einer langen
  *  Seite die Bewegung wegnehmen. Bei Hochformat-A4 auf dem Telefon passt die
  *  Seite komplett ins Bild, dort greift es also immer.
+ *
+ *  v1.0.9: kein Leerbild mehr beim Wechsel von der gedehnten auf die scharfe
+ *  Darstellung. canvas.width zu setzen loescht den Inhalt, gezeichnet wird aber
+ *  erst asynchron - dazwischen stand die Flaeche leer. Jetzt wird abseits
+ *  gerendert und erst das fertige Bild in einem einzigen synchronen Block
+ *  eingesetzt. Dafuer liegen kurz zwei Saetze Canvas im Speicher, deshalb ist
+ *  das Pixelbudget von 12 auf 9 Mio. gesenkt.
  */
 (function () {
   'use strict';
@@ -54,7 +61,7 @@
   var MAX_ZOOM = 4;
   var MIN_ZOOM = 1;
   var DBL_ZOOM = 2.2;
-  var MAX_PIXELS = 12e6;   /* Canvas-Obergrenze, iOS kippt darueber */
+  var MAX_PIXELS = 9e6;    /* Canvas-Obergrenze; beim Tausch liegen kurz zwei Saetze */
   var SWIPE_PX = 60;
   var SWIPE_MAX_Y = 45;
   var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
@@ -510,36 +517,58 @@
          sprengt die Doppelseite auf Retina den iOS-Canvasspeicher. */
       var w = vp1.width * scale * cols, h = vp1.height * scale;
       if (w * h * dpr * dpr > MAX_PIXELS) dpr = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
-      el.stage.style.transform = '';
-      el.stage.style.transformOrigin = '';
-      el.stage.classList.toggle('is-spread', cols > 1);
-
-      var cvs = [el.canvas, el.canvas2];
+      /* Abseits rendern. Das alte Bild bleibt stehen - notfalls gedehnt vom
+         Pinch - bis das neue vollstaendig da ist. */
+      var offs = [];
+      var sizes = [];
       var proms = [];
-      for (var i = 0; i < cvs.length; i++) {
-        if (i >= cols) {
-          cvs[i].style.display = 'none';
-          cvs[i].width = cvs[i].height = 0;
-          continue;
-        }
+      for (var i = 0; i < cols; i++) {
         var vp = pages[i].getViewport({ scale: scale * dpr });
-        cvs[i].width = Math.max(1, Math.floor(vp.width));
-        cvs[i].height = Math.max(1, Math.floor(vp.height));
-        cvs[i].style.width = Math.floor(vp.width / dpr) + 'px';
-        cvs[i].style.height = Math.floor(vp.height / dpr) + 'px';
-        cvs[i].style.display = 'block';
-        var task = pages[i].render({ canvasContext: i === 0 ? el.ctx : el.ctx2, viewport: vp });
+        var off = document.createElement('canvas');
+        off.width = Math.max(1, Math.floor(vp.width));
+        off.height = Math.max(1, Math.floor(vp.height));
+        offs.push(off);
+        sizes.push({ w: Math.floor(vp.width / dpr), h: Math.floor(vp.height / dpr) });
+        var task = pages[i].render({
+          canvasContext: off.getContext('2d', { alpha: false }),
+          viewport: vp
+        });
         renderTasks.push(task);
         proms.push(task.promise);
       }
-      /* Jetzt stehen die neuen CSS-Groessen - erst ab hier ist der Scrollbereich
-         gross genug, dass der gemerkte Stand nicht gekappt wird. */
-      if (pendingScroll) {
-        el.view.scrollLeft = Math.max(0, pendingScroll.left);
-        el.view.scrollTop = Math.max(0, pendingScroll.top);
-        pendingScroll = null;
-      }
-      return Promise.all(proms);
+
+      return Promise.all(proms).then(function () {
+        if (my !== seq || n !== pageNo) return;
+        /* Ein einziger synchroner Block: Dehnung weg, neue Groessen, Bild
+           eingesetzt, Scrollstand gesetzt. Der Browser malt nichts dazwischen,
+           deshalb gibt es kein Leerbild. */
+        el.stage.style.transform = '';
+        el.stage.style.transformOrigin = '';
+        el.stage.classList.toggle('is-spread', cols > 1);
+
+        var cvs = [el.canvas, el.canvas2];
+        for (var j = 0; j < cvs.length; j++) {
+          if (j >= cols) {
+            cvs[j].style.display = 'none';
+            cvs[j].width = cvs[j].height = 0;
+            continue;
+          }
+          cvs[j].width = offs[j].width;
+          cvs[j].height = offs[j].height;
+          cvs[j].style.width = sizes[j].w + 'px';
+          cvs[j].style.height = sizes[j].h + 'px';
+          cvs[j].style.display = 'block';
+          (j === 0 ? el.ctx : el.ctx2).drawImage(offs[j], 0, 0);
+          offs[j].width = offs[j].height = 0;    /* Speicher sofort zurueckgeben */
+        }
+        /* Erst jetzt ist der Scrollbereich gross genug, dass der gemerkte
+           Stand nicht am alten Maximum gekappt wird. */
+        if (pendingScroll) {
+          el.view.scrollLeft = Math.max(0, pendingScroll.left);
+          el.view.scrollTop = Math.max(0, pendingScroll.top);
+          pendingScroll = null;
+        }
+      });
     }).then(function () {
       if (my !== seq) return;
       renderTasks = [];
@@ -568,9 +597,9 @@
     if (n < 1 || n > pageCount) return;
     pageNo = n;
     zoom = 1;
-    pendingScroll = null;
-    el.view.scrollTop = 0;
-    el.view.scrollLeft = 0;
+    /* Nicht sofort auf 0 springen: die alte Seite steht noch, bis die neue
+       fertig ist - sie wuerde sonst vor dem Wechsel wegrucken. */
+    pendingScroll = { left: 0, top: 0 };
     render(seq);
   }
 
