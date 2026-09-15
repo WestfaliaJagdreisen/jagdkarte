@@ -181,7 +181,7 @@
         'Chinesisches Wasserreh': 'Chinese Water Deer',
         'Kudu': 'Greater Kudu',
         'Oryx': 'Gemsbok',
-        'Wapiti': 'Wapiti',
+        'Wapiti': 'Elk',
         'Bergnyala': 'Mountain Nyala',
         'Bongo': 'Bongo',
         'Leopard': 'Leopard',
@@ -1483,12 +1483,12 @@
       });
  
       currentZoomCont = cont;
-      clickedSvg.style.transition = 'transform 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
+      clickedSvg.style.transition = 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
       applyZoomTransform(cont, clickedSvg);
  
       var isSvg2 = clickedSvg.classList.contains('jk-svg2');
       var targetOffset = isSvg2 ? -halfWidth : 0;
-      rotor.style.transition = 'transform 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
+      rotor.style.transition = 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
       rotor.style.transform = 'translateX(' + targetOffset + 'px)';
       offset = targetOffset;
  
@@ -1692,33 +1692,4 @@
     } catch (err) {}
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
-      // --- Deep-Link: ?kontinent=Europa -> Kontinent fokussieren ---
-    (function () {
-      var MAP = {
-        'europa': 'EU',
-        'asien': 'AS',
-        'afrika': 'AF',
-        'amerika': 'NA',
-        'nordamerika': 'NA',
-        'suedamerika': 'SA',
-        'ozeanien': 'OC'
-      };
-      var m = window.location.search.match(/[?&]kontinent=([^&]+)/);
-      if (!m) return;
-      var key = decodeURIComponent(m[1]).toLowerCase()
-                  .replace(/ü/g, 'ue').replace(/ö/g, 'oe').replace(/ä/g, 'ae');
-      var cont = MAP[key];
-      if (!cont) return;
-
-      var versuche = 0;
-      var timer = setInterval(function () {
-        versuche++;
-        if (typeof zoomTo === 'function' && mount && mount.querySelector('svg')) {
-          clearInterval(timer);
-          setTimeout(function () { zoomTo(cont, null); }, 350);
-        } else if (versuche > 60) {
-          clearInterval(timer);
-        }
-      }, 50);
-    })();
 })();
