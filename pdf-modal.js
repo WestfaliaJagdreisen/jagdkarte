@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.11
+/*! Westfalia pdf-modal v1.0.12
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -62,6 +62,11 @@
  *  nachzurechnen (Zentrierung, Ueberlauf, Polsterung, je Achse verschieden)
  *  wird der Ankerpunkt als Anteil der Buehne gemerkt und nach dem Umbau
  *  nachgemessen und ausgeglichen.
+ *
+ *  v1.0.12: runde Blaetterknoepfe neben der Seite, im Stil der Lightbox-Pfeile.
+ *  Nur bei pointer:fine - auf Touch fuellt die Seite die Breite, dort laegen
+ *  sie auf dem Text. Sie tragen dieselben data-act-Werte wie die Pfeile in der
+ *  Fussleiste, laufen also ueber dieselbe Delegation und Beschriftung.
  */
 (function () {
   'use strict';
@@ -211,6 +216,16 @@
       'background:#3E3530;color:#F5F1E8;border:1px solid rgba(201,169,97,.5);border-radius:2rem;',
       'padding:.5rem 1.1rem;font-size:.82rem;opacity:0;pointer-events:none;transition:opacity .2s}',
       '#wf-pdf-toast.is-on{opacity:1}',
+      '#wf-pdf-row{margin:auto;display:flex;align-items:center;gap:1.75rem}',
+      '#wf-pdf-stage{margin:0}',   /* Zentrierung uebernimmt jetzt die Reihe */
+      '#wf-pdf .wf-pdf-side{display:none;width:2.75rem;height:2.75rem;border-radius:50%;',
+      'background:rgba(33,30,34,.55);border:1px solid rgba(245,241,232,.18);opacity:.85;',
+      'transition:opacity .15s ease,background-color .15s ease}',
+      '#wf-pdf .wf-pdf-side svg{width:16px;height:27px;fill:none;stroke:#F5F1E8;stroke-width:2;',
+      'stroke-linecap:round;stroke-linejoin:round}',
+      '#wf-pdf .wf-pdf-side:hover{opacity:1;background:rgba(33,30,34,.8)}',
+      '#wf-pdf .wf-pdf-side:disabled{opacity:.35;background:rgba(33,30,34,.55)}',
+      '@media(pointer:fine){#wf-pdf:not(.wf-pdf-1p) .wf-pdf-side{display:flex}}',
       '@media(max-width:600px){#wf-pdf-title{font-size:.72rem}#wf-pdf-view{padding:.5rem .25rem}}',
       '@media(pointer:coarse){#wf-pdf .wf-pdf-zoom{display:none}}'
     ].join('');
@@ -238,8 +253,14 @@
         '<button class="wf-pdf-btn" data-act="share">' + icon('<path d="M12 15V4M8 7.5 12 3.5l4 4M5 13v6.5h14V13"/>') + '</button>' +
         '<button class="wf-pdf-btn" data-act="close">' + icon('<path d="M6 6l12 12M18 6 6 18"/>') + '</button>' +
       '</div>' +
-      '<div id="wf-pdf-view"><div id="wf-pdf-stage"><canvas id="wf-pdf-canvas"></canvas>' +
-        '<canvas id="wf-pdf-canvas2"></canvas></div><div id="wf-pdf-msg"></div></div>' +
+      '<div id="wf-pdf-view"><div id="wf-pdf-row">' +
+        '<button class="wf-pdf-btn wf-pdf-side" data-act="prev">' +
+          '<svg viewBox="0 0 24 40" aria-hidden="true"><path d="M17 4 6 20l11 16"/></svg></button>' +
+        '<div id="wf-pdf-stage"><canvas id="wf-pdf-canvas"></canvas>' +
+        '<canvas id="wf-pdf-canvas2"></canvas></div>' +
+        '<button class="wf-pdf-btn wf-pdf-side" data-act="next">' +
+          '<svg viewBox="0 0 24 40" aria-hidden="true"><path d="M7 4 18 20 7 36"/></svg></button>' +
+        '</div><div id="wf-pdf-msg"></div></div>' +
       '<div id="wf-pdf-foot">' +
         '<button class="wf-pdf-btn" data-act="prev">' + icon('<path d="M14.5 5 8 12l6.5 7"/>') + '</button>' +
         '<div id="wf-pdf-pageno"></div>' +
@@ -257,6 +278,7 @@
       title: o.querySelector('#wf-pdf-title'),
       prog: o.querySelector('#wf-pdf-prog'),
       view: o.querySelector('#wf-pdf-view'),
+      row: o.querySelector('#wf-pdf-row'),
       stage: o.querySelector('#wf-pdf-stage'),
       canvas: o.querySelector('#wf-pdf-canvas'),
       canvas2: o.querySelector('#wf-pdf-canvas2'),
@@ -374,6 +396,7 @@
     seq++;
 
     el.title.textContent = title;
+    el.root.classList.add('wf-pdf-1p');   /* waehrend des Ladens keine Knoepfe */
     el.canvas.style.display = 'none';
     el.canvas2.style.display = 'none';
     pendingScroll = pendingAnchor = null;
@@ -420,6 +443,7 @@
       msg('');
       el.canvas.style.display = 'block';
       el.foot.style.visibility = pageCount > 1 ? 'visible' : 'hidden';
+      el.root.classList.toggle('wf-pdf-1p', pageCount <= 1);
       render(my);
     })['catch'](function (e) {
       if (my !== seq) return;
@@ -556,7 +580,11 @@
 
   function fitScale(vp1, cols) {
     cols = cols || 1;
-    var availW = el.view.clientWidth - 16;
+    /* Die Knoepfe stehen neben der Seite, ihr Platz gehoert nicht zur Seite -
+       sonst waechst die Doppelseite in einem knappen Fenster in den
+       Querscroll hinein. Bei ausgeblendeten Knoepfen ist die Differenz 0. */
+    var side = el.row.offsetWidth - el.stage.offsetWidth;
+    var availW = el.view.clientWidth - 16 - Math.max(0, side);
     var availH = el.view.clientHeight - 32;
     if (availW < 80 || availH < 80) return 1;
     var byW = availW / (vp1.width * cols);
@@ -661,10 +689,13 @@
 
   function pager() {
     el.pageno.textContent = (twoUp() ? pageNo + '\u2013' + (pageNo + 1) : pageNo) + ' / ' + pageCount;
-    var p = el.root.querySelector('[data-act="prev"]');
-    var n = el.root.querySelector('[data-act="next"]');
-    if (p) p.disabled = pageNo <= 1;
-    if (n) n.disabled = nextPage() > pageCount;
+    /* Fussleiste und Seitenknoepfe tragen dieselben data-act-Werte - alle
+       gleichschalten, sonst bleibt ein Paar aktiv, das nichts mehr tut. */
+    var ps = el.root.querySelectorAll('[data-act="prev"]');
+    var ns = el.root.querySelectorAll('[data-act="next"]');
+    var i;
+    for (i = 0; i < ps.length; i++) ps[i].disabled = pageNo <= 1;
+    for (i = 0; i < ns.length; i++) ns[i].disabled = nextPage() > pageCount;
   }
 
   function go(d) {
@@ -749,7 +780,7 @@
     var b = e.target.closest ? e.target.closest('[data-act]') : null;
     if (!b) {
       /* Klick auf den Hintergrund schliesst, Klick auf die Seite nicht */
-      if (e.target === el.view || e.target === el.root) close();
+      if (e.target === el.view || e.target === el.root || e.target === el.row) close();
       return;
     }
     e.preventDefault();
