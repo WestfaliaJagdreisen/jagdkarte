@@ -1692,4 +1692,33 @@
     } catch (err) {}
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+      // --- Deep-Link: ?kontinent=Europa -> Kontinent fokussieren ---
+    (function () {
+      var MAP = {
+        'europa': 'EU',
+        'asien': 'AS',
+        'afrika': 'AF',
+        'amerika': 'NA',
+        'nordamerika': 'NA',
+        'suedamerika': 'SA',
+        'ozeanien': 'OC'
+      };
+      var m = window.location.search.match(/[?&]kontinent=([^&]+)/);
+      if (!m) return;
+      var key = decodeURIComponent(m[1]).toLowerCase()
+                  .replace(/ü/g, 'ue').replace(/ö/g, 'oe').replace(/ä/g, 'ae');
+      var cont = MAP[key];
+      if (!cont) return;
+
+      var versuche = 0;
+      var timer = setInterval(function () {
+        versuche++;
+        if (typeof zoomTo === 'function' && mount && mount.querySelector('svg')) {
+          clearInterval(timer);
+          setTimeout(function () { zoomTo(cont, null); }, 350);
+        } else if (versuche > 60) {
+          clearInterval(timer);
+        }
+      }, 50);
+    })();
 })();
