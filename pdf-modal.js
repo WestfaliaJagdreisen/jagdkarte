@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.10
+/*! Westfalia pdf-modal v1.0.11
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -54,6 +54,14 @@
  *  4x). Mit dem Vorrat reicht beim Zoomen bis 2x die vorhandene Bitmap - dann
  *  wird nur die CSS-Groesse geaendert, gar nicht neu gerendert. Kein Wechsel
  *  von unscharf auf scharf mehr, weil es keinen Wechsel gibt.
+ *
+ *  v1.0.11: der Zoompunkt bleibt jetzt wirklich stehen. Die Buehne ist per
+ *  margin:auto zentriert; passt die Seite noch ganz ins Bild, gibt es oben und
+ *  unten Leerraum, der beim Aufziehen verschwindet. Die alte Scrollformel
+ *  kannte diesen Versatz nicht - gemessen 256 px Sprung senkrecht. Statt ihn
+ *  nachzurechnen (Zentrierung, Ueberlauf, Polsterung, je Achse verschieden)
+ *  wird der Ankerpunkt als Anteil der Buehne gemerkt und nach dem Umbau
+ *  nachgemessen und ausgeglichen.
  */
 (function () {
   'use strict';
@@ -134,7 +142,8 @@
   var open = false;
   var histPushed = false;
   var rerenderTimer = null;
-  var pendingScroll = null;   /* erst nach dem Neurendern anwendbar */
+  var pendingScroll = null;   /* fester Scrollstand, erst nach dem Neurendern */
+  var pendingAnchor = null;   /* Zoompunkt, der stehen bleiben soll */
   var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
   var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
 
@@ -367,7 +376,7 @@
     el.title.textContent = title;
     el.canvas.style.display = 'none';
     el.canvas2.style.display = 'none';
-    pendingScroll = null;
+    pendingScroll = pendingAnchor = null;
     el.stage.style.transformOrigin = '';
     el.stage.classList.remove('is-spread');
     el.stage.style.transform = '';
@@ -498,26 +507,51 @@
 
   /* Reicht die vorhandene Bitmap fuer den neuen Zoom? Dann nur die CSS-Groesse
      anpassen: sofort, scharf, ohne Rendern und ohne Tausch. Genau dafuer ist
-     der Vorrat da. */
-  function resizeOnly(r) {
+     der Vorrat da. Pruefen und Anwenden sind getrennt - sonst muesste man die
+     Dehnung schon entfernen, bevor feststeht, ob es ohne Rendern geht. */
+  function canResize(r) {
     if (!doc || !el.canvas.width) return false;
     var need = Math.min(window.devicePixelRatio || 1, 2);
     var cvs = [el.canvas, el.canvas2];
-    var plan = [];
+    var any = false;
     for (var i = 0; i < cvs.length; i++) {
       var c = cvs[i];
       if (!c.width || c.style.display === 'none') continue;
       var w = parseFloat(c.style.width) * r;
-      var h = parseFloat(c.style.height) * r;
-      if (!w || !h || c.width / w < need - 0.01) return false;
-      plan.push({ c: c, w: w, h: h });
+      if (!w || c.width / w < need - 0.01) return false;
+      any = true;
     }
-    if (!plan.length) return false;
-    for (var j = 0; j < plan.length; j++) {
-      plan[j].c.style.width = Math.round(plan[j].w) + 'px';
-      plan[j].c.style.height = Math.round(plan[j].h) + 'px';
+    return any;
+  }
+
+  function doResize(r) {
+    var cvs = [el.canvas, el.canvas2];
+    for (var i = 0; i < cvs.length; i++) {
+      var c = cvs[i];
+      if (!c.width || c.style.display === 'none') continue;
+      c.style.width = Math.round(parseFloat(c.style.width) * r) + 'px';
+      c.style.height = Math.round(parseFloat(c.style.height) * r) + 'px';
     }
-    return true;
+  }
+
+  /* Zoompunkt als Anteil der Buehne merken. Anteile bleiben unter gleichmaessiger
+     Skalierung gueltig, die Dehnung vom Pinch stoert die Messung also nicht. */
+  function anchorOf(ax, ay) {
+    var sr = el.stage.getBoundingClientRect();
+    var vr = el.view.getBoundingClientRect();
+    if (!sr.width || !sr.height) return null;
+    return { fx: (vr.left + ax - sr.left) / sr.width,
+             fy: (vr.top + ay - sr.top) / sr.height, ax: ax, ay: ay };
+  }
+
+  /* Nach dem Umbau nachmessen und die Differenz wegscrollen. Das braucht die
+     Zentrierung nicht zu kennen - sie steckt im gemessenen Rechteck. */
+  function applyAnchor(a) {
+    if (!a) return;
+    var sr = el.stage.getBoundingClientRect();
+    var vr = el.view.getBoundingClientRect();
+    el.view.scrollLeft = Math.max(0, el.view.scrollLeft + (sr.left + a.fx * sr.width) - (vr.left + a.ax));
+    el.view.scrollTop = Math.max(0, el.view.scrollTop + (sr.top + a.fy * sr.height) - (vr.top + a.ay));
   }
 
   function fitScale(vp1, cols) {
@@ -606,7 +640,10 @@
           el.view.scrollLeft = Math.max(0, pendingScroll.left);
           el.view.scrollTop = Math.max(0, pendingScroll.top);
           pendingScroll = null;
+        } else if (pendingAnchor) {
+          applyAnchor(pendingAnchor);
         }
+        pendingAnchor = null;
       });
     }).then(function () {
       if (my !== seq) return;
@@ -639,6 +676,7 @@
     /* Nicht sofort auf 0 springen: die alte Seite steht noch, bis die neue
        fertig ist - sie wuerde sonst vor dem Wechsel wegrucken. */
     pendingScroll = { left: 0, top: 0 };
+    pendingAnchor = null;
     render(seq);
   }
 
@@ -653,27 +691,24 @@
     var r = z / old;
     var cx = (ax == null ? el.view.clientWidth / 2 : ax);
     var cy = (ay == null ? el.view.clientHeight / 2 : ay);
-    var target = {
-      left: (el.view.scrollLeft + cx) * r - cx,
-      top: (el.view.scrollTop + cy) * r - cy
-    };
+    var anchor = anchorOf(cx, cy);
 
     /* Deckt der Vorrat den neuen Zoom, ist alles in diesem Block erledigt -
        synchron, also malt der Browser nichts Halbfertiges dazwischen. */
-    if (resizeOnly(r)) {
+    if (canResize(r)) {
       el.stage.style.transform = '';
       el.stage.style.transformOrigin = '';
-      el.view.scrollLeft = Math.max(0, target.left);
-      el.view.scrollTop = Math.max(0, target.top);
-      pendingScroll = null;
+      doResize(r);
+      applyAnchor(anchor);
+      pendingScroll = pendingAnchor = null;
       clearTimeout(rerenderTimer);
       return;
     }
 
-    /* Sonst neu rendern. Der Scrollstand wird NICHT hier gesetzt: die Buehne
-       hat noch die alte Groesse, der Browser wuerde den Wert am alten Maximum
-       kappen - genau das war das Springen. */
-    pendingScroll = target;
+    /* Sonst neu rendern. Ausgeglichen wird NICHT hier: die Buehne hat noch die
+       alte Groesse, der Browser wuerde den Scrollwert am alten Maximum kappen. */
+    pendingAnchor = anchor;
+    pendingScroll = null;
     clearTimeout(rerenderTimer);
     rerenderTimer = setTimeout(function () { render(seq); }, now ? 0 : 90);
   }
