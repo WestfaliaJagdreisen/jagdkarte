@@ -181,7 +181,7 @@
         'Chinesisches Wasserreh': 'Chinese Water Deer',
         'Kudu': 'Greater Kudu',
         'Oryx': 'Gemsbok',
-        'Wapiti': 'Elk',
+        'Wapiti': 'Wapiti',
         'Bergnyala': 'Mountain Nyala',
         'Bongo': 'Bongo',
         'Leopard': 'Leopard',
