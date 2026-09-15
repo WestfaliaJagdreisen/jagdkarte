@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.9
+/*! Westfalia pdf-modal v1.0.10
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -47,6 +47,13 @@
  *  gerendert und erst das fertige Bild in einem einzigen synchronen Block
  *  eingesetzt. Dafuer liegen kurz zwei Saetze Canvas im Speicher, deshalb ist
  *  das Pixelbudget von 12 auf 9 Mio. gesenkt.
+ *
+ *  v1.0.10: auf Touch wird mit doppelter Aufloesung gerendert. Messung bei
+ *  6x gedrosselter CPU: die Renderzeit haengt am Seiteninhalt, kaum an der
+ *  Pixelzahl (schwere Katalogseite 110 ms bei 1x, 291 ms bei 2x, 306 ms bei
+ *  4x). Mit dem Vorrat reicht beim Zoomen bis 2x die vorhandene Bitmap - dann
+ *  wird nur die CSS-Groesse geaendert, gar nicht neu gerendert. Kein Wechsel
+ *  von unscharf auf scharf mehr, weil es keinen Wechsel gibt.
  */
 (function () {
   'use strict';
@@ -66,6 +73,7 @@
   var SWIPE_MAX_Y = 45;
   var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
   var SPREAD_MIN_W = 1024;                   /* darunter wird eine Doppelseite unleserlich */
+  var ZOOM_HEAD = 2;                         /* Aufloesungsvorrat fuer den Pinch-Zoom */
 
   var T = {
     de: {
@@ -484,6 +492,34 @@
   }
 
   /* ---------- Rendern ---------- */
+  function coarse() {
+    return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  }
+
+  /* Reicht die vorhandene Bitmap fuer den neuen Zoom? Dann nur die CSS-Groesse
+     anpassen: sofort, scharf, ohne Rendern und ohne Tausch. Genau dafuer ist
+     der Vorrat da. */
+  function resizeOnly(r) {
+    if (!doc || !el.canvas.width) return false;
+    var need = Math.min(window.devicePixelRatio || 1, 2);
+    var cvs = [el.canvas, el.canvas2];
+    var plan = [];
+    for (var i = 0; i < cvs.length; i++) {
+      var c = cvs[i];
+      if (!c.width || c.style.display === 'none') continue;
+      var w = parseFloat(c.style.width) * r;
+      var h = parseFloat(c.style.height) * r;
+      if (!w || !h || c.width / w < need - 0.01) return false;
+      plan.push({ c: c, w: w, h: h });
+    }
+    if (!plan.length) return false;
+    for (var j = 0; j < plan.length; j++) {
+      plan[j].c.style.width = Math.round(plan[j].w) + 'px';
+      plan[j].c.style.height = Math.round(plan[j].h) + 'px';
+    }
+    return true;
+  }
+
   function fitScale(vp1, cols) {
     cols = cols || 1;
     var availW = el.view.clientWidth - 16;
@@ -512,23 +548,26 @@
       var vp1 = pages[0].getViewport({ scale: 1 });
       var cols = pages.length;
       var scale = fitScale(vp1, cols) * zoom;
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      /* Auf Touch mit Vorrat rendern, damit Pinch-Zoom ohne Neurendern scharf
+         bleibt. Auf dem Desktop bringt das nichts: dort aendert der Zoom die
+         Layoutgroesse, das laesst sich nicht wegpuffern. */
+      var ss = Math.min(window.devicePixelRatio || 1, 2) * (coarse() ? ZOOM_HEAD : 1);
       /* Pixelbudget gilt fuer die ganze Buehne, nicht je Canvas - sonst
          sprengt die Doppelseite auf Retina den iOS-Canvasspeicher. */
       var w = vp1.width * scale * cols, h = vp1.height * scale;
-      if (w * h * dpr * dpr > MAX_PIXELS) dpr = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
+      if (w * h * ss * ss > MAX_PIXELS) ss = Math.max(1, Math.sqrt(MAX_PIXELS / (w * h)));
       /* Abseits rendern. Das alte Bild bleibt stehen - notfalls gedehnt vom
          Pinch - bis das neue vollstaendig da ist. */
       var offs = [];
       var sizes = [];
       var proms = [];
       for (var i = 0; i < cols; i++) {
-        var vp = pages[i].getViewport({ scale: scale * dpr });
+        var vp = pages[i].getViewport({ scale: scale * ss });
         var off = document.createElement('canvas');
         off.width = Math.max(1, Math.floor(vp.width));
         off.height = Math.max(1, Math.floor(vp.height));
         offs.push(off);
-        sizes.push({ w: Math.floor(vp.width / dpr), h: Math.floor(vp.height / dpr) });
+        sizes.push({ w: Math.floor(vp.width / ss), h: Math.floor(vp.height / ss) });
         var task = pages[i].render({
           canvasContext: off.getContext('2d', { alpha: false }),
           viewport: vp
@@ -611,16 +650,30 @@
     }
     var old = zoom;
     zoom = z;
-    /* Zoompunkt festhalten. Der Scrollstand wird NICHT hier gesetzt: die
-       Buehne hat noch die alte Groesse, der Browser wuerde den Wert am
-       alten Maximum kappen - genau das war das Springen. */
     var r = z / old;
     var cx = (ax == null ? el.view.clientWidth / 2 : ax);
     var cy = (ay == null ? el.view.clientHeight / 2 : ay);
-    pendingScroll = {
+    var target = {
       left: (el.view.scrollLeft + cx) * r - cx,
       top: (el.view.scrollTop + cy) * r - cy
     };
+
+    /* Deckt der Vorrat den neuen Zoom, ist alles in diesem Block erledigt -
+       synchron, also malt der Browser nichts Halbfertiges dazwischen. */
+    if (resizeOnly(r)) {
+      el.stage.style.transform = '';
+      el.stage.style.transformOrigin = '';
+      el.view.scrollLeft = Math.max(0, target.left);
+      el.view.scrollTop = Math.max(0, target.top);
+      pendingScroll = null;
+      clearTimeout(rerenderTimer);
+      return;
+    }
+
+    /* Sonst neu rendern. Der Scrollstand wird NICHT hier gesetzt: die Buehne
+       hat noch die alte Groesse, der Browser wuerde den Wert am alten Maximum
+       kappen - genau das war das Springen. */
+    pendingScroll = target;
     clearTimeout(rerenderTimer);
     rerenderTimer = setTimeout(function () { render(seq); }, now ? 0 : 90);
   }
