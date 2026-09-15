@@ -1483,12 +1483,12 @@
       });
  
       currentZoomCont = cont;
-      clickedSvg.style.transition = 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
+      clickedSvg.style.transition = 'transform 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
       applyZoomTransform(cont, clickedSvg);
  
       var isSvg2 = clickedSvg.classList.contains('jk-svg2');
       var targetOffset = isSvg2 ? -halfWidth : 0;
-      rotor.style.transition = 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
+      rotor.style.transition = 'transform 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
       rotor.style.transform = 'translateX(' + targetOffset + 'px)';
       offset = targetOffset;
  
@@ -1582,7 +1582,7 @@
           if (animalInfo) animalInfo.classList.remove('jk-show');
         }, delay);
       });
-      setTimeout(function() { if (mySeq !== stateSeq) return; panel.classList.add('jk-show'); }, 500);
+      setTimeout(function() { if (mySeq !== stateSeq) return; panel.classList.add('jk-show'); }, 400);
     }
  
     function reset() {
