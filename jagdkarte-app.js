@@ -1582,7 +1582,7 @@
           if (animalInfo) animalInfo.classList.remove('jk-show');
         }, delay);
       });
-      setTimeout(function() { if (mySeq !== stateSeq) return; panel.classList.add('jk-show'); }, 400);
+      setTimeout(function() { if (mySeq !== stateSeq) return; panel.classList.add('jk-show'); }, 500);
     }
  
     function reset() {
