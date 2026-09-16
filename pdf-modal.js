@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.12
+/*! Westfalia pdf-modal v1.0.13
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -67,6 +67,12 @@
  *  Nur bei pointer:fine - auf Touch fuellt die Seite die Breite, dort laegen
  *  sie auf dem Text. Sie tragen dieselben data-act-Werte wie die Pfeile in der
  *  Fussleiste, laufen also ueber dieselbe Delegation und Beschriftung.
+ *
+ *  v1.0.13: die Seitenzahl in der Fussleiste ist anklickbar. Ein Klick tauscht
+ *  sie gegen ein Eingabefeld, Enter springt, Escape bricht ab. Escape schliesst
+ *  waehrend der Eingabe NICHT das Overlay, und der Fokusverlust springt nicht -
+ *  auf dem Handy ist Wegtippen die uebliche Art, die Tastatur zu schliessen.
+ *  Im Doppelseitenmodus faellt die Zielseite auf ihre Doppelseite (57 -> 56|57).
  */
 (function () {
   'use strict';
@@ -102,6 +108,7 @@
       zoomOut: 'Verkleinern',
       copied: 'Link kopiert',
       page: 'Seite',
+      jump: 'Seite aufrufen',
       twoPage: 'Doppelseite',
       onePage: 'Einzelseite'
     },
@@ -118,6 +125,7 @@
       zoomOut: 'Zoom out',
       copied: 'Link copied',
       page: 'Page',
+      jump: 'Go to page',
       twoPage: 'Two pages',
       onePage: 'Single page'
     }
@@ -151,6 +159,7 @@
   var pendingAnchor = null;   /* Zoompunkt, der stehen bleiben soll */
   var spreadDoc = false;   /* darf dieses Dokument ueberhaupt als Doppelseite? */
   var spreadPref = null;   /* null = automatisch, true/false = vom Nutzer gesetzt */
+  var jumping = false;     /* Eingabefeld der Fussleiste ist offen */
 
   /* ---------- Helfer ---------- */
   function isPdfHref(h) { return /\.pdf(\?|#|$)/i.test(h || ''); }
@@ -211,7 +220,23 @@
       'padding:.5rem .6rem calc(.5rem + env(safe-area-inset-bottom,0px));',
       'background:rgba(33,30,34,.88);border-top:1px solid rgba(245,241,232,.14)}',
       '#wf-pdf-pageno{color:#F5F1E8;font-family:Oswald,"Oswald Local",sans-serif;font-size:.82rem;',
-      'letter-spacing:.08em;min-width:4.5rem;text-align:center;opacity:.9}',
+      'letter-spacing:.08em;min-width:4.5rem;opacity:.9;cursor:pointer;',
+      /* 44px hohes Tippziel. Die Zahl steht optisch genau wie vorher, nur die
+         Flaeche drumherum waechst - die Fussleiste wird dadurch 4px hoeher.
+         Die Striche liegen per text-decoration am Text, nicht als border am
+         Kasten: sonst haengen sie 24px unter der Zahl. */
+      'min-height:2.75rem;display:flex;align-items:center;justify-content:center;',
+      '-webkit-text-decoration:underline dashed rgba(201,169,97,.55);',
+      'text-decoration:underline dashed rgba(201,169,97,.55);text-underline-offset:4px;',
+      '-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}',
+      /* Eingabefeld: eigenes Element neben der Zahl, nicht dieselbe Box - so
+         kann pager() die Zahl jederzeit schreiben, ohne die Eingabe zu fressen.
+         Gleiche Hoehe wie die Zahl, damit die Leiste beim Wechsel nicht springt. */
+      '#wf-pdf-jump{width:4.5rem;box-sizing:border-box;min-height:2.75rem;',
+      'background:rgba(245,241,232,.12);',
+      'color:#F5F1E8;font-family:Oswald,"Oswald Local",sans-serif;font-size:.82rem;',
+      'letter-spacing:.08em;text-align:center;padding:.18rem .3rem;',
+      'border:1px solid rgba(201,169,97,.6);border-radius:.2rem;outline:none;-webkit-appearance:none}',
       '#wf-pdf-toast{position:fixed;left:50%;bottom:5.5rem;transform:translateX(-50%);z-index:2147483001;',
       'background:#3E3530;color:#F5F1E8;border:1px solid rgba(201,169,97,.5);border-radius:2rem;',
       'padding:.5rem 1.1rem;font-size:.82rem;opacity:0;pointer-events:none;transition:opacity .2s}',
@@ -263,7 +288,9 @@
         '</div><div id="wf-pdf-msg"></div></div>' +
       '<div id="wf-pdf-foot">' +
         '<button class="wf-pdf-btn" data-act="prev">' + icon('<path d="M14.5 5 8 12l6.5 7"/>') + '</button>' +
-        '<div id="wf-pdf-pageno"></div>' +
+        '<div id="wf-pdf-pageno" data-act="jump"></div>' +
+        '<input id="wf-pdf-jump" type="text" inputmode="numeric" autocomplete="off" ' +
+          'spellcheck="false" style="display:none">' +
         '<button class="wf-pdf-btn" data-act="next">' + icon('<path d="M9.5 5 16 12l-6.5 7"/>') + '</button>' +
       '</div>';
     document.body.appendChild(o);
@@ -285,6 +312,7 @@
       msg: o.querySelector('#wf-pdf-msg'),
       foot: o.querySelector('#wf-pdf-foot'),
       pageno: o.querySelector('#wf-pdf-pageno'),
+      jump: o.querySelector('#wf-pdf-jump'),
       toast: toast
     };
     el.ctx = el.canvas.getContext('2d', { alpha: false });
@@ -292,6 +320,8 @@
 
     o.addEventListener('click', onUiClick, false);
     o.addEventListener('dblclick', onDblClick, false);
+    el.jump.addEventListener('keydown', onJumpKey, false);
+    el.jump.addEventListener('blur', function () { closeJump(false); }, false);
     el.view.addEventListener('wheel', onWheel, { passive: false });
     el.view.addEventListener('touchstart', onTouchStart, { passive: false });
     el.view.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -300,7 +330,7 @@
   }
 
   function label() {
-    var m = { out: 'zoomOut', 'in': 'zoomIn', dl: 'download', share: 'share', close: 'close', prev: 'prev', next: 'next' };
+    var m = { out: 'zoomOut', 'in': 'zoomIn', dl: 'download', share: 'share', close: 'close', prev: 'prev', next: 'next', jump: 'jump' };
     var b = el.root.querySelectorAll('[data-act]');
     for (var i = 0; i < b.length; i++) {
       var k = m[b[i].getAttribute('data-act')];
@@ -404,6 +434,7 @@
     el.stage.classList.remove('is-spread');
     el.stage.style.transform = '';
     el.foot.style.visibility = 'hidden';
+    closeJump(false);
     el.pageno.textContent = '';
     msg(t('loading'));
     label();
@@ -489,6 +520,7 @@
     el.canvas.width = el.canvas.height = 0;
     el.canvas2.width = el.canvas2.height = 0;
     busy(false);
+    closeJump(false);
     el.root.classList.remove('is-on');
     document.removeEventListener('keydown', onKey, false);
     window.removeEventListener('popstate', onPop, false);
@@ -698,10 +730,15 @@
     for (i = 0; i < ns.length; i++) ns[i].disabled = nextPage() > pageCount;
   }
 
-  function go(d) {
-    if (!doc) return;
-    var n = d > 0 ? nextPage() : prevPage();
-    if (n < 1 || n > pageCount) return;
+  function goTo(n) {
+    if (!doc || !pageCount) return;
+    n = Math.round(n);
+    if (!isFinite(n)) return;
+    if (n < 1) n = 1;
+    if (n > pageCount) n = pageCount;
+    /* Im Doppelseitenmodus gibt es nur linke Seiten: 57 landet auf 56|57. */
+    if (spreadNow() && n > 1) n = leftOf(n);
+    if (n === pageNo) return;
     pageNo = n;
     zoom = 1;
     /* Nicht sofort auf 0 springen: die alte Seite steht noch, bis die neue
@@ -709,6 +746,46 @@
     pendingScroll = { left: 0, top: 0 };
     pendingAnchor = null;
     render(seq);
+  }
+
+  function go(d) {
+    if (!doc) return;
+    var n = d > 0 ? nextPage() : prevPage();
+    if (n < 1 || n > pageCount) return;
+    goTo(n);
+  }
+
+  /* ---------- Seite direkt aufrufen ---------- */
+  function openJump() {
+    if (!doc || !pageCount || jumping) return;
+    jumping = true;
+    el.jump.value = '';
+    el.jump.placeholder = String(pageNo);
+    el.jump.setAttribute('aria-label', t('jump'));
+    el.pageno.style.display = 'none';
+    el.jump.style.display = 'block';
+    try { el.jump.focus(); } catch (e) {}
+  }
+
+  /* commit=false ist der Normalfall (Escape, Fokusverlust): nur zurueck zur
+     Anzeige. Nur Enter springt wirklich. */
+  function closeJump(commit) {
+    if (!jumping) return;
+    var v = el.jump.value;
+    jumping = false;
+    el.jump.style.display = 'none';
+    el.pageno.style.display = '';
+    pager();
+    if (!commit) return;
+    var n = parseInt(v, 10);
+    if (!/^\s*\d+\s*$/.test(v) || isNaN(n)) return;   /* Unsinn: nicht springen */
+    goTo(n);
+  }
+
+  function onJumpKey(e) {
+    var k = e.key;
+    if (k === 'Enter') { e.preventDefault(); closeJump(true); }
+    else if (k === 'Escape') { e.preventDefault(); closeJump(false); }
   }
 
   function setZoom(z, ax, ay, now) {
@@ -790,6 +867,7 @@
     else if (a === 'next') go(1);
     else if (a === 'in') setZoom(zoom * 1.35);
     else if (a === 'out') setZoom(zoom / 1.35);
+    else if (a === 'jump') openJump();
     else if (a === 'dl') download();
     else if (a === 'share') share();
     else if (a === 'spread') {
@@ -817,6 +895,11 @@
 
   function onKey(e) {
     if (!open) return;
+    /* Waehrend der Eingabe hat das Feld Vorrang: Escape bricht nur die Eingabe
+       ab, Pfeile gehoeren dem Cursor. Die zweite Bedingung faengt den Moment
+       ab, in dem closeJump() das Flag schon zurueckgesetzt hat, die Taste aber
+       noch hochblubbert - sonst schliesst dasselbe Escape gleich das Overlay. */
+    if (jumping || (el.jump && e.target === el.jump)) return;
     var k = e.key;
     if (k === 'Escape') { e.preventDefault(); close(); }
     else if (k === 'ArrowRight' || k === 'PageDown') { e.preventDefault(); go(1); }
