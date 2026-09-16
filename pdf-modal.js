@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.16
+/*! Westfalia pdf-modal v1.0.17
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -102,6 +102,13 @@
  *      Bildhoehe da, quer auf dem Telefon in 4,3-facher. Im Hochformat auf dem
  *      Telefon war die Regel wirkungslos, weil dort die Breite ohnehin der
  *      engere Wert ist. Jetzt durchgehend die ganze Seite.
+ *
+ *  v1.0.17: eingezoomt blaettert ein Wisch ueber den Rand hinaus. Massgeblich
+ *  ist die Lage beim ANSETZEN der Geste: wer schon am rechten Rand steht und
+ *  weiter nach links wischt, blaettert; die Geste, die erst zum Rand fuehrt,
+ *  blaettert absichtlich nicht - sonst kippt jedes kraeftige Scrollen ans Ende
+ *  gleich die Seite um. Also hoechstens zwei Wische. Nach dem Blaettern steht
+ *  der Zoom wieder auf 1, wie bisher.
  */
 (function () {
   'use strict';
@@ -970,8 +977,15 @@
       tState = { mode: 'pinch', d0: dist(e.touches[0], e.touches[1]), k: 1,
                  ax: mx - vr.left, ay: my - vr.top };
     } else if (e.touches.length === 1) {
+      var v = el.view;
       tState = { mode: 'swipe', x: e.touches[0].clientX, y: e.touches[0].clientY,
-                 lx: e.touches[0].clientX, ly: e.touches[0].clientY };
+                 lx: e.touches[0].clientX, ly: e.touches[0].clientY,
+                 /* Lage beim Ansetzen - nur wer schon am Rand steht, blaettert
+                    eingezoomt ueber den Rand hinaus */
+                 atL: v.scrollLeft <= 2,
+                 atR: v.scrollLeft >= v.scrollWidth - v.clientWidth - 2,
+                 atT: v.scrollTop <= 2,
+                 atB: v.scrollTop >= v.scrollHeight - v.clientHeight - 2 };
     }
   }
 
@@ -995,11 +1009,21 @@
      verwirft zu viele echte Gesten - entscheidend ist, welche Achse deutlich
      laenger ist. Diagonales bleibt damit weiter wirkungslos. */
   function endSwipe(x, y) {
-    if (zoom > 1.05) return;
     var dx = x - tState.x, dy = y - tState.y;
     var ax = Math.abs(dx), ay = Math.abs(dy);
-    if (ax > SWIPE_PX && ax >= ay * SWIPE_RATIO) go(dx < 0 ? 1 : -1);
-    else if (ay > SWIPE_PX && ay >= ax * SWIPE_RATIO && !scrollable()) go(dy < 0 ? 1 : -1);
+    var horiz = ax > SWIPE_PX && ax >= ay * SWIPE_RATIO;
+    var vert = ay > SWIPE_PX && ay >= ax * SWIPE_RATIO;
+    if (zoom > 1.05) {
+      /* Eingezoomt gehoert die Geste dem Scrollen. Blaettern nur ueber einen
+         Rand hinaus, an dem man beim Ansetzen schon stand. */
+      if (horiz && dx < 0 && tState.atR) go(1);
+      else if (horiz && dx > 0 && tState.atL) go(-1);
+      else if (vert && dy < 0 && tState.atB) go(1);
+      else if (vert && dy > 0 && tState.atT) go(-1);
+      return;
+    }
+    if (horiz) go(dx < 0 ? 1 : -1);
+    else if (vert && !scrollable()) go(dy < 0 ? 1 : -1);
   }
 
   function onTouchEnd(e) {
