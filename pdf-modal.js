@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.15
+/*! Westfalia pdf-modal v1.0.16
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -88,6 +88,20 @@
  *  Umweg ueber maximum-scale im Viewport scheidet aus, er wuerde das Zoomen der
  *  ganzen Website abschalten. Die Zahl daneben bleibt bei .82rem, das Feld ist
  *  darum waehrend der Eingabe etwas groesser als die Anzeige davor.
+ *
+ *  v1.0.16: zwei Korrekturen, die parallel zu 1.0.13-1.0.15 entstanden sind und
+ *  hier nachgezogen werden.
+ *  (a) Wischerkennung: bisher galt eine feste Obergrenze von 45 px auf der
+ *      Nebenachse. Der Daumen dreht aber um den Ballen - ein Wisch ueber 200 px
+ *      nimmt leicht 60 bis 120 px der anderen Achse mit. Gemessen schlug ab
+ *      45 px Versatz jede Geste fehl. Jetzt zaehlt das Verhaeltnis der Achsen,
+ *      Mindestweg 60 -> 45 px. Dazu touchcancel, damit eine vom Browser
+ *      abgebrochene Geste nicht stillschweigend verfaellt.
+ *  (b) Anfangsgroesse: auf Touch wurde immer auf Breite gefuellt, ohne die
+ *      Hoehe anzusehen. Auf Tablets stand die Seite damit in 2,3- bis 2,5-facher
+ *      Bildhoehe da, quer auf dem Telefon in 4,3-facher. Im Hochformat auf dem
+ *      Telefon war die Regel wirkungslos, weil dort die Breite ohnehin der
+ *      engere Wert ist. Jetzt durchgehend die ganze Seite.
  */
 (function () {
   'use strict';
@@ -103,8 +117,8 @@
   var MIN_ZOOM = 1;
   var DBL_ZOOM = 2.2;
   var MAX_PIXELS = 9e6;    /* Canvas-Obergrenze; beim Tausch liegen kurz zwei Saetze */
-  var SWIPE_PX = 60;
-  var SWIPE_MAX_Y = 45;
+  var SWIPE_PX = 45;      /* Mindestweg auf der Hauptachse */
+  var SWIPE_RATIO = 1.3;  /* so viel laenger muss die Hauptachse sein */
   var SPREAD_RE = /(katalog|preisliste)/i;   /* Dateiname entscheidet, kein Markup noetig */
   var SPREAD_MIN_W = 1024;                   /* darunter wird eine Doppelseite unleserlich */
   var ZOOM_HEAD = 2;                         /* Aufloesungsvorrat fuer den Pinch-Zoom */
@@ -345,6 +359,7 @@
     el.view.addEventListener('touchstart', onTouchStart, { passive: false });
     el.view.addEventListener('touchmove', onTouchMove, { passive: false });
     el.view.addEventListener('touchend', onTouchEnd, false);
+    el.view.addEventListener('touchcancel', onTouchCancel, false);
     label();
   }
 
@@ -638,13 +653,11 @@
     var availW = el.view.clientWidth - 16 - Math.max(0, side);
     var availH = el.view.clientHeight - 32;
     if (availW < 80 || availH < 80) return 1;
-    var byW = availW / (vp1.width * cols);
-    var byH = availH / vp1.height;
-    /* Doppelseite immer ganz sichtbar - halb abgeschnitten waere sie sinnlos */
-    if (cols > 1) return Math.min(byW, byH);
-    /* Schmal/Touch: Breite fuellen, vertikal scrollen. Desktop: ganze Seite. */
-    var narrow = window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches;
-    return narrow ? byW : Math.min(byW, byH);
+    /* Immer die ganze Seite, auch einseitig. Auf Breite fuellen sah auf dem
+       Telefon im Hochformat gleich aus - dort ist die Breite ohnehin der
+       engere Wert - liess die Seite auf Tablets und im Querformat aber weit
+       ueber den Bildrand hinauslaufen. */
+    return Math.min(availW / (vp1.width * cols), availH / vp1.height);
   }
 
   function render(my) {
@@ -957,7 +970,8 @@
       tState = { mode: 'pinch', d0: dist(e.touches[0], e.touches[1]), k: 1,
                  ax: mx - vr.left, ay: my - vr.top };
     } else if (e.touches.length === 1) {
-      tState = { mode: 'swipe', x: e.touches[0].clientX, y: e.touches[0].clientY };
+      tState = { mode: 'swipe', x: e.touches[0].clientX, y: e.touches[0].clientY,
+                 lx: e.touches[0].clientX, ly: e.touches[0].clientY };
     }
   }
 
@@ -969,7 +983,23 @@
       k = Math.max(MIN_ZOOM / zoom, Math.min(MAX_ZOOM / zoom, k));
       tState.k = k;
       el.stage.style.transform = 'scale(' + k + ')';
+    } else if (tState.mode === 'swipe' && e.touches.length === 1) {
+      /* Letzte Position mitschreiben - bei touchcancel liefert der Browser
+         keine brauchbaren Koordinaten mehr. */
+      tState.lx = e.touches[0].clientX;
+      tState.ly = e.touches[0].clientY;
     }
+  }
+
+  /* Der Daumen wischt im Bogen. Eine feste Obergrenze auf der Nebenachse
+     verwirft zu viele echte Gesten - entscheidend ist, welche Achse deutlich
+     laenger ist. Diagonales bleibt damit weiter wirkungslos. */
+  function endSwipe(x, y) {
+    if (zoom > 1.05) return;
+    var dx = x - tState.x, dy = y - tState.y;
+    var ax = Math.abs(dx), ay = Math.abs(dy);
+    if (ax > SWIPE_PX && ax >= ay * SWIPE_RATIO) go(dx < 0 ? 1 : -1);
+    else if (ay > SWIPE_PX && ay >= ax * SWIPE_RATIO && !scrollable()) go(dy < 0 ? 1 : -1);
   }
 
   function onTouchEnd(e) {
@@ -988,15 +1018,22 @@
       }
       return;
     }
-    if (tState.mode === 'swipe' && zoom <= 1.05 && e.changedTouches && e.changedTouches.length === 1) {
-      var dx = e.changedTouches[0].clientX - tState.x;
-      var dy = e.changedTouches[0].clientY - tState.y;
-      if (Math.abs(dx) > SWIPE_PX && Math.abs(dy) < SWIPE_MAX_Y) {
-        go(dx < 0 ? 1 : -1);
-      } else if (Math.abs(dy) > SWIPE_PX && Math.abs(dx) < SWIPE_MAX_Y && !scrollable()) {
-        /* Hochwischen heisst weiter, wie beim Scrollen durch eine Liste */
-        go(dy < 0 ? 1 : -1);
-      }
+    if (tState.mode === 'swipe') {
+      var ct = (e.changedTouches && e.changedTouches.length === 1) ? e.changedTouches[0] : null;
+      endSwipe(ct ? ct.clientX : tState.lx, ct ? ct.clientY : tState.ly);
+    }
+    tState = null;
+  }
+
+  /* Bricht der Browser die Geste ab (Systemgeste, Scrollversuch), kommt kein
+     touchend - ohne das hier verfaellt der Wisch stillschweigend. */
+  function onTouchCancel() {
+    if (!tState) return;
+    if (tState.mode === 'pinch') {
+      el.stage.style.transform = '';
+      el.stage.style.transformOrigin = '';
+    } else if (tState.mode === 'swipe') {
+      endSwipe(tState.lx, tState.ly);
     }
     tState = null;
   }
