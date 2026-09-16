@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.14
+/*! Westfalia pdf-modal v1.0.15
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -81,6 +81,13 @@
  *  nicht. Tippt man dabei auf die Buehne, schliesst dieselbe Geste zusaetzlich
  *  das Overlay - bewusst so belassen. Auf dem Desktop bricht Escape weiterhin
  *  nur die Eingabe ab.
+ *
+ *  v1.0.15: das Eingabefeld traegt 16px statt .82rem. Safari auf iOS zoomt die
+ *  komplette Seite, sobald ein Feld mit weniger als 16px den Fokus bekommt -
+ *  beim Antippen der Seitenzahl sprang also die ganze Oberflaeche auf. Der
+ *  Umweg ueber maximum-scale im Viewport scheidet aus, er wuerde das Zoomen der
+ *  ganzen Website abschalten. Die Zahl daneben bleibt bei .82rem, das Feld ist
+ *  darum waehrend der Eingabe etwas groesser als die Anzeige davor.
  */
 (function () {
   'use strict';
@@ -240,9 +247,12 @@
       /* Eingabefeld: eigenes Element neben der Zahl, nicht dieselbe Box - so
          kann pager() die Zahl jederzeit schreiben, ohne die Eingabe zu fressen.
          Gleiche Hoehe wie die Zahl, damit die Leiste beim Wechsel nicht springt. */
+      /* 16px ist Pflicht, nicht Geschmack: darunter zoomt iOS beim Fokus die
+         ganze Seite auf. Absolut in px, damit eine geaenderte Wurzelgroesse
+         den Wert nicht wieder unter die Schwelle druecken kann. */
       '#wf-pdf-jump{width:4.5rem;box-sizing:border-box;min-height:2.75rem;',
       'background:rgba(245,241,232,.12);',
-      'color:#F5F1E8;font-family:Oswald,"Oswald Local",sans-serif;font-size:.82rem;',
+      'color:#F5F1E8;font-family:Oswald,"Oswald Local",sans-serif;font-size:16px;',
       'letter-spacing:.08em;text-align:center;padding:.18rem .3rem;',
       'border:1px solid rgba(201,169,97,.6);border-radius:.2rem;outline:none;-webkit-appearance:none}',
       '#wf-pdf-toast{position:fixed;left:50%;bottom:5.5rem;transform:translateX(-50%);z-index:2147483001;',
