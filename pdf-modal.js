@@ -1,4 +1,4 @@
-/*! Westfalia pdf-modal v1.0.13
+/*! Westfalia pdf-modal v1.0.14
  *  PDF-Links oeffnen in einem Overlay statt in einem neuen Tab.
  *  Blaettern, Zoomen, Download, Teilen. Rendert mit PDF.js auf Canvas,
  *  damit auch iOS/Android anzeigen koennen (iframe-PDF ist dort kaputt).
@@ -73,6 +73,14 @@
  *  waehrend der Eingabe NICHT das Overlay, und der Fokusverlust springt nicht -
  *  auf dem Handy ist Wegtippen die uebliche Art, die Tastatur zu schliessen.
  *  Im Doppelseitenmodus faellt die Zielseite auf ihre Doppelseite (57 -> 56|57).
+ *
+ *  v1.0.14: der Fokusverlust springt jetzt, statt abzubrechen. Grund: iOS gibt
+ *  einer Zifferntastatur (inputmode numeric) keine Eingabetaste, auf dem iPhone
+ *  gab es also ueberhaupt keinen Weg, den Sprung auszuloesen. Wegtippen ist dort
+ *  die natuerliche Bestaetigung. Leeres oder unsinniges Feld springt weiterhin
+ *  nicht. Tippt man dabei auf die Buehne, schliesst dieselbe Geste zusaetzlich
+ *  das Overlay - bewusst so belassen. Auf dem Desktop bricht Escape weiterhin
+ *  nur die Eingabe ab.
  */
 (function () {
   'use strict';
@@ -321,7 +329,8 @@
     o.addEventListener('click', onUiClick, false);
     o.addEventListener('dblclick', onDblClick, false);
     el.jump.addEventListener('keydown', onJumpKey, false);
-    el.jump.addEventListener('blur', function () { closeJump(false); }, false);
+    /* true: Wegtippen ist auf dem Handy die einzige Bestaetigung, die es gibt. */
+    el.jump.addEventListener('blur', function () { closeJump(true); }, false);
     el.view.addEventListener('wheel', onWheel, { passive: false });
     el.view.addEventListener('touchstart', onTouchStart, { passive: false });
     el.view.addEventListener('touchmove', onTouchMove, { passive: false });
@@ -767,8 +776,9 @@
     try { el.jump.focus(); } catch (e) {}
   }
 
-  /* commit=false ist der Normalfall (Escape, Fokusverlust): nur zurueck zur
-     Anzeige. Nur Enter springt wirklich. */
+  /* commit=true springt, sofern etwas Sinnvolles im Feld steht: Enter und
+     Fokusverlust. commit=false bricht nur ab: Escape und das Aufraeumen beim
+     Oeffnen/Schliessen des Overlays. */
   function closeJump(commit) {
     if (!jumping) return;
     var v = el.jump.value;
