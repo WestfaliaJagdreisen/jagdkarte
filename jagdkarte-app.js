@@ -1,4 +1,4 @@
-// Version: 20260917_v83_cms_sync_laender_arten
+// Version: 20260917_v84_drueckjagd_kacheln_aus_cms
 (function () {
   var retryCount = 0;
   function init() {
@@ -289,10 +289,12 @@
                       'Europe': 'EU', 'Asia': 'AS', 'Africa': 'AF', 'Americas': 'AMERIKA', 'America': 'AMERIKA', 'Oceania': 'OC' };
     var KONT_MEHR = { 'EU': ['EU', 'Europa'], 'AS': ['AS', 'Asien'], 'AF': ['AF', 'Afrika'], 'AMERIKA': ['NA', 'Amerika'], 'OC': ['OC', 'Ozeanien'] };
 
-    // Jagdart-Kacheln, die kein Wildarten-Eintrag sind (filtern ueber jagdart_equal).
-    var JAGDART_KACHELN = {
-      'PL': [ { name: 'Drückjagd', img: 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a84306b617ad5354ba3cbbd_drueckjagd-polen-lutowko-hero-p-500.jpg', filter: 'jagdart' } ]
-    };
+    // Jagdart-Kacheln (seit v84 aus dem CMS): Jedes Land mit mindestens einer
+    // veroeffentlichten Reise der Jagdart "Drückjagd" bekommt am Ende der
+    // Galerie eine Kachel "Drückjagd" (Filter jagdart_equal). Quelle ist
+    // #reisen-data: .rd-land / .rd-bild / .rd-jagdarten > .rd-jagdart.
+    // Bild = Featured Image der ersten passenden Reise.
+    var KACHEL_JAGDARTEN = ['Drückjagd'];
 
     // Vorschaubilder 500 px, Schluessel = Datei-ID des CMS-Bildes (Feld
     // "Repraesentatives Bild", in DE und EN identisch). Wird das Bild im CMS
@@ -398,8 +400,16 @@
         return m ? m[1] : '';
     }
 
+    // Webflow-Variante 500 px: "-p-500" vor der Endung. Existiert nur fuer
+    // Bilder, die ueber den Designer hochgeladen wurden -> onerror faellt in
+    // renderAnimalInfo auf das Original (data-full) zurueck.
+    function jkBild500(url) {
+        return url ? url.replace(/\.(jpe?g|png|webp)$/i, '-p-500.$1') : '';
+    }
+
     var BUSINESS = { 'EU': [], 'AS': [], 'AF': [], 'AMERIKA': [], 'OC': [] };
     var ANIMAL_DATA = {};
+    var NAME_ZU_ISO = {};
     (function () {
         var src = document.getElementById('laender-data');
         if (!src) return;
@@ -427,8 +437,31 @@
                     img:   THUMB_500[jkDateiId(url)] || url
                 });
             });
-            ANIMAL_DATA[iso] = arten.concat(JAGDART_KACHELN[iso] || []);
+            ANIMAL_DATA[iso] = arten;
+            NAME_ZU_ISO[name] = iso;
         });
+
+        // Jagdart-Kacheln aus den Reisen anhaengen
+        var rd = document.getElementById('reisen-data');
+        if (rd) {
+            var gesetzt = {};
+            rd.querySelectorAll('.rd-slug').forEach(function (slugEl) {
+                var item = slugEl.parentNode;
+                var iso  = NAME_ZU_ISO[jkText(item.querySelector('.rd-land'))];
+                if (!iso || !ANIMAL_DATA[iso]) return;
+                var arten = {};
+                item.querySelectorAll('.rd-jagdart').forEach(function (j) { arten[jkText(j)] = true; });
+                KACHEL_JAGDARTEN.forEach(function (ja) {
+                    var key = iso + '|' + ja;
+                    if (gesetzt[key]) return;
+                    if (!arten[ja] && !arten[jagdartLabel(ja)]) return;
+                    gesetzt[key] = true;
+                    var bildEl = item.querySelector('.rd-bild');
+                    var full = bildEl ? (bildEl.getAttribute('src') || '') : '';
+                    ANIMAL_DATA[iso].push({ name: ja, filter: 'jagdart', img: jkBild500(full), full: full });
+                });
+            });
+        }
         Object.keys(BUSINESS).forEach(function (key) {
             BUSINESS[key].sort(function (a, b) { return a.name.localeCompare(b.name, 'de'); });
             BUSINESS[key].push({ name: 'Weitere Länder (' + KONT_MEHR[key][1] + ')\u2026', iso: null, more: KONT_MEHR[key][0] });
@@ -1132,14 +1165,16 @@
         var items = structured.map(function(a) {
             var isJagdart = a.filter === 'jagdart';
             return { name: a.name, label: isJagdart ? jagdartLabel(a.name) : (a.label || wildLabel(a.name)),
-                     img: a.img || PLACEHOLDER_IMG, href: buildAnimalUrl(iso, a) };
+                     img: a.img || PLACEHOLDER_IMG, full: a.full || '', href: buildAnimalUrl(iso, a) };
         });
  
         var count = items.length;
         var galleryHtml = '';
         items.forEach(function(it) {
             galleryHtml += '<a class="jk-animal-item" href="' + it.href + '" data-iso="' + iso + '" data-animal="' + it.name + '">' +
-                             '<img class="jk-animal-img" src="' + it.img + '" alt="' + it.label + '" />' +
+                             '<img class="jk-animal-img" src="' + it.img + '" alt="' + it.label + '"' +
+                               (it.full ? ' data-full="' + it.full + '" onerror="if(this.dataset.full){this.src=this.dataset.full;this.removeAttribute(\'data-full\');}"' : '') +
+                             ' />' +
                              '<div class="jk-animal-name">' + it.label + '</div>' +
                            '</a>';
         });
