@@ -1,4 +1,4 @@
-// Version: 20260913_v81_timer_race_fix
+// Version: 20260917_v82_hover_sync_nach_einflug
 (function () {
   var retryCount = 0;
   function init() {
@@ -1147,6 +1147,9 @@
     // Verzoegerte Callbacks aus einer aelteren Generation steigen aus,
     // statt in den inzwischen aufgebauten neuen Zustand hineinzuschreiben.
     var stateSeq = 0;
+    // Letzte bekannte Mausposition (Viewport-Koordinaten). null = unbekannt
+    // oder Zeiger hat das Fenster verlassen.
+    var ptrX = null, ptrY = null;
  
     function isTouchLayout() {
       return (stageEl.offsetWidth <= 1024) || (stageEl.offsetHeight > stageEl.offsetWidth);
@@ -1295,6 +1298,10 @@
     }
     function pointerUp() { if (!dragging) return; dragging = false; viewport.classList.remove('jk-grabbing'); }
     viewport.addEventListener('mousedown', pointerDown); window.addEventListener('mousemove', pointerMove); window.addEventListener('mouseup', pointerUp);
+    function trackPointer(e) { ptrX = e.clientX; ptrY = e.clientY; }
+    window.addEventListener('mousemove', trackPointer, {passive:true});
+    window.addEventListener('mousedown', trackPointer, {passive:true});
+    document.addEventListener('mouseout', function (e) { if (!e.relatedTarget) { ptrX = null; ptrY = null; } });
     viewport.addEventListener('touchstart', pointerDown, {passive:true}); window.addEventListener('touchmove', pointerMove, {passive:false}); window.addEventListener('touchend', pointerUp);
  
     var downX = 0, moved = false;
@@ -1570,7 +1577,11 @@
       // sofort zur Länderseite sprangen.
       zoomClickReady = false;
       clearTimeout(zoomReadyTimer);
-      zoomReadyTimer = setTimeout(function(){ zoomClickReady = true; }, 1300);
+      zoomReadyTimer = setTimeout(function(){
+        if (mySeq !== stateSeq) return;
+        zoomClickReady = true;
+        syncHoverAtPointer();
+      }, 1300);
       [50, 200, 500, 900, 1250].forEach(function(delay) {
         setTimeout(function() {
           if (mySeq !== stateSeq) return;
@@ -1616,35 +1627,56 @@
       setTimeout(function() { if (mySeq !== stateSeq) return; panel.innerHTML = ''; panel.removeAttribute('style'); }, 450);
     }
  
+    function hoverServicePath(target) {
+        var iso = target.dataset.iso;
+        var rect = target.getBoundingClientRect();
+        var stageRect = stageEl.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2 - stageRect.left;
+        var topY = rect.top - stageRect.top - 15;
+        if (topY < 35) topY = 35;
+        showMapTooltip(iso, centerX, topY);
+ 
+        if (currentHoverIso !== iso) {
+            currentHoverIso = iso;
+            panel.querySelectorAll('li.jk-active-hover').forEach(function(li) { li.classList.remove('jk-active-hover'); });
+            activeSvg.querySelectorAll('path.jk-active-hover').forEach(function(p) { p.classList.remove('jk-active-hover'); });
+ 
+            var li = panel.querySelector('li[data-iso="'+iso+'"]');
+            if (li) li.classList.add('jk-active-hover');
+            target.classList.add('jk-active-hover');
+            if (target.nextElementSibling) target.parentNode.appendChild(target);
+ 
+            renderAnimalInfo(iso);
+        }
+    }
+ 
     stageEl.addEventListener('mouseover', function(e) {
         if (!zoomed || !activeSvg) return;
         if (!zoomClickReady) return;
         if (noAutoSpin) return;
-        var isPath = e.target.tagName === 'path' && e.target.classList.contains('jk-service');
- 
-        if (isPath) {
-            var iso = e.target.dataset.iso;
-            var rect = e.target.getBoundingClientRect();
-            var stageRect = stageEl.getBoundingClientRect();
-            var centerX = rect.left + rect.width / 2 - stageRect.left;
-            var topY = rect.top - stageRect.top - 15;
-            if (topY < 35) topY = 35;
-            showMapTooltip(iso, centerX, topY);
- 
-            if (currentHoverIso !== iso) {
-                currentHoverIso = iso;
-                panel.querySelectorAll('li.jk-active-hover').forEach(function(li) { li.classList.remove('jk-active-hover'); });
-                activeSvg.querySelectorAll('path.jk-active-hover').forEach(function(p) { p.classList.remove('jk-active-hover'); });
- 
-                var li = panel.querySelector('li[data-iso="'+iso+'"]');
-                if (li) li.classList.add('jk-active-hover');
-                e.target.classList.add('jk-active-hover');
-                if (e.target.nextElementSibling) e.target.parentNode.appendChild(e.target);
- 
-                renderAnimalInfo(iso);
-            }
+        if (e.target.tagName === 'path' && e.target.classList.contains('jk-service')) {
+            hoverServicePath(e.target);
         }
     });
+ 
+    // Waehrend des 1,3s-Einflugs werden Hover-Events verworfen. Steht der Zeiger
+    // beim Freischalten schon auf einem Land (Karte oder Liste), kommt kein neues
+    // mouseover/mouseenter mehr – deshalb den Zustand unter dem Zeiger einmal
+    // nachziehen. Nur Desktop; ohne bekannte Zeigerposition passiert nichts.
+    function syncHoverAtPointer() {
+        if (!zoomed || !activeSvg || !zoomClickReady || noAutoSpin) return;
+        if (ptrX === null || ptrY === null) return;
+        var el = document.elementFromPoint(ptrX, ptrY);
+        if (!el || !stageEl.contains(el)) return;
+        if (el.tagName === 'path' && el.classList.contains('jk-service')) {
+            hoverServicePath(el);
+            return;
+        }
+        var li = el.closest ? el.closest('.jk-country-list li') : null;
+        if (li && li.dataset.iso && panel.contains(li)) {
+            li.dispatchEvent(new MouseEvent('mouseenter'));
+        }
+    }
  
     allPaths().forEach(function (p) {
       var cont = p.dataset.cont;
