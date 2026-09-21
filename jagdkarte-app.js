@@ -1,4 +1,4 @@
-// Version: 20260917_v84_drueckjagd_kacheln_aus_cms
+// Version: 20260921_v85_thumb500_braunbaer_bighorn
 (function () {
   var retryCount = 0;
   function init() {
@@ -384,7 +384,9 @@
         '6aa7faec932ed3103b7d52ba': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a71d0d637799726ace8e1f9_Schwarzba%CC%88r-p-500.jpg',
         '6aa7faec932ed3103b7d52c1': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a2bee5c88829c3cbf56fd21_Lo%CC%88we-p-500.jpg',
         '6aa7faec932ed3103b7d52c4': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a58c813898aae4f5c524b8c_Wasserbu%CC%88ffel-p-500.jpg',
-        '6aa7faec932ed3103b7d52d1': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c3761042af189b90721_Wei%C3%9Fwedelhirsch-p-500.jpg'
+        '6aa7faec932ed3103b7d52d1': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a316c3761042af189b90721_Wei%C3%9Fwedelhirsch-p-500.jpg',
+        '6aa7faec932ed3103b7d529b': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa7fa972a5423cb5a398456_braunbaer-p-500.jpg',
+        '6aa7faec932ed3103b7d52b3': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa7fa9778336289e2d6d0db_desert-bighorn-p-500.jpg'
     };
 
     var LAND_DE_VON_EN = {};
