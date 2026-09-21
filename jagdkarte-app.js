@@ -475,21 +475,6 @@
             if (c.iso && c.slug) isoToSlug[c.iso] = c.slug;
         });
     });
-    // === Sanktionierte Länder (EU-Sanktionen) ============================
-    // Russland (asiat. + europ.) und Weißrussland: keine Navigation,
-    // stattdessen Hinweis-Popup (global in Footer-Code definiert).
-    var SANCTION_ISOS = { 'RU': true, 'RU-EU': true, 'BY': true };
-    function isSanctionedIso(iso) {
-        return !!SANCTION_ISOS[iso];
-    }
-    function showSanctionNotice() {
-        // Greift auf das globale Popup zu (Footer-Code). Fallback: nichts tun.
-        if (typeof window.JK_SANCTION_SHOW === 'function') {
-            window.JK_SANCTION_SHOW();
-        }
-    }
-    // =====================================================================
- 
 // === Produkt-Verfügbarkeit ===========================================
     // Liest den versteckten CMS-Datenblock (#reisen-data) auf der Seite.
     // Länder ohne veröffentlichtes Produkt führen NICHT auf die (noch leere)
@@ -609,8 +594,6 @@
  
     function gotoCountry(iso) {
         if (!iso) return;
-        // Sanktionierte Länder: kein Sprung, nur Hinweis. Muss zuerst stehen.
-        if (isSanctionedIso(iso)) { showSanctionNotice(); return; }
         var landName = cmsLand(isoToName[iso]);
         // Genau ein Produkt + keine Einleitung -> Produktseite statt leerer Hülle
         var direct = direktLinkLand(landName);
