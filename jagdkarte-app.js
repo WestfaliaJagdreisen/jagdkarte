@@ -1,4 +1,4 @@
-// Version: 20260923_v86_thumb500_fallback_p500
+// Version: 20260923_v87_wildart_mehrfach
 (function () {
   var retryCount = 0;
   function init() {
@@ -588,8 +588,16 @@
         // wildName ist der deutsche Name aus ANIMAL_DATA. .rd-wildart ist
         // seit 2026-09-02 auf EN uebersetzt (Produkte EN-Texte), kann aber
         // bei noch nicht uebersetzten Produkten deutsch bleiben -> beide pruefen.
+        // Seit 2026-09-23 darf "Wildart" mehrere Arten enthalten, durch Komma
+        // getrennt (Lany: "Rothirsch, Damhirsch, Muffel, Sikahirsch,
+        // Schwarzwild"). Passt, wenn eine der Arten passt. Gleiche Regel
+        // im Footer-Code der Wildart- und der Laenderseite.
         var wildEn = wildLabel(wildName);
-        var passend = imLand.filter(function (p) { return p.wildart === wildName || p.wildart === wildEn || (cmsLabel && p.wildart === cmsLabel); });
+        var passend = imLand.filter(function (p) {
+            var arten = p.wildart.split(',').map(function (a) { return a.trim(); });
+            return arten.indexOf(wildName) !== -1 || arten.indexOf(wildEn) !== -1 ||
+                   (cmsLabel && arten.indexOf(cmsLabel) !== -1);
+        });
         if (passend.length === 1) return PRODUKT_BASE + passend[0].slug;
         return null;
     }
