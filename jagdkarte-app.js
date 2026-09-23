@@ -1,4 +1,4 @@
-// Version: 20260921_v85_thumb500_braunbaer_bighorn
+// Version: 20260923_v86_thumb500_fallback_p500
 (function () {
   var retryCount = 0;
   function init() {
@@ -297,9 +297,11 @@
     var KACHEL_JAGDARTEN = ['Drückjagd'];
 
     // Vorschaubilder 500 px, Schluessel = Datei-ID des CMS-Bildes (Feld
-    // "Repraesentatives Bild", in DE und EN identisch). Wird das Bild im CMS
-    // getauscht, aendert sich die ID -> kein Treffer -> die Karte zeigt das
-    // neue Originalbild (groesser, aber richtig) statt stillschweigend das alte.
+    // "Repraesentatives Bild"). Wird das Bild im CMS getauscht, aendert sich
+    // die ID -> kein Treffer -> seit v86 wird die Webflow-Variante "-p-500"
+    // des neuen Bildes versucht; fehlt sie (API-Upload), faellt onerror in
+    // renderAnimalInfo auf das Original zurueck. Neue Bilder daher im
+    // Designer-CMS-Panel hochladen, dann ist hier kein Eintrag noetig.
     var THUMB_500 = {
         '6a1eb6df918bd79ca6067033': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1eb6df918bd79ca6067033_Damhirsch-p-500.jpg',
         '6a1ecca503f180a3c0eced81': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6a1ecca503f180a3c0eced81_Rehbock-p-500.jpg',
@@ -367,7 +369,6 @@
         '6aa2c58c3f8c0e87dd5ce885': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ce8b6dc4784f42cc7c_rusahirsch-p-500.jpg',
         '6aa2c58c3f8c0e87dd5ce88a': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3ceb5e6b3d6e2a04000_schneehase-p-500.jpg',
         '6aa2c58c3f8c0e87dd5ce893': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cef92c3260b7033e27_rappenantilope-p-500.jpg',
-        '6aa2c58c3f8c0e87dd5ce899': 'https://cdn.prod.website-files.com/6a031b71b6957742cb6b4caa/6aa2c58c3f8c0e87dd5ce899_6aa2c3cf85c584d9bc070ff2_sibirischer-steinbock.jpeg',
         '6aa2c58c3f8c0e87dd5ce89c': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf57b600403aa8eae1_schneeschaf-p-500.jpg',
         '6aa2c58c3f8c0e87dd5ce8a4': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cf85c584d9bc071007_sitatunga-p-500.jpg',
         '6aa2c58c3f8c0e87dd5ce8ac': 'https://cdn.prod.website-files.com/6a031706a57be115a0a95741/6aa2c3cfb1cb84c6a8ccce91_steinschaf-p-500.jpg',
@@ -436,7 +437,8 @@
                 arten.push({
                     name:  IS_EN ? (WILD_DE_VON_EN[n] || n) : n,   // intern deutsch
                     label: n,                                       // Anzeige + Filterwert wie im CMS
-                    img:   THUMB_500[jkDateiId(url)] || url
+                    img:   THUMB_500[jkDateiId(url)] || jkBild500(url),
+                    full:  THUMB_500[jkDateiId(url)] ? '' : url
                 });
             });
             ANIMAL_DATA[iso] = arten;
