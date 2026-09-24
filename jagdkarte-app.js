@@ -1,4 +1,4 @@
-// Version: 20260923_v87_wildart_mehrfach
+// Version: 20260924_v88_wild_en_sync
 (function () {
   var retryCount = 0;
   function init() {
@@ -125,7 +125,7 @@
     // Deutscher Wildart-Name -> englischer Name (Sammlung Wildarten, 89).
     var WILD_EN = {
         'Amerikanischer Bison': 'American Bison',
-        'Kahlwild': 'Red Hind',
+        'Kahlwild': 'Antlerless Deer',
         'Pinselohrschwein': 'Red River Hog',
         'Ducker': 'Duiker',
         'Python': 'Python',
@@ -181,7 +181,7 @@
         'Chinesisches Wasserreh': 'Chinese Water Deer',
         'Kudu': 'Greater Kudu',
         'Oryx': 'Gemsbok',
-        'Wapiti': 'Elk',
+        'Wapiti': 'Wapiti',
         'Bergnyala': 'Mountain Nyala',
         'Bongo': 'Bongo',
         'Leopard': 'Leopard',
