@@ -745,7 +745,7 @@
     mount.innerHTML =
       '<div class="jk-stage">' +
         '<div class="jk-eyebrow">' + T.eyebrow + '</div>' +
-        '<h1 class="jk-headline" style="margin:0;line-height:inherit">' + T.headline + '</h1>' +
+        '<h1 class="jk-headline" style="margin:0;line-height:inherit;font-style:normal">' + T.headline + '</h1>' +
         '<div class="jk-sub">' + T.sub + '</div>' +
         '<div class="jk-back">' + T.back + '</div>' +
         '<div class="jk-viewport"><div class="jk-rotor">' +
