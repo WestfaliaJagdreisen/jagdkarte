@@ -1,4 +1,4 @@
-// Version: 20260924_v88_wild_en_sync
+// Version: 20261007_v89_marco_polo_merge
 (function () {
   var retryCount = 0;
   function init() {
@@ -163,7 +163,6 @@
         'Schneeschaf': 'Snow Sheep',
         'Argali': 'Argali',
         'Altai-Argali': 'Altai Argali',
-        'Marco-Polo-Argali (Tien-Shan)': 'Marco Polo Sheep (Tien Shan)',
         'Wolf': 'Wolf',
         'Lord Derby Eland': 'Lord Derby Eland',
         'Warzenschwein': 'Warthog',
@@ -197,7 +196,7 @@
         'Blauschaf': 'Blue Sheep',
         'Tur': 'Tur',
         'Urial': 'Urial',
-        'Marco-Polo-Argali (Pamir)': 'Marco Polo Sheep (Pamir)',
+        'Marco-Polo-Argali': 'Marco Polo Sheep',
         'Moschusochse': 'Muskox',
         'Wisent': 'European Bison',
         'Elch': 'Moose',
