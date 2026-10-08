@@ -1,4 +1,4 @@
-// Version: 20261007_v89_marco_polo_merge
+// Version: 20261008_v90_laenderseite_ohne_produkt
 (function () {
   var retryCount = 0;
   function init() {
@@ -556,6 +556,13 @@
         return _ohneText[landName];
     }
  
+    // Land steht in #laender-data UND hat eine Einleitung (fehlt das Land
+    // im Datenblock, gilt es hier als nicht fertig).
+    function laenderseiteFertig(landName) {
+        hatLaenderText(landName);
+        return !!_ohneText && _ohneText[landName] === true;
+    }
+
     // Klick auf ein Land: nur ueberspringen, wenn genau ein Produkt
     // existiert UND die Laenderseite keinen Einleitungstext hat.
     function direktLinkLand(landName) {
@@ -611,8 +618,10 @@
         if (direct) { window.location.href = direct; return; }
         var slug = isoToSlug[iso];
         if (!slug) return;
-        // Noch kein Produkt online -> Filterseite mit Vorbereitungs-Hinweis
-        if (!hasProduct(landName)) {
+        // Noch kein Produkt online -> Filterseite mit Vorbereitungs-Hinweis,
+        // ausser das Land hat eine fertige Laenderseite (Einleitung im CMS,
+        // z. B. Kanada nur mit Broschueren) -> dann die Laenderseite.
+        if (!hasProduct(landName) && !laenderseiteFertig(landName)) {
             window.location.href = REISEN_BASE + '?land_equal=' + encodeURIComponent(landName);
             return;
         }
