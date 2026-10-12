@@ -1,4 +1,4 @@
-// Version: 20261008_v90_laenderseite_ohne_produkt
+// Version: 20261012_v91_namibia_laenderseite
 (function () {
   var retryCount = 0;
   function init() {
@@ -580,7 +580,9 @@
     // Produkt hat - kommt ein zweites dazu, faellt die Ausnahme von selbst
     // weg. Muss mit dem Footer-Code der Wildart- und der Laenderseite
     // uebereinstimmen.
-    var ALLE_ARTEN_ABGEDECKT = { 'Namibia': true };
+    // 2026-10-12: Namibia entfernt - zweites Revier (Broschuere Schoenfeld),
+    // Arten laufen wieder ueber die Liste.
+    var ALLE_ARTEN_ABGEDECKT = {};
  
     // Klick auf eine Wildart: genau ein passendes Produkt im Land.
     function direktLinkArt(landName, wildName, cmsLabel) {
